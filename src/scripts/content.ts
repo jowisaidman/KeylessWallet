@@ -1,7 +1,6 @@
 import { Web3 } from "web3";
 
 async function injectExtensionScript(url: string) {
-
   try {
     const script = document.createElement("script");
     script.src = chrome.runtime.getURL(url);

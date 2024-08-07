@@ -15,8 +15,7 @@ const calculatePosition = async () => {
     latestWindow.width !== undefined
   ) {
     const top = latestWindow.top;
-    const left =
-      latestWindow.left - WIDTH;
+    const left = latestWindow.left - WIDTH;
     return { top, left };
   }
 
@@ -24,10 +23,16 @@ const calculatePosition = async () => {
 };
 
 const getWalletWindowId = async () => {
-  const lastWindowPopup = await chrome.windows.getLastFocused({ windowTypes: ["popup"], populate: true });
-    const walletPopupWindowId = (lastWindowPopup && lastWindowPopup.tabs ? lastWindowPopup.tabs[0].windowId : undefined);
+  const lastWindowPopup = await chrome.windows.getLastFocused({
+    windowTypes: ["popup"],
+    populate: true,
+  });
+  const walletPopupWindowId =
+    lastWindowPopup && lastWindowPopup.tabs
+      ? lastWindowPopup.tabs[0].windowId
+      : undefined;
 
-    return walletPopupWindowId
+  return walletPopupWindowId;
 };
 
 const waitForWalletWindowId = async () => {
@@ -117,5 +122,5 @@ export async function configureAndRenderExtension(command: Command) {
 }
 
 export async function setChainId(command: Command) {
-  await chrome.storage.local.set({ chainId: command.data.chainId });  
+  await chrome.storage.local.set({ chainId: command.data.chainId });
 }

@@ -1,4 +1,4 @@
-import React, {FC, PropsWithChildren} from 'react';
+import React, { FC, PropsWithChildren } from "react";
 
 export const Loading = () => {
   return (
@@ -22,16 +22,17 @@ export const Loading = () => {
   );
 };
 
-const LoadingWrapper: FC<PropsWithChildren<{ className?: string }>> = ({children, className}) => {
+const LoadingWrapper: FC<PropsWithChildren<{ className?: string }>> = ({
+  children,
+  className,
+}) => {
   return (
     <div
       className={`${className} flex flex-col items-center text-center`}
       data-cy="loading"
     >
       <Loading />
-      <div className="mt-3">
-        {children}
-      </div>
+      <div className="mt-3">{children}</div>
     </div>
   );
 };
