@@ -20,7 +20,7 @@
         ],
         "js": [
           "js/vendor.js",
-          "js/content_script.js"
+          "js/content.js"
         ]
       }
     ],
@@ -34,7 +34,7 @@
     "web_accessible_resources": [
       {
         "resources": [
-          "js/attach.js"
+          "js/attachKeylessExtension.js"
         ],
         "matches": [
           "<all_urls>"
