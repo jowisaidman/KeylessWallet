@@ -7,6 +7,8 @@ module.exports = {
   entry: {
     popup: path.join(srcDir, "popup.tsx"),
     background: path.join(srcDir, "background.ts"),
+    attach: path.join(srcDir, "scripts/attachKeylessExtension.ts"),
+    content_script: path.join(srcDir, "scripts/content.ts"),
   },
   output: {
     path: path.join(__dirname, "../dist/js"),

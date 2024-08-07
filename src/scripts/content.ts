@@ -9,10 +9,11 @@ async function injectExtensionScript(url: string) {
 
     const node = document.head || document.documentElement;
     node.prepend(script);
+    window.postMessage("attach");
   } catch (error) {
     console.log(error);
     throw error;
   }
 }
 
-injectExtensionScript("js/attachKeylessExtension.js");
+injectExtensionScript("js/attach.js");
