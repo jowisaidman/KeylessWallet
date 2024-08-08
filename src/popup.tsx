@@ -37,7 +37,7 @@ const Popup = () => {
         />
       </div>
       <div className="flex flex-col grow justify-center items-center m-3 px-5">
-        {source === "none" ? <SyncAddress /> : <Welcome />}
+        {<Welcome />}
       </div>
     </div>
   );

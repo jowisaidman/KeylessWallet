@@ -13,7 +13,8 @@ export default () => {
   }
 
   function confirmAccount() {
-    chrome.storage.sync.set({ source: "none", account });
+    //chrome.storage.sync.set({ source: "none", account });
+    chrome.storage.sync.set({ source: "welcome", account });
   }
 
   function retry() {

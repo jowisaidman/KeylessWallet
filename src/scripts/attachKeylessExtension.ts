@@ -33,6 +33,8 @@ let chainChanged: any = undefined;
 let networkChanged: any = undefined;
 let connect: any = undefined;
 
+const originalEthereum = window.ethereum;
+
 class Provider implements Eip1193Provider {
   wallet = "Keyless";
 
@@ -99,7 +101,7 @@ function process_request(
       return requestPermissions();
     default:
       console.log("default");
-      return Promise.resolve(1);
+      return originalEthereum.request({ method, params });
   }
 }
 
@@ -135,6 +137,7 @@ async function eth_requestAccounts(): Promise<any> {
   if (accountsChanged) {
     await accountsChanged(ACCOUNT);
   }
+  //originalEthereum.request({ method: 'eth_requestAccounts' });
   // return Promise.resolve("0x9A85ed0190C0946C7aF69C11c184A1598199d0c3us");
   return [ACCOUNT];
   // return {"jsonrpc":"2.0","result":[ACCOUNT]};
@@ -167,7 +170,7 @@ async function attachKeylessExtension() {
 
   /*
     console.log("Provider", provider);*/
-  /*
+  
   window.dispatchEvent(new Event("eip6963:requestProvider"));
 
   let wallet_providers: Array<WalletProvider> = [];
@@ -199,7 +202,7 @@ async function attachKeylessExtension() {
   if (wallet_providers.length == 0) {
     console.log("** No wallet installed **");
   }
-  */
+  
 
   console.log(`** Interception done **`);
 }
@@ -212,6 +215,26 @@ async function attachKeylessExtension() {
 //  },
 //  false,
 //);
+
+
+window.addEventListener('signMessageEvent', async (event) => {
+    console.log("Received signMessageEvent:", event);
+});
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    console.log("AAAAAAAu12319283912391923");
+    if (request.type === 'signMessageEvent') {
+      // Dispatch a custom event to the main window
+      const event = new CustomEvent('signMessageEvent', {
+        detail: request.payload
+      });
+      
+      // Dispatch the event to the main window
+      window.dispatchEvent(event);
+      sendResponse({ status: 'event dispatched' });
+    }
+    return true;
+  });
 
 console.log("** KeyLess - loading..");
 window.addEventListener("load", attachKeylessExtension);
