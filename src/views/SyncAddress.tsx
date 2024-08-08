@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Button } from "../components/Button";
 import { Tabs, Tab } from "../components/Tabs";
 import { QrReader } from "../components/QrReader";
+import { changeScreen, Screen } from "../utils/navigation";
 
 export default () => {
   const [account, setAccount] = useState<string>();
@@ -20,6 +21,10 @@ export default () => {
     setScanning(true);
   }
 
+  function cancel() {
+    changeScreen(Screen.Welcome);
+  }
+
   return (
     <div className="flex flex-col items-center gap-5 grow pb-5 h-full justify-between">
       <div className="text-center my-2">
@@ -32,7 +37,18 @@ export default () => {
       </div>
 
       {scanning ? (
-        <QrReader readInterval={500} onSuccess={onScanAddress} />
+        <>
+          <QrReader readInterval={500} onSuccess={onScanAddress} />
+          <Button
+            onClick={cancel}
+            variant="secondary"
+            className="px-10"
+            centered
+            size="lg"
+          >
+            Cancel
+          </Button>
+        </>
       ) : (
         <>
           <div className="text-center">
@@ -49,7 +65,6 @@ export default () => {
               centered
               size="lg"
             >
-              {" "}
               Retry
             </Button>
             <Button
@@ -59,7 +74,6 @@ export default () => {
               className="px-10"
               size="lg"
             >
-              {" "}
               Confirm
             </Button>
           </div>
