@@ -19,7 +19,8 @@
           "<all_urls>"
         ],
         "js": [
-          "js/vendor.js"
+          "js/vendor.js",
+          "js/content.js"
         ]
       }
     ],

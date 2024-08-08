@@ -1,39 +1,43 @@
-import React, { ButtonHTMLAttributes, FC, forwardRef } from 'react';
+import React, { ButtonHTMLAttributes, FC, forwardRef } from "react";
 
-export interface IButtonProperties extends ButtonHTMLAttributes<HTMLButtonElement> {
-  'data-testid'?: string;
-  size?: 'lg' | 'sm';
+export interface IButtonProperties
+  extends ButtonHTMLAttributes<HTMLButtonElement> {
+  "data-testid"?: string;
+  size?: "lg" | "sm";
   disabled?: boolean;
-  variant?: 'primary' | 'secondary';
+  variant?: "primary" | "secondary";
   centered?: boolean;
 }
 
-export const Button: FC<IButtonProperties> = forwardRef<HTMLButtonElement, IButtonProperties>(
+export const Button: FC<IButtonProperties> = forwardRef<
+  HTMLButtonElement,
+  IButtonProperties
+>(
   (
     {
-      'data-testid': dataTestId,
+      "data-testid": dataTestId,
       children,
       className,
       disabled,
       onClick,
-      size = 'sm',
-      type = 'button',
-      variant = 'primary',
+      size = "sm",
+      type = "button",
+      variant = "primary",
       centered,
       ...rest
     },
-    ref,
+    ref
   ) => {
     const variants = {
       parent: {
         primary:
-          'active:outline-accent-hover-action outline-none bg-highlight text-on-highlight hover:bg-highlight/[.6]',
+          "active:outline-accent-hover-action outline-none bg-highlight text-on-highlight hover:bg-highlight/[.6]",
         secondary:
-          'outline-default outline-width-[0.5px] bg-transparent outline-1 text-default hover:bg-white/[.1] active:outline-highlight',
+          "outline-default outline-width-[0.5px] bg-transparent outline-1 text-default hover:bg-white/[.1] active:outline-highlight",
       },
       sizes: {
-        sm: 'px-3 py-1',
-        lg: 'px-3 py-3',
+        sm: "px-3 py-1",
+        lg: "px-3 py-3",
       },
     };
     return (
@@ -45,18 +49,24 @@ export const Button: FC<IButtonProperties> = forwardRef<HTMLButtonElement, IButt
         ref={ref}
         className={[
           className,
-          'rounded-full active:outline-1 leading-snug transition-all text-base outline disabled:cursor-not-allowed !disabled:outline-none',
+          "rounded-full active:outline-1 leading-snug transition-all text-base outline disabled:cursor-not-allowed !disabled:outline-none",
           variants.parent[variant],
           variants.sizes[size],
-        ].join(' ')}
-        {...rest}>
+        ].join(" ")}
+        {...rest}
+      >
         <span
-          className={`flex items-center space-x-md transition-opacity text-base ${centered ? 'justify-center': ''}`}>
-          <div className="flex items-center space-x-md font-semibold">{children}</div>
+          className={`flex items-center space-x-md transition-opacity text-base ${
+            centered ? "justify-center" : ""
+          }`}
+        >
+          <div className="flex items-center space-x-md font-semibold">
+            {children}
+          </div>
         </span>
       </button>
     );
-  },
+  }
 );
 
-Button.displayName = 'Button';
+Button.displayName = "Button";
