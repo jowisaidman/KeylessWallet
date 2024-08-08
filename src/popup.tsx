@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import Welcome from "./views/Welcome";
+import SyncAddress from "./views/SyncAddress";
 
 const Popup = () => {
   const [source, setSource] = useState<string>("none");
@@ -36,7 +37,7 @@ const Popup = () => {
         />
       </div>
       <div className="flex flex-col grow justify-center items-center m-3 px-5">
-        {source === "none" ? <Welcome /> : <Welcome />}
+        {source === "none" ? <SyncAddress /> : <Welcome />}
       </div>
     </div>
   );
