@@ -10,8 +10,9 @@ import {
   WalletContext,
   IWalletContext,
   getSavedState,
-  WalletStateKey,
   DefaultContext,
+  SOURCE,
+  CURRENT_ACCOUNT,
 } from "./context/context";
 
 const Popup = () => {
@@ -26,10 +27,16 @@ const Popup = () => {
   // Effect 1: Add listener to sync persisted state with local state
   useEffect(() => {
     const listener = async () => {
-      await chrome.storage.local.get(WalletStateKey, (result) => {
-        setWalletContext(result[WalletStateKey]);
-      });
+      await chrome.storage.local.get(
+        [SOURCE, CURRENT_ACCOUNT, "command"],
+        (result) => {
+          console.log(1, result);
+          setWalletContext({ ...result } as IWalletContext);
+          setCommand(result["command"]);
+        }
+      );
     };
+
     chrome.storage.onChanged.addListener(listener);
     return () => {
       chrome.storage.onChanged.removeListener(listener);
@@ -38,55 +45,36 @@ const Popup = () => {
 
   // Effect 2: Sync local state with storage data on mount
   useEffect(() => {
-    chrome.storage.local.get(WalletStateKey, async (result) => {
-      setWalletContext(result[WalletStateKey]);
+    chrome.storage.local.get([SOURCE, CURRENT_ACCOUNT, "command"], (result) => {
+      console.log(2, result);
+      setWalletContext({ ...result } as IWalletContext);
       setSyncedWithStorage(true);
+      setCommand(result["command"]);
     });
   }, []);
 
   // Process commands
   useEffect(() => {
-    const listener = async () => {
-      await chrome.storage.local.get(["command"], (result) => {
-        setCommand(result["command"]);
-      });
-    };
-    chrome.storage.onChanged.addListener(listener);
-    return () => {
-      chrome.storage.onChanged.removeListener(listener);
-    };
-  }, []);
-
-  useEffect(() => {
-    chrome.storage.local.get(["command"], (result) => {
-      if (result["command"]) {
-        setCommand(result["command"]);
-      }
-    });
-  }, []);
-
-  // Process commands
-  useEffect(() => {
-    if (command) {
+    if (syncedWithStorage && command) {
+      console.log(walletContext, syncedWithStorage);
       console.log("Processing ", command, JSON.stringify(command.data[0]));
-      switch (command["type"]) {
-        case "eth_sendTransaction": {
-          goToSignScreenWithQr(JSON.stringify(command.data[0]));
-          /*
-          chrome.storage.local
-            .set({ signData: JSON.stringify(command.data[0]) })
-            .then(() => changeScreen(Screen.QrToSign));
-            */
-          break;
+      const commandType = command["type"];
+      const commandData = command.data[0];
+
+      // Remove command after processing it
+      chrome.storage.local.set({ command: null }).then(async () => {
+        switch (commandType) {
+          case "eth_sendTransaction": {
+            goToSignScreenWithQr(JSON.stringify(command.data[0]));
+            break;
+          }
+          default:
+            console.warn("Unknown command", command);
+            break;
         }
-        default:
-          console.warn("Unknown command", command);
-          break;
-      }
+      });
     }
-    // Remove command after processing it
-    chrome.storage.local.set({ command: null });
-  }, [command]);
+  }, [command, syncedWithStorage]);
 
   function getScreen() {
     switch (walletContext?.source) {
@@ -130,9 +118,12 @@ const Popup = () => {
 
 const container = document.getElementById("root")!;
 const root = createRoot(container);
-
+/*
 root.render(
   <React.StrictMode>
     <Popup />
   </React.StrictMode>
 );
+*/
+
+root.render(<Popup />);

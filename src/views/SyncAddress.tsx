@@ -29,8 +29,8 @@ export default () => {
     setScanning(true);
   }
 
-  function cancel() {
-    changeScreen(Screen.Welcome);
+  async function cancel() {
+    await changeScreen(Screen.Welcome);
   }
 
   return (
@@ -48,7 +48,7 @@ export default () => {
         <>
           <QrReader readInterval={500} onSuccess={onScanAddress} />
           <Button
-            onClick={cancel}
+            onClick={async () => await confirmAccount()}
             variant="secondary"
             className="px-10"
             centered

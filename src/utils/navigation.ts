@@ -48,8 +48,9 @@ export function checkContractVerification() {
     });
 }
 
-export function changeScreen(screen: Screen) {
-  updateState((currentState) => {
+export async function changeScreen(screen: Screen) {
+  await updateState((currentState) => {
+    console.log("=>", currentState);
     currentState.source = screen;
     return currentState;
   });
@@ -58,5 +59,5 @@ export function changeScreen(screen: Screen) {
 export function goToSignScreenWithQr(data: string) {
   chrome.storage.local
     .set({ signData: data })
-    .then(() => changeScreen(Screen.QrToSign));
+    .then(async () => await changeScreen(Screen.QrToSign));
 }

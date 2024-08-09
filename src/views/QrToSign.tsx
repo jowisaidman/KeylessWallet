@@ -52,7 +52,9 @@ export default () => {
       <canvas id="qr" />
       <div className="flex items-center space-x-3 items-end mb-1">
         <Button
-          onClick={back}
+          onClick={async () => {
+            await back();
+          }}
           variant="secondary"
           className="px-10"
           centered
@@ -62,7 +64,9 @@ export default () => {
           Back
         </Button>
         <Button
-          onClick={send}
+          onClick={async () => {
+            await send();
+          }}
           variant="primary"
           centered
           className="px-10"
