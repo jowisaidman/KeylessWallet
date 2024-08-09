@@ -5,9 +5,6 @@ import { QrReader } from "../components/QrReader";
 import { changeScreen, Screen } from "../utils/navigation";
 import { updateState } from "../context/context";
 
-const wait = async (milliseconds: number) =>
-  new Promise((resolve) => setTimeout(resolve, milliseconds));
-
 export default () => {
   const [account, setAccount] = useState<string>();
   const [scanning, setScanning] = useState<boolean>(true);
@@ -23,11 +20,8 @@ export default () => {
             address: account!,
             type: 'offline_wallet',
         };
-        console.log("===>", currentState);
         return currentState;
     });
-    console.log("CCCHANG");
-    // await wait(2000);
     await changeScreen(Screen.Welcome);
   }
 

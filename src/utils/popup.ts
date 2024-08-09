@@ -49,6 +49,7 @@ const waitForWalletWindowId = async () => {
   }
 };
 
+/*
 const closeWindowWithTarget = (targetId: number, listeningId: number) => {
   function listener(_tabId: number, removeInfo: chrome.tabs.TabRemoveInfo) {
     if (removeInfo.windowId === listeningId) {
@@ -65,7 +66,6 @@ const closeWindowWithTarget = (targetId: number, listeningId: number) => {
             `Error resetting extension: ${JSON.stringify(error, null, 4)}`
           )
         );
-        */
       chrome.windows.remove(targetId);
       chrome.tabs.onRemoved.removeListener(listener);
     }
@@ -91,6 +91,7 @@ const closeWindowWithTarget = (targetId: number, listeningId: number) => {
 
   chrome.tabs.onRemoved.addListener(listener);
 };
+*/
 
 export async function configureAndRenderExtension(command: Command) {
   let position = await calculatePosition();
@@ -151,7 +152,7 @@ export async function configureAndRenderExtension2(command: Command) {
       focused: true,
     });
     if (extension.id) {
-      closeWindowWithTarget(extension.id, walletId);
+      // closeWindowWithTarget(extension.id, walletId);
 
       chrome.windows.update(extension.id, {
         focused: true,

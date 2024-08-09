@@ -15,7 +15,7 @@ import {
 
 const Popup = () => {
   const [walletContext, setWalletContext] =
-    useState<IWalletContext | null>(DefaultContext);
+    useState<IWalletContext>(DefaultContext);
 
   const [command, setCommand] =
     useState<Command | null>(null);
@@ -24,7 +24,6 @@ const Popup = () => {
   useEffect(() => {
     const listener = async () => {
       await chrome.storage.local.get(WalletStateKey, (result) => {
-          console.log("new wallet context", result[WalletStateKey]);
         setWalletContext(result[WalletStateKey]);
       });
     };
@@ -36,7 +35,6 @@ const Popup = () => {
 
   // Effect 2: Sync local state with storage data on mount
   useEffect(() => {
-
     chrome.storage.local.get(WalletStateKey, async (result) => {
         setWalletContext(result[WalletStateKey])
     });
