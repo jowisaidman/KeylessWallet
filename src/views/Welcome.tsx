@@ -8,7 +8,26 @@ export default () => {
   return (
     <div className="flex flex-col items-center gap-5 grow mt-5 pb-5 h-full">
       <div className={`flex flex-col items-center justify-center`}>
+
+        <div className="text-primary font-bold">Network</div>
+
+        <select className="text-secondary">
+          <option value="1">
+            Ethereum Mainnet
+          </option>
+          <option value="11155111">
+            Ethereum Sepolia
+          </option>
+          <option value="8453">
+            Base
+          </option>
+          <option value="84532">
+            Base Sepolia
+          </option>
+        </select>
+
         <div className="text-primary font-bold">Account</div>
+
         <div className="text-secondary">
           0x9A85ed0190C0946C7aF69C11c184A1598199d0c3us
         </div>
