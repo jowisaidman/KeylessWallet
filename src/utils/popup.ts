@@ -39,12 +39,9 @@ const waitForWalletWindowId = async () => {
   let retries = 10;
 
   while (retries > 0) {
-    console.log("test");
     await wait(1000);
-    console.log("test2");
 
     const walletWindowId = await getWalletWindowId();
-    console.log("test3");
 
     if (walletWindowId) return walletWindowId;
 
@@ -95,6 +92,12 @@ const closeWindowWithTarget = (targetId: number, listeningId: number) => {
 
 export async function configureAndRenderExtension(command: Command) {
   let position = await calculatePosition();
+
+  chrome.storage.sync.set({ command });
+
+  await chrome.windows.getCurrent();
+
+  /*
   chrome.windows.create({
     url: chrome.runtime.getURL("popup.html"),
     type: "popup",
@@ -103,16 +106,35 @@ export async function configureAndRenderExtension(command: Command) {
     width: 400,
     height: 600,
   });
+  */
+const { top, left } = await calculatePosition();
+    await chrome.storage.local.set({ source: "wallet" });
+
+    const extension = await chrome.windows.create({
+      url: chrome.runtime.getURL("popup.html"),
+      type: "popup",
+      width: WIDTH,
+      height: HEIGHT,
+      focused: true,
+    });
+    if (extension.id) {
+      chrome.windows.update(extension.id, {
+        focused: true,
+        drawAttention: true,
+      });
+    }
 }
 export async function configureAndRenderExtension2(command: Command) {
+    console.log("1");
   await chrome.storage.local.set({ event: command });
 
+    console.log("2");
   await chrome.windows.getCurrent();
 
+    console.log("3");
   const walletId = await waitForWalletWindowId();
 
-  console.log(walletId);
-
+    console.log("4");
   if (walletId) {
     const { top, left } = await calculatePosition();
     await chrome.storage.local.set({ source: "wallet" });

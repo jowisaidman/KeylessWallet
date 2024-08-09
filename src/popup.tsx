@@ -3,6 +3,8 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import Welcome from "./views/Welcome";
 import SyncAddress from "./views/SyncAddress";
+import { changeScreen, Screen } from "./utils/navigation";
+import { Command } from "./models";
 import {
   WalletContext,
   IWalletContext,
@@ -14,6 +16,9 @@ import {
 const Popup = () => {
   const [walletContext, setWalletContext] =
     useState<IWalletContext>(DefaultContext);
+
+  const [command, setCommand] =
+    useState<Command | null>(null);
 
   // Effect 1: Add listener to sync persisted state with local state
   useEffect(() => {
@@ -34,6 +39,45 @@ const Popup = () => {
       setWalletContext(result[WalletStateKey]);
     });
   }, []);
+
+  // Process commands
+    useEffect(() => {
+    const listener = () => {
+      chrome.storage.sync.get(["command"], (result) => {
+        setCommand(result["command"]);
+      });
+    };
+    chrome.storage.onChanged.addListener(listener);
+    return () => {
+      chrome.storage.onChanged.removeListener(listener);
+    };
+  }, []);
+
+
+  useEffect(() => {
+    chrome.storage.sync.get(["command"], (result) => {
+        if (result["command"]) {
+          setCommand(result["command"]);
+        }
+    });
+  }, []);
+
+  // Process commands
+  useEffect(() => {
+      if (command) {
+            console.log("Processing ", command);
+            switch (command["type"]) {
+                case "eth_sendTransaction":
+                    changeScreen(Screen.SyncAddress);
+                    break;
+                default:
+                    console.warn("Unknown command", command);
+                    break;
+            }
+      }
+            // Remove command after processing it
+      chrome.storage.sync.set({ "command" : null });
+  }, [command]);
 
   function getScreen() {
     switch (walletContext.source) {
