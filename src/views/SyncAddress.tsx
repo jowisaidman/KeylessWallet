@@ -16,11 +16,11 @@ export default () => {
 
   async function confirmAccount() {
     await updateState((currentState) => {
-        currentState.currentAccount = {
-            address: account!,
-            type: 'offline_wallet',
-        };
-        return currentState;
+      currentState.currentAccount = {
+        address: account!,
+        type: "offline_wallet",
+      };
+      return currentState;
     });
     await changeScreen(Screen.Welcome);
   }
@@ -76,7 +76,7 @@ export default () => {
               Retry
             </Button>
             <Button
-              onClick={async () => await  confirmAccount()}
+              onClick={async () => await confirmAccount()}
               variant="primary"
               centered
               className="px-10"

@@ -110,34 +110,34 @@ export async function configureAndRenderExtension(command: Command) {
     height: 600,
   });
   */
-const { top, left } = await calculatePosition();
-    await chrome.storage.local.set({ source: "wallet" });
+  const { top, left } = await calculatePosition();
+  await chrome.storage.local.set({ source: "wallet" });
 
-    const extension = await chrome.windows.create({
-      url: chrome.runtime.getURL("popup.html"),
-      type: "popup",
-      width: WIDTH,
-      height: HEIGHT,
+  const extension = await chrome.windows.create({
+    url: chrome.runtime.getURL("popup.html"),
+    type: "popup",
+    width: WIDTH,
+    height: HEIGHT,
+    focused: true,
+  });
+  if (extension.id) {
+    chrome.windows.update(extension.id, {
       focused: true,
+      drawAttention: true,
     });
-    if (extension.id) {
-      chrome.windows.update(extension.id, {
-        focused: true,
-        drawAttention: true,
-      });
-    }
+  }
 }
 export async function configureAndRenderExtension2(command: Command) {
-    console.log("1");
+  console.log("1");
   await chrome.storage.local.set({ event: command });
 
-    console.log("2");
+  console.log("2");
   await chrome.windows.getCurrent();
 
-    console.log("3");
+  console.log("3");
   const walletId = await waitForWalletWindowId();
 
-    console.log("4");
+  console.log("4");
   if (walletId) {
     const { top, left } = await calculatePosition();
     // await chrome.storage.local.set({ source: "wallet" });

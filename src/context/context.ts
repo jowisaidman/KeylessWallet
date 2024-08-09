@@ -6,8 +6,8 @@ export const WalletStateKey = "walletPersistedState";
 export type IWalletContext = {
   source: Screen;
   currentAccount?: {
-      type: string,
-      address: string
+    type: string;
+    address: string;
   };
 };
 
