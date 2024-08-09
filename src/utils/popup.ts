@@ -39,9 +39,12 @@ const waitForWalletWindowId = async () => {
   let retries = 10;
 
   while (retries > 0) {
+    console.log("test");
     await wait(1000);
+    console.log("test2");
 
     const walletWindowId = await getWalletWindowId();
+    console.log("test3");
 
     if (walletWindowId) return walletWindowId;
 
@@ -91,11 +94,24 @@ const closeWindowWithTarget = (targetId: number, listeningId: number) => {
 };
 
 export async function configureAndRenderExtension(command: Command) {
+  let position = await calculatePosition();
+  chrome.windows.create({
+    url: chrome.runtime.getURL("popup.html"),
+    type: "popup",
+    top: position.top,
+    left: position.left,
+    width: 400,
+    height: 600,
+  });
+}
+export async function configureAndRenderExtension2(command: Command) {
   await chrome.storage.local.set({ event: command });
 
   await chrome.windows.getCurrent();
 
   const walletId = await waitForWalletWindowId();
+
+  console.log(walletId);
 
   if (walletId) {
     const { top, left } = await calculatePosition();
