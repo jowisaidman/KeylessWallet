@@ -5,20 +5,22 @@ export const WalletStateKey = "walletPersistedState";
 
 export type IWalletContext = {
   source: Screen;
+  currentAccount?: {
+      type: string,
+      address: string
+  };
 };
 
 export const DefaultContext: IWalletContext = {
-  source: Screen.SyncAddress,
+  source: Screen.Welcome,
 };
 
-export function getSavedState(): IWalletContext {
-  let newState = { [WalletStateKey]: { source: Screen.SyncAddress } };
-  chrome.storage.sync.get([WalletStateKey], (result) => {
-    if (!result[WalletStateKey]) {
-      console.log("1");
-      chrome.storage.sync.set({ [WalletStateKey]: newState });
+export async function getSavedState(): Promise<IWalletContext> {
+  let newState = { [WalletStateKey]: DefaultContext };
+  await chrome.storage.local.get(WalletStateKey, async (result) => {
+    if (result[WalletStateKey] == null) {
+      await chrome.storage.local.set({ [WalletStateKey]: newState });
     } else {
-      console.log("2");
       newState = result[WalletStateKey];
     }
   });
@@ -27,10 +29,10 @@ export function getSavedState(): IWalletContext {
 }
 
 // Updates the persisted state
-export function updateState(f: (c: IWalletContext) => IWalletContext) {
-  let currentState = getSavedState();
-  console.log({ [WalletStateKey]: f(currentState) });
-  chrome.storage.sync.set({ [WalletStateKey]: f(currentState) });
+export async function updateState(f: (c: IWalletContext) => IWalletContext) {
+  let currentState = await getSavedState();
+  let newState = f(currentState);
+  await chrome.storage.local.set({ [WalletStateKey]: newState });
 }
 
-export const WalletContext = createContext<IWalletContext>(getSavedState());
+export const WalletContext = createContext<IWalletContext>(DefaultContext);

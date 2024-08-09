@@ -1,8 +1,10 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import Welcome from "./views/Welcome";
 import SyncAddress from "./views/SyncAddress";
+import { changeScreen, Screen } from "./utils/navigation";
+import { Command } from "./models";
 import {
   WalletContext,
   IWalletContext,
@@ -15,10 +17,17 @@ const Popup = () => {
   const [walletContext, setWalletContext] =
     useState<IWalletContext>(DefaultContext);
 
+  // Tells us if we synced with saved state the first time we enter the popup
+  const [syncedWithStorage, setSyncedWithStorage] =
+    useState<boolean>(false);
+
+  const [command, setCommand] =
+    useState<Command | null>(null);
+
   // Effect 1: Add listener to sync persisted state with local state
   useEffect(() => {
-    const listener = () => {
-      chrome.storage.sync.get([WalletStateKey], (result) => {
+    const listener = async () => {
+      await chrome.storage.local.get(WalletStateKey, (result) => {
         setWalletContext(result[WalletStateKey]);
       });
     };
@@ -30,18 +39,60 @@ const Popup = () => {
 
   // Effect 2: Sync local state with storage data on mount
   useEffect(() => {
-    chrome.storage.sync.get([WalletStateKey], (result) => {
-      setWalletContext(result[WalletStateKey]);
+    chrome.storage.local.get(WalletStateKey, async (result) => {
+        setWalletContext(result[WalletStateKey]);
+        setSyncedWithStorage(true);
     });
   }, []);
 
+  // Process commands
+    useEffect(() => {
+    const listener = async () => {
+      await chrome.storage.local.get(["command"], (result) => {
+        setCommand(result["command"]);
+      });
+    };
+    chrome.storage.onChanged.addListener(listener);
+    return () => {
+      chrome.storage.onChanged.removeListener(listener);
+    };
+  }, []);
+  /*
+
+
+  useEffect(() => {
+    chrome.storage.local.get(["command"], (result) => {
+        if (result["command"]) {
+          setCommand(result["command"]);
+        }
+    });
+  }, []);
+
+
+  // Process commands
+  useEffect(() => {
+      if (command) {
+            console.log("Processing ", command);
+            switch (command["type"]) {
+                case "eth_sendTransaction":
+                    changeScreen(Screen.SyncAddress);
+                    break;
+                default:
+                    console.warn("Unknown command", command);
+                    break;
+            }
+      }
+            // Remove command after processing it
+      chrome.storage.local.set({ "command" : null });
+  }, [command]);
+*/
   function getScreen() {
-    switch (walletContext.source) {
-      case "sync_address": {
+    switch (walletContext?.source) {
+      case Screen.SyncAddress: {
         return <SyncAddress />;
       }
       default: {
-        return <Welcome />;
+        return <Welcome syncedWithStorage={syncedWithStorage} />;
       }
     }
   }

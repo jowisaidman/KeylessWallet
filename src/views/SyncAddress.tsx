@@ -3,6 +3,7 @@ import { Button } from "../components/Button";
 import { Tabs, Tab } from "../components/Tabs";
 import { QrReader } from "../components/QrReader";
 import { changeScreen, Screen } from "../utils/navigation";
+import { updateState } from "../context/context";
 
 export default () => {
   const [account, setAccount] = useState<string>();
@@ -13,8 +14,15 @@ export default () => {
     setScanning(false);
   }
 
-  function confirmAccount() {
-    chrome.storage.sync.set({ source: "none", account });
+  async function confirmAccount() {
+    await updateState((currentState) => {
+        currentState.currentAccount = {
+            address: account!,
+            type: 'offline_wallet',
+        };
+        return currentState;
+    });
+    await changeScreen(Screen.Welcome);
   }
 
   function retry() {
@@ -38,7 +46,7 @@ export default () => {
 
       {scanning ? (
         <>
-          <QrReader readInterval={5000} onSuccess={onScanAddress} />
+          <QrReader readInterval={500} onSuccess={onScanAddress} />
           <Button
             onClick={cancel}
             variant="secondary"
@@ -68,7 +76,7 @@ export default () => {
               Retry
             </Button>
             <Button
-              onClick={confirmAccount}
+              onClick={async () => await  confirmAccount()}
               variant="primary"
               centered
               className="px-10"
