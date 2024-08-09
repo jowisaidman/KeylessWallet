@@ -1,6 +1,7 @@
 import React from "react";
 import { LabelledButton } from "../components/LabelledButton";
 import { Tabs, Tab } from "../components/Tabs";
+import { changeScreen, Screen } from "../utils/navigation";
 
 export default () => {
   return (
@@ -30,6 +31,16 @@ export default () => {
             label="Receive"
           >
             ↙
+          </LabelledButton>
+          <LabelledButton
+            variant="primary"
+            centered
+            size="lg"
+            className="px-5"
+            label="Sync Account"
+            onClick={() => changeScreen(Screen.SyncAddress)}
+          >
+            &#8634;
           </LabelledButton>
         </div>
         <br />
