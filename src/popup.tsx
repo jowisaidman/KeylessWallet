@@ -17,6 +17,10 @@ const Popup = () => {
   const [walletContext, setWalletContext] =
     useState<IWalletContext>(DefaultContext);
 
+  // Tells us if we synced with saved state the first time we enter the popup
+  const [syncedWithStorage, setSyncedWithStorage] =
+    useState<boolean>(false);
+
   const [command, setCommand] =
     useState<Command | null>(null);
 
@@ -36,7 +40,8 @@ const Popup = () => {
   // Effect 2: Sync local state with storage data on mount
   useEffect(() => {
     chrome.storage.local.get(WalletStateKey, async (result) => {
-        setWalletContext(result[WalletStateKey])
+        setWalletContext(result[WalletStateKey]);
+        setSyncedWithStorage(true);
     });
   }, []);
 
@@ -87,7 +92,7 @@ const Popup = () => {
         return <SyncAddress />;
       }
       default: {
-        return <Welcome />;
+        return <Welcome syncedWithStorage={syncedWithStorage} />;
       }
     }
   }

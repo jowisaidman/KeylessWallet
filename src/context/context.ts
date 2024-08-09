@@ -8,7 +8,7 @@ export type IWalletContext = {
   currentAccount?: {
       type: string,
       address: string
-  }
+  };
 };
 
 export const DefaultContext: IWalletContext = {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { FC } from "react";
 import { useContext, useEffect } from 'react';
 import { LabelledButton } from "../components/LabelledButton";
 import { Tabs, Tab } from "../components/Tabs";
@@ -8,12 +8,11 @@ import {
   IWalletContext,
 } from "../context/context";
 
-
-export default () => {
+export const Welcome: FC<{ syncedWithStorage: boolean }> = ({ syncedWithStorage }) => {
     const walletContext = useContext<IWalletContext>(WalletContext);
 
     useEffect(() => {
-      if (walletContext.currentAccount == null) {
+      if (syncedWithStorage && walletContext.currentAccount == null) {
           changeScreen(Screen.SyncAddress);
       }
     }, [walletContext]);
@@ -71,3 +70,5 @@ export default () => {
     </div>
   );
 };
+
+export default Welcome;
