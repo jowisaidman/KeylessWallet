@@ -41,9 +41,11 @@ export const QrReader: FC<IQrReader> = ({ readInterval, onSuccess }) => {
   }
 
   function stopStream() {
-    window.stream.getTracks().forEach(function (track: any) {
-      track.stop();
-    });
+    if (scanning && canvas.current != null && video.current != null) {
+      window.stream.getTracks().forEach(function (track: any) {
+        track.stop();
+      });
+    }
   }
 
   useEffect(() => {
@@ -66,7 +68,7 @@ export const QrReader: FC<IQrReader> = ({ readInterval, onSuccess }) => {
             stopStream();
             onSuccess(result);
           })
-          .catch((error: any) => console.log(error || "No QR code found."));
+          .catch((error: any) => console.log(error));
       }, readInterval);
 
       return stopStream;

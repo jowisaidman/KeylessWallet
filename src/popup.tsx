@@ -3,12 +3,20 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import Welcome from "./views/Welcome";
 import SyncAddress from "./views/SyncAddress";
-import { WalletContext, IWalletContext, getSavedState, WalletStateKey } from "./context/context";
+import {
+  WalletContext,
+  IWalletContext,
+  getSavedState,
+  WalletStateKey,
+  DefaultContext,
+} from "./context/context";
 
 const Popup = () => {
-    const [walletContext, setWalletContext] = useState<IWalletContext>(getSavedState());
+  const [walletContext, setWalletContext] =
+    useState<IWalletContext>(DefaultContext);
 
-useEffect(() => {
+  // Effect 1: Add listener to sync persisted state with local state
+  useEffect(() => {
     const listener = () => {
       chrome.storage.sync.get([WalletStateKey], (result) => {
         setWalletContext(result[WalletStateKey]);
@@ -21,58 +29,11 @@ useEffect(() => {
   }, []);
 
   // Effect 2: Sync local state with storage data on mount
-  /*
   useEffect(() => {
-    // 'sync' can be 'local', depends on your usecase
-    chrome.storage.sync.get(["source"], (result) => {
-      setSource(result.source);
+    chrome.storage.sync.get([WalletStateKey], (result) => {
+      setWalletContext(result[WalletStateKey]);
     });
   }, []);
-  */
-    /*
-  const [source, setSource] = useState<string>("none");
-
-  const initPlugin = async () => {
-    const storageSource = await chrome.storage.local.get("source");
-
-    if (storageSource.source) {
-      setSource(storageSource.source);
-    }
-  };
-
-  useEffect(() => {
-    const listener = () => {
-      chrome.storage.sync.get(["source"], (result) => {
-        setSource(result.source);
-      });
-    };
-    chrome.storage.onChanged.addListener(listener);
-    return () => {
-      chrome.storage.onChanged.removeListener(listener);
-    };
-  }, []);
-
-  // Effect 2: Sync local state with storage data on mount
-  useEffect(() => {
-    // 'sync' can be 'local', depends on your usecase
-    chrome.storage.sync.get(["source"], (result) => {
-      setSource(result.source);
-    });
-  }, []);
-
-  function checkSource() {
-    chrome.storage.sync.get(["source"], (result) => {
-      if (result.source) {
-        setSource(result.source);
-      }
-    });
-  }
-
-
-  useEffect(() => {
-    initPlugin();
-  }, []);
-  */
 
   function getScreen() {
     switch (walletContext.source) {

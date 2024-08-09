@@ -38,7 +38,7 @@ export default () => {
 
       {scanning ? (
         <>
-          <QrReader readInterval={500} onSuccess={onScanAddress} />
+          <QrReader readInterval={5000} onSuccess={onScanAddress} />
           <Button
             onClick={cancel}
             variant="secondary"
