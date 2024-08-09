@@ -15,7 +15,7 @@ export default () => {
     useEffect(() => {
       if (walletContext != null && walletContext.currentAccount == null) {
           console.log("going to sync");
-        // changeScreen(Screen.SyncAddress);
+          changeScreen(Screen.SyncAddress);
       }
     }, [walletContext]);
 
@@ -53,7 +53,7 @@ export default () => {
             size="lg"
             className="px-5"
             label="Sync Account"
-            onClick={() => changeScreen(Screen.SyncAddress)}
+            onClick={async () => await changeScreen(Screen.SyncAddress)}
           >
             &#8634;
           </LabelledButton>

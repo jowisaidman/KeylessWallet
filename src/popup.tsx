@@ -36,8 +36,10 @@ const Popup = () => {
 
   // Effect 2: Sync local state with storage data on mount
   useEffect(() => {
-      console.log('is this?');
-      getSavedState().then(s => { console.log("-->-->", s); setWalletContext(s)} );
+
+    chrome.storage.local.get(WalletStateKey, async (result) => {
+        setWalletContext(result[WalletStateKey])
+    });
   }, []);
 
   // Process commands
