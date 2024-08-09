@@ -1,22 +1,7 @@
 "use strict";
-import { BrowserProvider, Eip1193Provider } from "ethers";
-import {
-  EIP6963AnnounceProviderEvent,
-  EIP6963ProviderDetail,
-} from "web3/lib/commonjs/web3_eip6963";
-import { WalletProvider } from "../models/provider";
-
-export enum SupportedWallets {
-  METAMASK = "MetaMask",
-  TRUST_WALLET = "Trust Wallet",
-  PHANTOM = "Phantom",
-}
-
-declare global {
-  interface WindowEventMap {
-    "eip6963:announceProvider": EIP6963AnnounceProviderEvent;
-  }
-}
+import { Eip1193Provider } from "ethers";
+import { configureAndRenderExtension } from "../utils/popup";
+import { dispatchEvent } from "../utils/utils";
 
 declare global {
   interface Window {
@@ -25,9 +10,10 @@ declare global {
 }
 
 const ACCOUNT = "0x9A85ed0190C0946C7aF69C11c184A1598199d0c3";
+const NETWORK_ID = "0xaa36a7"; // Sepolia
+// const NETWORK_ID ="0x1";
 
-let providers: Map<string, EIP6963ProviderDetail> = new Map();
-
+// Callback function injected by the dApp
 let accountsChanged: any = undefined;
 let chainChanged: any = undefined;
 let networkChanged: any = undefined;
@@ -36,6 +22,7 @@ let connect: any = undefined;
 class Provider implements Eip1193Provider {
   wallet = "Keyless";
 
+  // For testing, we say we are metamask
   isMetaMask = true;
 
   constructor() {}
@@ -70,16 +57,15 @@ class Provider implements Eip1193Provider {
       case "connect":
         connect = callback;
         break;
-
       default:
         break;
     }
-    // callback()
   }
 
   send(method: string, params: Array<any> | Record<string, any>): Promise<any> {
     return process_request(method, params);
   }
+  // callback()
 }
 
 function process_request(
@@ -90,6 +76,12 @@ function process_request(
   switch (method) {
     case "eth_chainId":
       return eth_chainId();
+    case "eth_sendTransaction":
+      dispatchEvent({
+        type: method,
+        data: params,
+      });
+      return new Promise(() => {});
     case "eth_requestAccounts":
     case "eth_accounts":
       return eth_requestAccounts();
@@ -120,13 +112,9 @@ async function requestPermissions(): Promise<any> {
       },
     ],
   };
-  // return {"jsonrpc":"2.0","id": undefined,"result":true};
 }
 
 async function eth_accounts(): Promise<any> {
-  // await accountsChanged(ACCOUNT);
-  // return {"jsonrpc":"2.0", "result":[ACCOUNT]};
-  console.log("asd");
   return ACCOUNT;
 }
 
@@ -135,7 +123,6 @@ async function eth_requestAccounts(): Promise<any> {
   if (accountsChanged) {
     await accountsChanged(ACCOUNT);
   }
-  // return Promise.resolve("0x9A85ed0190C0946C7aF69C11c184A1598199d0c3us");
   return [ACCOUNT];
   // return {"jsonrpc":"2.0","result":[ACCOUNT]};
 }
@@ -143,89 +130,28 @@ async function eth_requestAccounts(): Promise<any> {
 async function eth_chainId(): Promise<any> {
   console.log(chainChanged);
   if (chainChanged) {
-    await chainChanged("0x1");
+    await chainChanged(NETWORK_ID);
   }
 
-  return "0x1";
-  // return {"jsonrpc":"2.0","id": undefined,"result":"0x1"};
+  return NETWORK_ID;
 }
 
 async function net_version(): Promise<any> {
   console.log(networkChanged);
   if (networkChanged) {
-    await networkChanged("1");
+    await networkChanged(NETWORK_ID);
   }
 
-  return { jsonrpc: "2.0", id: undefined, result: "1" };
+  return NETWORK_ID;
 }
 
 async function attachKeylessExtension() {
   const custom_provider = new Provider();
-  // const provider = new BrowserProvider(custom_provider);
   window.ethereum = custom_provider;
   console.log(window.ethereum);
-
-  /*
-    console.log("Provider", provider);*/
-  /*
-  window.dispatchEvent(new Event("eip6963:requestProvider"));
-
-  let wallet_providers: Array<WalletProvider> = [];
-  Object.values(SupportedWallets).forEach((elem) => {
-    let provider = providers.get(elem);
-    if (provider) {
-        wallet_providers.push(new WalletProvider(elem, provider.provider));
-      }
-    }
-  );
-
-  wallet_providers.forEach(async (provider) => {
-    provider.interceptRequests();
-    await provider.notifyChainId();
-
-    provider.on("chainChanged", (chainId: any) => {
-      const event = new CustomEvent("KeylessInterception", {
-        detail: {
-          type: "eth_chainId",
-          data: {
-            chainId: parseInt(chainId, 16),
-          },
-        },
-      });
-
-      window.dispatchEvent(event);
-    }); });
-
-  if (wallet_providers.length == 0) {
-    console.log("** No wallet installed **");
-  }
-  */
 
   console.log(`** Interception done **`);
 }
 
-//window.addEventListener(
-//  "message",
-//  (event) => {
-//      console.log("AAAAAAAAAAAAAAAAA");
-//      attachKeylessExtension();
-//  },
-//  false,
-//);
-
 console.log("** KeyLess - loading..");
 window.addEventListener("load", attachKeylessExtension);
-
-window.addEventListener(
-  "eip6963:announceProvider",
-  (event: EIP6963AnnounceProviderEvent) => {
-    const { icon, rdns, uuid, name } = event.detail.info;
-
-    if (!icon || !rdns || !uuid || !name) {
-      console.error("invalid eip6963 provider info received!");
-      return;
-    }
-
-    providers.set(name, event.detail);
-  }
-);
