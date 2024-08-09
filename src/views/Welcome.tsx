@@ -1,7 +1,8 @@
 import React from "react";
 import { LabelledButton } from "../components/LabelledButton";
+import { Button } from "../components/Button";
 import { Tabs, Tab } from "../components/Tabs";
-import { changeScreen, Screen } from "../utils/navigation";
+import { watchAddress, changeScreen, Screen } from "../utils/navigation";
 
 export default () => {
   return (
@@ -11,6 +12,14 @@ export default () => {
         <div className="text-secondary">
           0x9A85ed0190C0946C7aF69C11c184A1598199d0c3us
         </div>
+        <Button
+          variant="secondary"
+          size="lg"
+          className="mt-3"
+          onClick={() => watchAddress()}>
+            Address information
+        </Button>
+        
         <div className="font-bold text-3xl mt-3 mb-3">0 Eth</div>
 
         <div className="flex items-center space-x-3">
