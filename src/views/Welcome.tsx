@@ -1,12 +1,13 @@
 import React, { FC } from "react";
 import { useContext, useEffect } from 'react';
 import { LabelledButton } from "../components/LabelledButton";
+import { Button } from "../components/Button";
 import { Tabs, Tab } from "../components/Tabs";
-import { changeScreen, Screen } from "../utils/navigation";
 import {
   WalletContext,
   IWalletContext,
 } from "../context/context";
+import { watchAddress, changeScreen, Screen } from "../utils/navigation";
 
 export const Welcome: FC<{ syncedWithStorage: boolean }> = ({ syncedWithStorage }) => {
     const walletContext = useContext<IWalletContext>(WalletContext);
@@ -20,10 +21,37 @@ export const Welcome: FC<{ syncedWithStorage: boolean }> = ({ syncedWithStorage 
   return (
     <div className="flex flex-col items-center gap-5 grow mt-5 pb-5 h-full">
       <div className={`flex flex-col items-center justify-center`}>
+
+        <div className="text-primary font-bold">Network</div>
+
+        <select className="text-secondary">
+          <option value="1">
+            Ethereum Mainnet
+          </option>
+          <option value="11155111">
+            Ethereum Sepolia
+          </option>
+          <option value="8453">
+            Base
+          </option>
+          <option value="84532">
+            Base Sepolia
+          </option>
+        </select>
+
         <div className="text-primary font-bold">Account</div>
+
         <div className="text-secondary">
             { (walletContext.currentAccount?.address) || 'No Address Loaded' }
         </div>
+        <Button
+          variant="secondary"
+          size="lg"
+          className="mt-3"
+          onClick={() => watchAddress()}>
+            Address information
+        </Button>
+
         <div className="font-bold text-3xl mt-3 mb-3">0 Eth</div>
 
         <div className="flex items-center space-x-3">
