@@ -1,4 +1,3 @@
-import { useContext } from "react";
 import { updateState } from "../context/context";
 
 export const enum Screen {
@@ -8,16 +7,15 @@ export const enum Screen {
   QrToRead = "scan_qr_to_send",
 }
 
-export function watchAddress() {
+export function watchAddress(address: string | undefined, chainId: number | undefined) {
   let baseUrl = "";
-  let chainId = 11155111;
 
-  if (chainId == 11155111)
-    baseUrl = "https://eth-sepolia.blockscout.com/address";
+  if (chainId == 1) baseUrl = "https://eth.blockscout.com/";
+  else if (chainId == 11155111) baseUrl = "https://eth-sepolia.blockscout.com";
+  else if (chainId == 8453) baseUrl = "https://base.blockscout.com/";
+  else if (chainId == 84532) baseUrl = "https://base-sepolia.blockscout.com/";
 
-  let address = "0x9A85ed0190C0946C7aF69C11c184A1598199d0c3";
-
-  var newURL = `${baseUrl}/${address}`;
+  var newURL = `${baseUrl}/address/${address}`;
 
   chrome.tabs.create({ url: newURL });
 }
