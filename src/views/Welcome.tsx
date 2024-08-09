@@ -22,7 +22,7 @@ export const Welcome: FC<{ syncedWithStorage: boolean }> = ({
       <div className={`flex flex-col items-center justify-center`}>
         <div className="text-primary font-bold">Network</div>
 
-        <select className="text-secondary">
+        <select className="text-secondary" id="networkSelector">
           <option value="1">Ethereum Mainnet</option>
           <option value="11155111">Ethereum Sepolia</option>
           <option value="8453">Base</option>
