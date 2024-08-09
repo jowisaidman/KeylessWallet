@@ -10,11 +10,12 @@ import {
 
 
 export default () => {
-    const walletContext = useContext<IWalletContext>(WalletContext);
+    const walletContext = useContext<IWalletContext | null>(WalletContext);
 
     useEffect(() => {
-      if (walletContext.currentAccount == null) {
-        changeScreen(Screen.SyncAddress);
+      if (walletContext != null && walletContext.currentAccount == null) {
+          console.log("going to sync");
+        // changeScreen(Screen.SyncAddress);
       }
     }, [walletContext]);
 
@@ -23,7 +24,7 @@ export default () => {
       <div className={`flex flex-col items-center justify-center`}>
         <div className="text-primary font-bold">Account</div>
         <div className="text-secondary">
-            { walletContext.currentAccount?.address || 'No Address Loaded' }
+            { (walletContext != null && walletContext.currentAccount?.address) || 'No Address Loaded' }
         </div>
         <div className="font-bold text-3xl mt-3 mb-3">0 Eth</div>
 

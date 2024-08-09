@@ -6,9 +6,9 @@ export const enum Screen {
   SyncAddress = "sync_address",
 }
 
-export function changeScreen(screen: Screen) {
-  updateState((currentState) => {
-      console.log("changing screen", currentState);
+export async function changeScreen(screen: Screen) {
+  await updateState((currentState) => {
+    console.log("current state", currentState);
     currentState.source = screen;
     return currentState;
   });

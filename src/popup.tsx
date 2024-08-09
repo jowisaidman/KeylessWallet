@@ -15,15 +15,15 @@ import {
 
 const Popup = () => {
   const [walletContext, setWalletContext] =
-    useState<IWalletContext>(DefaultContext);
+    useState<IWalletContext | null>(DefaultContext);
 
   const [command, setCommand] =
     useState<Command | null>(null);
 
   // Effect 1: Add listener to sync persisted state with local state
   useEffect(() => {
-    const listener = () => {
-      chrome.storage.sync.get([WalletStateKey], (result) => {
+    const listener = async () => {
+      await chrome.storage.local.get(WalletStateKey, (result) => {
           console.log("new wallet context", result[WalletStateKey]);
         setWalletContext(result[WalletStateKey]);
       });
@@ -36,15 +36,14 @@ const Popup = () => {
 
   // Effect 2: Sync local state with storage data on mount
   useEffect(() => {
-    chrome.storage.sync.get([WalletStateKey], (result) => {
-      setWalletContext(result[WalletStateKey]);
-    });
+      console.log('is this?');
+      getSavedState().then(s => { console.log("-->-->", s); setWalletContext(s)} );
   }, []);
 
   // Process commands
     useEffect(() => {
-    const listener = () => {
-      chrome.storage.sync.get(["command"], (result) => {
+    const listener = async () => {
+      await chrome.storage.local.get(["command"], (result) => {
         setCommand(result["command"]);
       });
     };
@@ -53,15 +52,17 @@ const Popup = () => {
       chrome.storage.onChanged.removeListener(listener);
     };
   }, []);
+  /*
 
 
   useEffect(() => {
-    chrome.storage.sync.get(["command"], (result) => {
+    chrome.storage.local.get(["command"], (result) => {
         if (result["command"]) {
           setCommand(result["command"]);
         }
     });
   }, []);
+
 
   // Process commands
   useEffect(() => {
@@ -77,11 +78,11 @@ const Popup = () => {
             }
       }
             // Remove command after processing it
-      chrome.storage.sync.set({ "command" : null });
+      chrome.storage.local.set({ "command" : null });
   }, [command]);
-
+*/
   function getScreen() {
-    switch (walletContext.source) {
+    switch (walletContext?.source) {
       case Screen.SyncAddress: {
         return <SyncAddress />;
       }

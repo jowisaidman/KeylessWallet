@@ -5,6 +5,9 @@ import { QrReader } from "../components/QrReader";
 import { changeScreen, Screen } from "../utils/navigation";
 import { updateState } from "../context/context";
 
+const wait = async (milliseconds: number) =>
+  new Promise((resolve) => setTimeout(resolve, milliseconds));
+
 export default () => {
   const [account, setAccount] = useState<string>();
   const [scanning, setScanning] = useState<boolean>(true);
@@ -14,16 +17,18 @@ export default () => {
     setScanning(false);
   }
 
-  function confirmAccount() {
-    updateState((currentState) => {
+  async function confirmAccount() {
+    await updateState((currentState) => {
         currentState.currentAccount = {
             address: account!,
             type: 'offline_wallet',
-        }
+        };
         console.log("===>", currentState);
         return currentState;
     });
-    changeScreen(Screen.Welcome);
+    console.log("CCCHANG");
+    // await wait(2000);
+    await changeScreen(Screen.Welcome);
   }
 
   function retry() {
@@ -77,7 +82,7 @@ export default () => {
               Retry
             </Button>
             <Button
-              onClick={confirmAccount}
+              onClick={async () => await  confirmAccount()}
               variant="primary"
               centered
               className="px-10"
