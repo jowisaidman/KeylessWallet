@@ -5,6 +5,10 @@ export const WalletStateKey = "walletPersistedState";
 
 export type IWalletContext = {
   source: Screen;
+  currentAccount?: {
+      type: string,
+      address: string
+  }
 };
 
 export const DefaultContext: IWalletContext = {
@@ -13,12 +17,11 @@ export const DefaultContext: IWalletContext = {
 
 export function getSavedState(): IWalletContext {
   let newState = { [WalletStateKey]: { source: Screen.SyncAddress } };
-  chrome.storage.sync.get([WalletStateKey], (result) => {
-    if (!result[WalletStateKey]) {
-      console.log("1");
+  chrome.storage.local.get([WalletStateKey], (result) => {
+    if (result[WalletStateKey] == null) {
       chrome.storage.sync.set({ [WalletStateKey]: newState });
     } else {
-      console.log("2");
+        console.log("current state from saved", result[WalletStateKey]);
       newState = result[WalletStateKey];
     }
   });
@@ -29,7 +32,6 @@ export function getSavedState(): IWalletContext {
 // Updates the persisted state
 export function updateState(f: (c: IWalletContext) => IWalletContext) {
   let currentState = getSavedState();
-  console.log({ [WalletStateKey]: f(currentState) });
   chrome.storage.sync.set({ [WalletStateKey]: f(currentState) });
 }
 

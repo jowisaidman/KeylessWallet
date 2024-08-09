@@ -1,15 +1,29 @@
 import React from "react";
+import { useContext, useEffect } from 'react';
 import { LabelledButton } from "../components/LabelledButton";
 import { Tabs, Tab } from "../components/Tabs";
 import { changeScreen, Screen } from "../utils/navigation";
+import {
+  WalletContext,
+  IWalletContext,
+} from "../context/context";
+
 
 export default () => {
+    const walletContext = useContext<IWalletContext>(WalletContext);
+
+    useEffect(() => {
+      if (walletContext.currentAccount == null) {
+        changeScreen(Screen.SyncAddress);
+      }
+    }, [walletContext]);
+
   return (
     <div className="flex flex-col items-center gap-5 grow mt-5 pb-5 h-full">
       <div className={`flex flex-col items-center justify-center`}>
         <div className="text-primary font-bold">Account</div>
         <div className="text-secondary">
-          0x9A85ed0190C0946C7aF69C11c184A1598199d0c3us
+            { walletContext.currentAccount?.address || 'No Address Loaded' }
         </div>
         <div className="font-bold text-3xl mt-3 mb-3">0 Eth</div>
 

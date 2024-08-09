@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import Welcome from "./views/Welcome";
@@ -24,6 +24,7 @@ const Popup = () => {
   useEffect(() => {
     const listener = () => {
       chrome.storage.sync.get([WalletStateKey], (result) => {
+          console.log("new wallet context", result[WalletStateKey]);
         setWalletContext(result[WalletStateKey]);
       });
     };
@@ -81,7 +82,7 @@ const Popup = () => {
 
   function getScreen() {
     switch (walletContext.source) {
-      case "sync_address": {
+      case Screen.SyncAddress: {
         return <SyncAddress />;
       }
       default: {
