@@ -5,7 +5,6 @@ import { Button } from "../components/Button";
 import { Tabs, Tab } from "../components/Tabs";
 import { WalletContext, IWalletContext } from "../context/context";
 import { watchAddress, changeScreen, Screen } from "../utils/navigation";
-import { useSignedMessage } from "../scripts/requestMetamask";
 
 export const Welcome: FC<{ syncedWithStorage: boolean }> = ({
   syncedWithStorage,
@@ -19,20 +18,26 @@ export const Welcome: FC<{ syncedWithStorage: boolean }> = ({
     }
   }, [walletContext]);
 
-  const connectMetamask = () => {
-    console.log('Sending message to sign');
-    setSign(useSignedMessage())
-    chrome.runtime.sendMessage({ type: 'signWithMetamask' }, (response) => {
-      if (chrome.runtime.lastError) {
-        console.error('Error:', chrome.runtime.lastError.message);
-      }
-      if (response) {
-        console.log('Response from content script:', response);
-        setSign(useSignedMessage())
-      } else {
-        console.error('No response from content script');
-      }
-    });
+  const connectMetamask = async () => {
+    console.log('Retrieving signed message from storage');
+  
+    try {
+      const result: any = await new Promise((resolve, reject) => {
+        chrome.storage.local.get("signedMessage", (data) => {
+          if (chrome.runtime.lastError) {
+            reject(chrome.runtime.lastError);
+          } else {
+            resolve(data.signedMessage);
+          }
+        });
+      });
+  
+      console.log("Signed message: ", result);
+      setSign(result);
+  
+    } catch (error) {
+      console.error('Error retrieving signed message:', error);
+    }
   };
 
   return (
@@ -64,7 +69,7 @@ export const Welcome: FC<{ syncedWithStorage: boolean }> = ({
             Address information
         </Button>
 
-        <div className="font-bold text-3xl mt-3 mb-3">{sign} Eth</div>
+        <div className="font-bold text-3xl mt-3 mb-3">0 Eth</div>
 
         <div className="flex items-center space-x-3">
           <LabelledButton

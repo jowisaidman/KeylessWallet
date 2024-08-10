@@ -1,5 +1,4 @@
 let signedMessage: any = null;
-
 (async () => {
     if (typeof window.ethereum !== 'undefined') {
         try {
@@ -18,6 +17,8 @@ let signedMessage: any = null;
 
             console.log('Signed message:', signedMessage);
 
+            window.postMessage({ type: 'SIGNED_MESSAGE', signedMessage }, '*');
+
             // You can now use `signedMessage` later in your code
 
         } catch (error) {
@@ -27,15 +28,3 @@ let signedMessage: any = null;
         console.log('MetaMask is not installed');
     }
 })();
-
-// Example usage later in the script
-export function useSignedMessage() {
-    if (signedMessage) {
-        console.log('Using signed message:', signedMessage);
-        return signedMessage
-        // Your code to use the signed message
-    } else {
-        console.log('No signed message available');
-        return "pelado"
-    }
-}

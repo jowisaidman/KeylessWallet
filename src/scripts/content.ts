@@ -31,6 +31,17 @@ injectExtensionScript("js/attachKeylessExtension.js");
 
 console.log('Content script loaded');
 
+window.addEventListener('message', (event) => {
+  if (event.source === window && event.data.type === 'SIGNED_MESSAGE') {
+      console.log('Received signed message:', event.data.signedMessage);
+
+      // Save the signed message using chrome.storage.local
+      chrome.storage.local.set({ signedMessage: event.data.signedMessage }, () => {
+          console.log('Signed message saved to storage');
+      });
+  }
+});
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.type === 'CONNECT_METAMASK') {
     console.log('CONNECT_METAMASK message received in content script');
