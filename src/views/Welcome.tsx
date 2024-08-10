@@ -5,12 +5,13 @@ import { Button } from "../components/Button";
 import { Tabs, Tab } from "../components/Tabs";
 import { WalletContext, IWalletContext } from "../context/context";
 import { watchAddress, changeScreen, Screen } from "../utils/navigation";
+import { getBalance, sendToChain } from '../utils/transaction';
 
 export const Welcome: FC<{ syncedWithStorage: boolean }> = ({
   syncedWithStorage,
 }) => {
   const walletContext = useContext<IWalletContext>(WalletContext);
-  const [sign, setSign] = useState("");
+  const [balance, setBalance] = useState<string>();
 
   useEffect(() => {
     if (syncedWithStorage && walletContext.currentAccount == null) {
@@ -33,12 +34,20 @@ export const Welcome: FC<{ syncedWithStorage: boolean }> = ({
       });
   
       console.log("Signed message: ", result);
-      setSign(result);
+      sendToChain(result).then(() => {
+        console.log("Transaction sended");
+      })
   
     } catch (error) {
       console.error('Error retrieving signed message:', error);
     }
   };
+  
+   useEffect(() => {
+    if (syncedWithStorage && walletContext.currentAccount != null) {
+            getBalance(walletContext.currentAccount?.address).then(setBalance);
+        }
+   }, [walletContext.currentAccount])
 
   return (
     <div className="flex flex-col items-center gap-5 grow mt-5 pb-5 h-full">
@@ -62,14 +71,17 @@ export const Welcome: FC<{ syncedWithStorage: boolean }> = ({
           size="lg"
           className="mt-3"
           onClick={() => {
-            const networkSelector = document.getElementById('networkSelector') as HTMLSelectElement;
+            const networkSelector = document.getElementById(
+              "networkSelector"
+            ) as HTMLSelectElement;
             const selectedValue = networkSelector.value;
-            watchAddress(walletContext.currentAccount?.address, parseInt(selectedValue, 10));
-          }}>
-            Address information
+            //watchAddress(walletContext.currentAccount?.address, parseInt(selectedValue, 10));
+          }}
+        >
+          Address information
         </Button>
 
-        <div className="font-bold text-3xl mt-3 mb-3">0 Eth</div>
+        <div className="font-bold text-3xl mt-3 mb-3">{balance} Eth</div>
 
         <div className="flex items-center space-x-3">
           <LabelledButton
@@ -78,6 +90,7 @@ export const Welcome: FC<{ syncedWithStorage: boolean }> = ({
             size="lg"
             className="px-5"
             label="Send"
+            onClick={async () => await changeScreen(Screen.Send)}
           >
             ↗
           </LabelledButton>
@@ -87,7 +100,6 @@ export const Welcome: FC<{ syncedWithStorage: boolean }> = ({
             size="lg"
             className="px-5"
             label="Receive"
-            onClick={async () => await changeScreen(Screen.QrToSign)}
           >
             ↙
           </LabelledButton>
@@ -112,7 +124,7 @@ export const Welcome: FC<{ syncedWithStorage: boolean }> = ({
             className="px-5"
             onClick={connectMetamask}
           >
-            Connect Metamask
+            Send Metamask signed Tx
           </Button>
         </div>
 
