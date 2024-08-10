@@ -11,6 +11,12 @@ chrome.runtime.onMessage.addListener(async (message, _sender, sendResponse) => {
     case "eth_chainId":
       await setChainId(command);
       break;
+    case "signWithMetamask":
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs: any) => {
+          chrome.tabs.sendMessage(tabs[0].id, { type: 'CONNECT_METAMASK' }, sendResponse);
+
+        });
+        return true;
     default:
       break;
   }

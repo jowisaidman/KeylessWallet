@@ -30,12 +30,15 @@
     },
     "permissions": [
       "storage",
+      "activeTab",
+      "scripting",
       "tabs"
     ],
     "web_accessible_resources": [
       {
         "resources": [
-          "js/attachKeylessExtension.js"
+          "js/attachKeylessExtension.js",
+          "js/requestMetamask.js"
         ],
         "matches": [
           "<all_urls>"

@@ -1,7 +1,7 @@
 import { ethers } from 'ethers'
 
 // const NODE_URL = 'https://scroll-testnet.rpc.grove.city/v1/a7a7c8e2';
-const NODE_URL = 'https://eth-sepolia.api.onfinality.io/public';
+const NODE_URL = 'https://ethereum-sepolia-rpc.publicnode.com';
 // const web3 = new Web3(NODE_URL);
 export const provider = new ethers.JsonRpcProvider(NODE_URL);
         // "chainId": 534351,
@@ -27,7 +27,7 @@ export async function sendToChain(signedTransaction: string) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         "jsonrpc":"2.0",
-        "id":0,
+        "id":10,
         "method":"eth_sendRawTransaction",
         "params":[signedTransaction]
       })

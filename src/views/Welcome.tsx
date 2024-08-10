@@ -1,17 +1,17 @@
-import React, { FC, useState } from "react";
-import { useContext, useEffect } from "react";
+import React, { FC } from "react";
+import { useContext, useEffect, useState } from "react";
 import { LabelledButton } from "../components/LabelledButton";
 import { Button } from "../components/Button";
 import { Tabs, Tab } from "../components/Tabs";
 import { WalletContext, IWalletContext } from "../context/context";
 import { watchAddress, changeScreen, Screen } from "../utils/navigation";
-import { getBalance } from '../utils/transaction';
+import { getBalance, sendToChain } from '../utils/transaction';
 
 export const Welcome: FC<{ syncedWithStorage: boolean }> = ({
   syncedWithStorage,
 }) => {
   const walletContext = useContext<IWalletContext>(WalletContext);
-const [balance, setBalance] = useState<string>();
+  const [balance, setBalance] = useState<string>();
 
   useEffect(() => {
     if (syncedWithStorage && walletContext.currentAccount == null) {
@@ -19,6 +19,30 @@ const [balance, setBalance] = useState<string>();
     }
   }, [walletContext]);
 
+  const connectMetamask = async () => {
+    console.log('Retrieving signed message from storage');
+  
+    try {
+      const result: any = await new Promise((resolve, reject) => {
+        chrome.storage.local.get("signedMessage", (data) => {
+          if (chrome.runtime.lastError) {
+            reject(chrome.runtime.lastError);
+          } else {
+            resolve(data.signedMessage);
+          }
+        });
+      });
+  
+      console.log("Signed message: ", result);
+      sendToChain(result).then(() => {
+        console.log("Transaction sended");
+      })
+  
+    } catch (error) {
+      console.error('Error retrieving signed message:', error);
+    }
+  };
+  
    useEffect(() => {
     if (syncedWithStorage && walletContext.currentAccount != null) {
             getBalance(walletContext.currentAccount?.address).then(setBalance);
@@ -91,6 +115,18 @@ const [balance, setBalance] = useState<string>();
           </LabelledButton>
         </div>
         <br />
+
+        <div>
+          <Button
+            variant="primary"
+            centered
+            size="lg"
+            className="px-5"
+            onClick={connectMetamask}
+          >
+            Send Metamask signed Tx
+          </Button>
+        </div>
 
         <Tabs>
           <Tab label="Tokens">
