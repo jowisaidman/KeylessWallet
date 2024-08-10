@@ -7,6 +7,7 @@ export const enum Screen {
   QrToSign = "sign",
   QrToRead = "scan_qr_to_send",
   SendToChain = "send_to_chain",
+  Send = "send",
 }
 
 export function watchAddress() {

@@ -6,6 +6,7 @@ import SyncAddress from "./views/SyncAddress";
 import QrToSign from "./views/QrToSign";
 import QrToRead from "./views/QrToRead";
 import SendToChain from "./views/SendToChain";
+import Send from "./views/Send";
 import { changeScreen, Screen, goToSignScreenWithQr } from "./utils/navigation";
 import { Command } from "./models";
 import {
@@ -100,6 +101,9 @@ const Popup = () => {
       }
       case Screen.SendToChain: {
         return <SendToChain />;
+      }
+      case Screen.Send: {
+        return <Send />;
       }
       default: {
         return <Welcome syncedWithStorage={syncedWithStorage} />;

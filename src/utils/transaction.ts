@@ -5,11 +5,10 @@ const NODE_URL = 'https://eth-sepolia.api.onfinality.io/public';
 // const web3 = new Web3(NODE_URL);
 export const provider = new ethers.JsonRpcProvider(NODE_URL);
         // "chainId": 534351,
-export function getTransaction(to: string, value: number, nonce: number): string {
+export function getTransaction(to: string, value: number): string {
     const tx = {
         "type": 2,
         "chainId": 11155111,
-        "nonce": nonce,
         "maxPriorityFeePerGas": "882358428",
         "maxFeePerGas": "42874510220",
         "gasLimit": 22000,

@@ -37,6 +37,8 @@ export default () => {
     const nonce = await getNextNonce(walletContext.currentAccount!.address);
     transaction.nonce = nonce;
 
+    console.log(JSON.stringify(transaction));
+
     QRCode.toCanvas(canvas, JSON.stringify(transaction), function (error: any) {
       if (error) console.error(error);
       console.log("success!");

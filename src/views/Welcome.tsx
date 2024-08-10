@@ -66,6 +66,7 @@ const [balance, setBalance] = useState<string>();
             size="lg"
             className="px-5"
             label="Send"
+            onClick={async () => await changeScreen(Screen.Send)}
           >
             ↗
           </LabelledButton>
@@ -75,7 +76,6 @@ const [balance, setBalance] = useState<string>();
             size="lg"
             className="px-5"
             label="Receive"
-            onClick={async () => await changeScreen(Screen.QrToSign)}
           >
             ↙
           </LabelledButton>
