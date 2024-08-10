@@ -4,11 +4,11 @@ module.exports = {
     theme: {
       extend: {
         colors: {
-          layer: "#2B2D42",
-          default: "#8D99AE",
+          layer: "#2b3b48",
+          default: "#c1c8c3",
           card: "#EDF2F4",
-          highlight: "#EF233C",
-          "on-highlight": "#D90429",
+          highlight: "#6dcf79",
+          "on-highlight": "#2c3c49",
           safe: "#8AC926",
           unsafe: "#FF595E",
           middle: "#FFCA3A",
@@ -20,12 +20,12 @@ module.exports = {
           "secondary-title": "#F77F00",
           "on-secondary-highlight": "#003049",
           "secondary-highlight": "#EAE2B7",
-          "on-tertiary-highlight": "#D62828",
+          "on-tertiary-highlight": "#2c3c49",
           "tertiary-highlight": "#F4A261",
-          footer: "#14213D",
+          footer: "#6dcf79",
         },
         textColor: {
-          default: "#FAFAFA",
+          default: "#2c3c49",
           secondary: "#6C757D",
         },
         outlineColor: {
