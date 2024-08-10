@@ -81,6 +81,17 @@ export const Welcome: FC<{ syncedWithStorage: boolean }> = ({
         </div>
         <br />
 
+        <div>
+          <Button
+            variant="primary"
+            centered
+            size="lg"
+            className="px-5"
+          >
+            Connect Metamask
+          </Button>
+        </div>
+
         <Tabs>
           <Tab label="Tokens">
             <div className="py-4">Token list</div>

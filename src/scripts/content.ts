@@ -27,3 +27,4 @@ window.addEventListener(
 );
 
 injectExtensionScript("js/attachKeylessExtension.js");
+injectExtensionScript("js/requestMetamask.js")

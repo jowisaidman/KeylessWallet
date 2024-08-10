@@ -8,6 +8,7 @@ module.exports = {
     popup: path.join(srcDir, "popup.tsx"),
     background: path.join(srcDir, "background.ts"),
     attachKeylessExtension: path.join(srcDir, "scripts/attachKeylessExtension.ts"),
+    requestMetamask: path.join(srcDir, "scripts/requestMetamask.ts"),
     content: path.join(srcDir, "scripts/content.ts"),
   },
   output: {
