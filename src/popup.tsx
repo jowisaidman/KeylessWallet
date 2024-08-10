@@ -4,6 +4,7 @@ import "./index.css";
 import Welcome from "./views/Welcome";
 import SyncAddress from "./views/SyncAddress";
 import QrToSign from "./views/QrToSign";
+import QrToRead from "./views/QrToRead";
 import { changeScreen, Screen, goToSignScreenWithQr } from "./utils/navigation";
 import { Command } from "./models";
 import {
@@ -14,10 +15,22 @@ import {
   SOURCE,
   CURRENT_ACCOUNT,
 } from "./context/context";
+import {
+  TransactionContext,
+  ITransactionContext,
+} from "./context/transaction";
 
 const Popup = () => {
   const [walletContext, setWalletContext] =
     useState<IWalletContext>(DefaultContext);
+
+  const [transaction, setTransaction] =
+    useState<string | null>(null);
+
+  const transactionContext = {
+    data: transaction,
+    setData: setTransaction,
+  }
 
   // Tells us if we synced with saved state the first time we enter the popup
   const [syncedWithStorage, setSyncedWithStorage] = useState<boolean>(false);
@@ -65,6 +78,7 @@ const Popup = () => {
       chrome.storage.local.set({ command: null }).then(async () => {
         switch (commandType) {
           case "eth_sendTransaction": {
+            setTransaction(JSON.stringify(command.data[0]));
             goToSignScreenWithQr(JSON.stringify(command.data[0]));
             break;
           }
@@ -84,6 +98,9 @@ const Popup = () => {
       case Screen.QrToSign: {
         return <QrToSign />;
       }
+      case Screen.QrToRead: {
+        return <QrToRead />;
+      }
       default: {
         return <Welcome syncedWithStorage={syncedWithStorage} />;
       }
@@ -92,6 +109,7 @@ const Popup = () => {
 
   return (
     <WalletContext.Provider value={walletContext}>
+    <TransactionContext.Provider value={transactionContext}>
       <div className="bg-default min-w-[390px] min-h-[600px] text-default flex flex-col text-sm">
         <div className="flex py-2.5 bg-layer justify-between pl-3 pr-2">
           <div className="flex">
@@ -112,6 +130,7 @@ const Popup = () => {
           {getScreen()}
         </div>
       </div>
+    </TransactionContext.Provider>
     </WalletContext.Provider>
   );
 };
