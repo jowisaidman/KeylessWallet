@@ -30,6 +30,8 @@
     },
     "permissions": [
       "storage",
+      "activeTab",
+      "scripting",
       "tabs"
     ],
     "web_accessible_resources": [
