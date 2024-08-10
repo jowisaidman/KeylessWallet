@@ -1,21 +1,29 @@
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 import { useContext, useEffect } from "react";
 import { LabelledButton } from "../components/LabelledButton";
 import { Button } from "../components/Button";
 import { Tabs, Tab } from "../components/Tabs";
 import { WalletContext, IWalletContext } from "../context/context";
 import { watchAddress, changeScreen, Screen } from "../utils/navigation";
+import { getBalance } from '../utils/transaction';
 
 export const Welcome: FC<{ syncedWithStorage: boolean }> = ({
   syncedWithStorage,
 }) => {
   const walletContext = useContext<IWalletContext>(WalletContext);
+const [balance, setBalance] = useState<string>();
 
   useEffect(() => {
     if (syncedWithStorage && walletContext.currentAccount == null) {
       changeScreen(Screen.SyncAddress);
     }
   }, [walletContext]);
+
+   useEffect(() => {
+    if (syncedWithStorage && walletContext.currentAccount != null) {
+            getBalance(walletContext.currentAccount?.address).then(setBalance);
+        }
+   }, [walletContext.currentAccount])
 
   return (
     <div className="flex flex-col items-center gap-5 grow mt-5 pb-5 h-full">
@@ -49,7 +57,7 @@ export const Welcome: FC<{ syncedWithStorage: boolean }> = ({
           Address information
         </Button>
 
-        <div className="font-bold text-3xl mt-3 mb-3">0 Eth</div>
+        <div className="font-bold text-3xl mt-3 mb-3">{balance} Eth</div>
 
         <div className="flex items-center space-x-3">
           <LabelledButton
