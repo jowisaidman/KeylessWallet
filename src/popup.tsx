@@ -16,22 +16,18 @@ import {
   SOURCE,
   CURRENT_ACCOUNT,
 } from "./context/context";
-import {
-  TransactionContext,
-  ITransactionContext,
-} from "./context/transaction";
+import { TransactionContext, ITransactionContext } from "./context/transaction";
 
 const Popup = () => {
   const [walletContext, setWalletContext] =
     useState<IWalletContext>(DefaultContext);
 
-  const [transaction, setTransaction] =
-    useState<string | null>(null);
+  const [transaction, setTransaction] = useState<string | null>(null);
 
   const transactionContext = {
     data: transaction,
     setData: setTransaction,
-  }
+  };
 
   // Tells us if we synced with saved state the first time we enter the popup
   const [syncedWithStorage, setSyncedWithStorage] = useState<boolean>(false);
@@ -113,28 +109,28 @@ const Popup = () => {
 
   return (
     <WalletContext.Provider value={walletContext}>
-    <TransactionContext.Provider value={transactionContext}>
-      <div className="bg-default min-w-[390px] min-h-[600px] text-default flex flex-col text-sm">
-        <div className="flex py-2.5 bg-layer justify-between pl-3 pr-2">
-          <div className="flex">
-            <img src="/icon_nb_48.png" alt="Keyless logo" />
-            <div className="font-bold text-2xl mt-2 mb-2">&nbsp; Keyless</div>
-            <div className="text-center px-3 py-1 m-3 rounded-2xl text-[#66EFF0] bg-[#66EFF0]/[0.1]">
-              Alpha
+      <TransactionContext.Provider value={transactionContext}>
+        <div className="bg-default min-w-[390px] min-h-[600px] text-default flex flex-col text-sm">
+          <div className="flex py-2.5 bg-layer justify-between pl-3 pr-2">
+            <div className="flex">
+              <img src="/icon_nb_48.png" alt="Keyless logo" />
+              <div className="font-bold text-2xl mt-2 mb-2">&nbsp; Keyless</div>
+              <div className="text-center px-3 py-1 m-3 rounded-2xl text-[#66EFF0] bg-[#66EFF0]/[0.1]">
+                Alpha
+              </div>
             </div>
+            <img
+              src="/close.svg"
+              alt="Close icon"
+              className="cursor-pointer"
+              onClick={() => window.close()}
+            />
           </div>
-          <img
-            src="/close.svg"
-            alt="Close icon"
-            className="cursor-pointer"
-            onClick={() => window.close()}
-          />
+          <div className="flex flex-col grow justify-center items-center m-3 px-5">
+            {getScreen()}
+          </div>
         </div>
-        <div className="flex flex-col grow justify-center items-center m-3 px-5">
-          {getScreen()}
-        </div>
-      </div>
-    </TransactionContext.Provider>
+      </TransactionContext.Provider>
     </WalletContext.Provider>
   );
 };

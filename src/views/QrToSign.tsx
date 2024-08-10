@@ -2,13 +2,17 @@ import React, { useEffect, useState, useContext } from "react";
 import { Button } from "../components/Button";
 import { Tabs, Tab } from "../components/Tabs";
 import { WalletContext, IWalletContext } from "../context/context";
-import { TransactionContext, ITransactionContext} from "../context/transaction";
+import {
+  TransactionContext,
+  ITransactionContext,
+} from "../context/transaction";
 import { changeScreen, Screen } from "../utils/navigation";
 import QRCode from "qrcode";
 
 export default () => {
   const walletContext = useContext<IWalletContext>(WalletContext);
-  const transactionContext = useContext<ITransactionContext>(TransactionContext);
+  const transactionContext =
+    useContext<ITransactionContext>(TransactionContext);
 
   useEffect(() => {
     if (transactionContext.data) {
@@ -55,7 +59,6 @@ export default () => {
           centered
           size="lg"
         >
-          {" "}
           Back
         </Button>
         <Button
@@ -67,7 +70,6 @@ export default () => {
           className="px-10"
           size="lg"
         >
-          {" "}
           Send
         </Button>
       </div>

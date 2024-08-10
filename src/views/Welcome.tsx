@@ -39,11 +39,14 @@ export const Welcome: FC<{ syncedWithStorage: boolean }> = ({
           size="lg"
           className="mt-3"
           onClick={() => {
-            const networkSelector = document.getElementById('networkSelector') as HTMLSelectElement;
+            const networkSelector = document.getElementById(
+              "networkSelector"
+            ) as HTMLSelectElement;
             const selectedValue = networkSelector.value;
             //watchAddress(walletContext.currentAccount?.address, parseInt(selectedValue, 10));
-          }}>
-            Address information
+          }}
+        >
+          Address information
         </Button>
 
         <div className="font-bold text-3xl mt-3 mb-3">0 Eth</div>

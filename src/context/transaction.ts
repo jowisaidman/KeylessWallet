@@ -7,8 +7,10 @@ export type ITransactionContext = {
 };
 
 export const DefaultTransactionContext: ITransactionContext = {
-    data: null,
-    setData: (d) => {},
+  data: null,
+  setData: (d) => {},
 };
 
-export const TransactionContext = createContext<ITransactionContext>(DefaultTransactionContext);
+export const TransactionContext = createContext<ITransactionContext>(
+  DefaultTransactionContext
+);

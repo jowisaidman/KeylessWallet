@@ -51,7 +51,7 @@ export function checkContractVerification() {
 
 export async function changeScreen(screen: Screen) {
   await updateState((currentState) => {
-      console.log("=>", currentState);
+    console.log("=>", currentState);
     currentState.source = screen;
     return currentState;
   });
