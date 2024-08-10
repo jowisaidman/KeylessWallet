@@ -2,26 +2,21 @@ import React, { useEffect, useState, useContext } from "react";
 import { Button } from "../components/Button";
 import { Tabs, Tab } from "../components/Tabs";
 import { WalletContext, IWalletContext } from "../context/context";
+import { TransactionContext, ITransactionContext} from "../context/transaction";
 import { changeScreen, Screen } from "../utils/navigation";
 import QRCode from "qrcode";
 
 export default () => {
   const walletContext = useContext<IWalletContext>(WalletContext);
-  const [data, setData] = useState<any>();
+  const transactionContext = useContext<ITransactionContext>(TransactionContext);
 
   useEffect(() => {
-    chrome.storage.local.get("signData", (result) => {
-      setData(result.signData);
-    });
-  }, []);
-
-  useEffect(() => {
-    if (data) {
+    if (transactionContext.data) {
       buildQrToSing().catch((e) =>
         console.log(`there was an error building qr to sing ${e}`)
       );
     }
-  }, [data]);
+  }, []);
 
   async function back() {
     await changeScreen(Screen.Welcome);
@@ -34,7 +29,7 @@ export default () => {
   async function buildQrToSing() {
     const canvas = document.getElementById("qr");
 
-    QRCode.toCanvas(canvas, data, function (error: any) {
+    QRCode.toCanvas(canvas, transactionContext.data!, function (error: any) {
       if (error) console.error(error);
       console.log("success!");
     });

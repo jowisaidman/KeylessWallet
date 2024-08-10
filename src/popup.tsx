@@ -5,6 +5,7 @@ import Welcome from "./views/Welcome";
 import SyncAddress from "./views/SyncAddress";
 import QrToSign from "./views/QrToSign";
 import QrToRead from "./views/QrToRead";
+import SendToChain from "./views/SendToChain";
 import { changeScreen, Screen, goToSignScreenWithQr } from "./utils/navigation";
 import { Command } from "./models";
 import {
@@ -79,7 +80,7 @@ const Popup = () => {
         switch (commandType) {
           case "eth_sendTransaction": {
             setTransaction(JSON.stringify(command.data[0]));
-            goToSignScreenWithQr(JSON.stringify(command.data[0]));
+            changeScreen(Screen.QrToSign);
             break;
           }
           default:
@@ -100,6 +101,9 @@ const Popup = () => {
       }
       case Screen.QrToRead: {
         return <QrToRead />;
+      }
+      case Screen.SendToChain: {
+        return <SendToChain />;
       }
       default: {
         return <Welcome syncedWithStorage={syncedWithStorage} />;

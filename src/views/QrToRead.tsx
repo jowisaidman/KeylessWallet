@@ -1,16 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import { Button } from '../components/Button';
-// import { sendToChain } from '../utils/transactions'
+import { TransactionContext, ITransactionContext} from "../context/transaction";
 import { QrReader } from "../components/QrReader";
 import { changeScreen, Screen } from "../utils/navigation";
 
 
 export default () => {
+  const transactionContext = useContext<ITransactionContext>(TransactionContext);
+
   async function cancel() {
     await changeScreen(Screen.Welcome);
   }
 
-  function onScanSignature(signature: string) {
+  function onScanSignature(signedTx: string) {
+      transactionContext.setData(signedTx)
+      changeScreen(Screen.SendToChain);
     console.log("scanned signature");
   }
 

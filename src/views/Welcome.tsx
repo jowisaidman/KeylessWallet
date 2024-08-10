@@ -41,7 +41,7 @@ export const Welcome: FC<{ syncedWithStorage: boolean }> = ({
           onClick={() => {
             const networkSelector = document.getElementById('networkSelector') as HTMLSelectElement;
             const selectedValue = networkSelector.value;
-            watchAddress(walletContext.currentAccount?.address, parseInt(selectedValue, 10));
+            //watchAddress(walletContext.currentAccount?.address, parseInt(selectedValue, 10));
           }}>
             Address information
         </Button>
