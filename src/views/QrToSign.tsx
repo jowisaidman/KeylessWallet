@@ -7,6 +7,7 @@ import {
   ITransactionContext,
 } from "../context/transaction";
 import { changeScreen, Screen } from "../utils/navigation";
+import { getNextNonce } from '../utils/transaction';
 import QRCode from "qrcode";
 
 export default () => {
@@ -32,8 +33,11 @@ export default () => {
 
   async function buildQrToSing() {
     const canvas = document.getElementById("qr");
+    let transaction = JSON.parse(transactionContext.data!);
+    const nonce = await getNextNonce(walletContext.currentAccount!.address);
+    transaction.nonce = nonce;
 
-    QRCode.toCanvas(canvas, transactionContext.data!, function (error: any) {
+    QRCode.toCanvas(canvas, JSON.stringify(transaction), function (error: any) {
       if (error) console.error(error);
       console.log("success!");
     });

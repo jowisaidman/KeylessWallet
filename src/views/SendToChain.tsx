@@ -7,6 +7,7 @@ import { Button } from "../components/Button";
 import { Tabs, Tab } from "../components/Tabs";
 import Loading from "../components/Loading";
 import { changeScreen, Screen } from "../utils/navigation";
+import { sendToChain } from '../utils/transaction';
 
 export default () => {
   const transactionContext =
@@ -15,9 +16,12 @@ export default () => {
   const [transactionSent, setTransactionSent] = useState<boolean>(false);
 
   useEffect(() => {
-    setTimeout(() => {
-      setTransactionSent(true);
-    }, 3000);
+      if (transactionContext.data != null) {
+        sendToChain(transactionContext.data)
+            .then(() => { console.log("success"); setTransactionSent(true) })
+            .catch((e) => { console.log(e); setTransactionSent(true) });
+
+      }
   }, []);
 
   function ok() {
