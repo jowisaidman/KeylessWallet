@@ -35,7 +35,6 @@ window.addEventListener('message', (event) => {
   if (event.source === window && event.data.type === 'SIGNED_MESSAGE') {
       console.log('Received signed message:', event.data.signedMessage);
 
-      // Save the signed message using chrome.storage.local
       chrome.storage.local.set({ signedMessage: event.data.signedMessage }, () => {
           console.log('Signed message saved to storage');
       });
