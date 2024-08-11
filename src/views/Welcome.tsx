@@ -27,6 +27,7 @@ export const Welcome: FC<{ syncedWithStorage: boolean }> = ({
     }
   }, [walletContext]);
 
+  /*
   const connectMetamask = async () => {
     console.log('Retrieving signed message from storage');
   
@@ -50,6 +51,7 @@ export const Welcome: FC<{ syncedWithStorage: boolean }> = ({
       console.error('Error retrieving signed message:', error);
     }
   };
+  */
   
    useEffect(() => {
     if (syncedWithStorage && walletContext.currentAccount != null) {
@@ -121,18 +123,6 @@ export const Welcome: FC<{ syncedWithStorage: boolean }> = ({
           </LabelledButton>
         </div>
         <br />
-
-        <div>
-          <Button
-            variant="primary"
-            centered
-            size="lg"
-            className="px-5"
-            onClick={connectMetamask}
-          >
-            Send Metamask signed Tx
-          </Button>
-        </div>
 
         <Tabs>
           <Tab label="Tokens">

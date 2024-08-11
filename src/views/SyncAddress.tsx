@@ -15,6 +15,9 @@ export default () => {
   }
 
   async function confirmAccount() {
+
+    console.log("confirmAccount", account);
+
     await updateState((currentState) => {
       currentState.currentAccount = {
         address: account!,

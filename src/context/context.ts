@@ -21,7 +21,7 @@ export type IWalletContext = {
 
 export const DefaultContext: IWalletContext = {
   source: Screen.Welcome,
-  network: {value: "11155111", label: "Ethereum Sepolia"},
+  network: {value: "84532", label: "Base Sepolia"},
 };
 
 export async function getSavedState(): Promise<IWalletContext> {
