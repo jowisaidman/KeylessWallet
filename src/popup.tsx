@@ -16,6 +16,7 @@ import {
   DefaultContext,
   SOURCE,
   CURRENT_ACCOUNT,
+  NETWORK,
 } from "./context/context";
 import { TransactionContext, ITransactionContext } from "./context/transaction";
 
@@ -39,7 +40,7 @@ const Popup = () => {
   useEffect(() => {
     const listener = async () => {
       await chrome.storage.local.get(
-        [SOURCE, CURRENT_ACCOUNT, "command"],
+        [SOURCE, CURRENT_ACCOUNT, NETWORK, "command"],
         (result) => {
           console.log(1, result);
           setWalletContext({ ...result } as IWalletContext);
@@ -56,7 +57,7 @@ const Popup = () => {
 
   // Effect 2: Sync local state with storage data on mount
   useEffect(() => {
-    chrome.storage.local.get([SOURCE, CURRENT_ACCOUNT, "command"], (result) => {
+    chrome.storage.local.get([SOURCE, CURRENT_ACCOUNT, NETWORK, "command"], (result) => {
       console.log(2, result);
       setWalletContext({ ...result } as IWalletContext);
       setSyncedWithStorage(true);

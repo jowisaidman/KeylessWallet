@@ -4,14 +4,22 @@ import { LabelledButton } from "../components/LabelledButton";
 import { Button } from "../components/Button";
 import { Tabs, Tab } from "../components/Tabs";
 import { WalletContext, IWalletContext } from "../context/context";
-import { watchAddress, changeScreen, Screen } from "../utils/navigation";
+import { watchAddress, changeScreen, Screen, changeNetwork } from "../utils/navigation";
 import { getBalance, sendToChain } from '../utils/transaction';
+import Select from "react-select";
 
 export const Welcome: FC<{ syncedWithStorage: boolean }> = ({
   syncedWithStorage,
 }) => {
   const walletContext = useContext<IWalletContext>(WalletContext);
   const [balance, setBalance] = useState<string>();
+  
+  const networks = [
+    { value: "1", label: "Ethereum" },
+    { value: "11155111", label: "Ethereum Sepolia" },
+    { value: "8453", label: "Base" },
+    { value: "84532", label: "Base Sepolia" },
+  ];
 
   useEffect(() => {
     if (syncedWithStorage && walletContext.currentAccount == null) {
@@ -54,12 +62,13 @@ export const Welcome: FC<{ syncedWithStorage: boolean }> = ({
       <div className={`flex flex-col items-center justify-center`}>
         <div className="text-primary font-bold">Network</div>
 
-        <select className="text-secondary" id="networkSelector">
-          <option value="1">Ethereum Mainnet</option>
-          <option value="11155111">Ethereum Sepolia</option>
-          <option value="8453">Base</option>
-          <option value="84532">Base Sepolia</option>
-        </select>
+        <Select
+            className="text-secondary"
+            id="networkSelector"
+            options={networks}
+            onChange={changeNetwork}
+            defaultValue={walletContext.network}
+        />
 
         <div className="text-primary font-bold">Account</div>
 
@@ -71,11 +80,8 @@ export const Welcome: FC<{ syncedWithStorage: boolean }> = ({
           size="lg"
           className="mt-3"
           onClick={() => {
-            const networkSelector = document.getElementById(
-              "networkSelector"
-            ) as HTMLSelectElement;
-            const selectedValue = networkSelector.value;
-            //watchAddress(walletContext.currentAccount?.address, parseInt(selectedValue, 10));
+            console.log(walletContext);
+            watchAddress(walletContext.currentAccount?.address, walletContext.network?.value);
           }}
         >
           Address information
