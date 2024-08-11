@@ -65,7 +65,7 @@ export default () => {
           centered
           className="px-10"
           size="lg"
-          disabled={!transactionSent}
+          //disabled={!transactionSent}
         >
           Done
         </Button>

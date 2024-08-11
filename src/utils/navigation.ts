@@ -2,6 +2,7 @@ import { useContext } from "react";
 import { updateState } from "../context/context";
 import { SingleValue } from "react-select";
 import { updateProvider } from "./transaction";
+import { ethers, Transaction } from "ethers";
 
 export const enum Screen {
   Welcome = "none",
@@ -41,18 +42,20 @@ export function watchAddress(address: string | undefined, chainId: string | unde
   chrome.tabs.create({ url: newURL });
 }
 
-export function watchTransaction(tx: string| null, chainId: string | undefined) {
+export function watchTransaction(raw: string| null, chainId: string | undefined) {
   let baseUrl = "";
 
   console.log("chainId", chainId);
-  console.log("tx", tx);
+  console.log("raw", raw);
+
+  let txHash = Transaction.from(raw!).hash;
   
   if (chainId == "1") baseUrl = "https://eth.blockscout.com/";
   else if (chainId == "11155111") baseUrl = "https://eth-sepolia.blockscout.com";
   else if (chainId == "8453") baseUrl = "https://base.blockscout.com/";
   else if (chainId == "84532") baseUrl = "https://base-sepolia.blockscout.com/";
 
-  var newURL = `${baseUrl}/tx/${tx}`;
+  var newURL = `${baseUrl}/tx/${txHash}`;
 
   chrome.tabs.create({ url: newURL });
 }

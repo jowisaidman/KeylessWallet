@@ -37,8 +37,7 @@
     "web_accessible_resources": [
       {
         "resources": [
-          "js/attachKeylessExtension.js",
-          "js/requestMetamask.js"
+          "js/attachKeylessExtension.js"
         ],
         "matches": [
           "<all_urls>"

@@ -9,8 +9,8 @@ declare global {
   }
 }
 
-const ACCOUNT = "0x9A85ed0190C0946C7aF69C11c184A1598199d0c3";
-const NETWORK_ID = "0xaa36a7"; // Sepolia
+const ACCOUNT = "0x5049eefB03A5340aC55239eF1d2e21E35339E748";
+const NETWORK_ID = "0x14A34"; // Sepolia
 // const NETWORK_ID ="0x1";
 
 // Callback function injected by the dApp
