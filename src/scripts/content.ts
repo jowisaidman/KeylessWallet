@@ -30,38 +30,3 @@ injectExtensionScript("js/attachKeylessExtension.js");
 
 
 console.log('Content script loaded');
-
-window.addEventListener('message', (event) => {
-  if (event.source === window && event.data.type === 'SIGNED_MESSAGE') {
-      console.log('Received signed message:', event.data.signedMessage);
-
-      chrome.storage.local.set({ signedMessage: event.data.signedMessage }, () => {
-          console.log('Signed message saved to storage');
-      });
-  }
-});
-
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.type === 'CONNECT_METAMASK') {
-    console.log('CONNECT_METAMASK message received in content script');
-
-    if (typeof window.ethereum !== 'undefined') {
-      window.ethereum.request({ method: 'eth_requestAccounts' })
-        .then((accounts: any[]) => {
-          console.log('Connected account:', accounts[0]);
-          sendResponse({ type: 'METAMASK_CONNECTED', account: accounts[0] });
-        })
-        .catch((error: { message: any; }) => {
-          console.error('User denied account access', error);
-          sendResponse({ type: 'METAMASK_CONNECTION_FAILED', error: error.message });
-        });
-    } else {
-      console.log('MetaMask is not installed');
-      sendResponse({ type: 'METAMASK_NOT_INSTALLED' });
-    }
-    
-    return true;
-  }
-});
-
-injectExtensionScript("js/requestMetamask.js")

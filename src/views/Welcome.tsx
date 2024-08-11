@@ -26,32 +26,6 @@ export const Welcome: FC<{ syncedWithStorage: boolean }> = ({
       changeScreen(Screen.SyncAddress);
     }
   }, [walletContext]);
-
-  /*
-  const connectMetamask = async () => {
-    console.log('Retrieving signed message from storage');
-  
-    try {
-      const result: any = await new Promise((resolve, reject) => {
-        chrome.storage.local.get("signedMessage", (data) => {
-          if (chrome.runtime.lastError) {
-            reject(chrome.runtime.lastError);
-          } else {
-            resolve(data.signedMessage);
-          }
-        });
-      });
-  
-      console.log("Signed message: ", result);
-      sendToChain(result).then(() => {
-        console.log("Transaction sended");
-      })
-  
-    } catch (error) {
-      console.error('Error retrieving signed message:', error);
-    }
-  };
-  */
   
    useEffect(() => {
     if (syncedWithStorage && walletContext.currentAccount != null) {
