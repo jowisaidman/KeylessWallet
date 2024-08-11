@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { updateState } from "../context/context";
 import { SingleValue } from "react-select";
+import { updateProvider } from "./transaction";
 
 export const enum Screen {
   Welcome = "none",
@@ -19,6 +20,9 @@ export async function changeNetwork(network: SingleValue<{ value: string; label:
     }
     return currentState;
   });
+  if (network !== null && network.value !== undefined) {
+    updateProvider(network.value);
+  }
 }
 
 export function watchAddress(address: string | undefined, chainId: string | undefined) {

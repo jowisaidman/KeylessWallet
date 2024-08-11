@@ -1,9 +1,10 @@
 import { ethers } from 'ethers'
 
 // const NODE_URL = 'https://scroll-testnet.rpc.grove.city/v1/a7a7c8e2';
-const NODE_URL = 'https://ethereum-sepolia-rpc.publicnode.com';
+const SEPOLIA_NODE_URL = 'https://ethereum-sepolia-rpc.publicnode.com';
 // const web3 = new Web3(NODE_URL);
-export const provider = new ethers.JsonRpcProvider(NODE_URL);
+export let provider = new ethers.JsonRpcProvider(SEPOLIA_NODE_URL);
+let node_url = SEPOLIA_NODE_URL;
         // "chainId": 534351,
 export function getTransaction(to: string, value: number): string {
     const tx = {
@@ -34,7 +35,7 @@ export async function sendToChain(signedTransaction: string) {
     };
 
     try {
-        let receipt = await fetch(NODE_URL, requestOptions);
+        let receipt = await fetch(node_url, requestOptions);
         console.log(`txn receipt`, await receipt.text());
     } catch(e) {
         console.log(`Error sending tx to chain ${e}`);
@@ -49,4 +50,16 @@ export async function getBalance(account: string): Promise<string> {
 
 export async function getNextNonce(account: string): Promise<number> {
     return await provider.getTransactionCount(account);
+}
+
+export async function updateProvider(chainId: string) {
+    let new_node_url = "";
+
+    if (chainId == "1") new_node_url = "https://ethereum-rpc.publicnode.com";
+    else if (chainId == "11155111") new_node_url = SEPOLIA_NODE_URL;
+    else if (chainId == "8453") new_node_url = "https://base-rpc.publicnode.com";
+    else if (chainId == "84532") new_node_url = "https://base-sepolia-rpc.publicnode.com";
+
+    provider = new ethers.JsonRpcProvider(new_node_url);
+    node_url = new_node_url;
 }

@@ -55,7 +55,7 @@ export const Welcome: FC<{ syncedWithStorage: boolean }> = ({
     if (syncedWithStorage && walletContext.currentAccount != null) {
             getBalance(walletContext.currentAccount?.address).then(setBalance);
         }
-   }, [walletContext.currentAccount])
+   }, [walletContext.currentAccount, walletContext.network]);
 
   return (
     <div className="flex flex-col items-center gap-5 grow mt-5 pb-5 h-full">
