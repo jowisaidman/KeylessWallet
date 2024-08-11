@@ -3,15 +3,17 @@ import {
   TransactionContext,
   ITransactionContext,
 } from "../context/transaction";
+import { WalletContext, IWalletContext } from "../context/context";
 import { Button } from "../components/Button";
 import { Tabs, Tab } from "../components/Tabs";
 import Loading from "../components/Loading";
-import { changeScreen, Screen } from "../utils/navigation";
+import { changeScreen, Screen, watchTransaction } from "../utils/navigation";
 import { sendToChain } from '../utils/transaction';
 
 export default () => {
   const transactionContext =
     useContext<ITransactionContext>(TransactionContext);
+  const walletContext = useContext<IWalletContext>(WalletContext);
 
   const [transactionSent, setTransactionSent] = useState<boolean>(false);
 
@@ -39,7 +41,19 @@ export default () => {
           <div className="text-primary font-bold text-3xl">
             Transaction sent
           </div>
-          <div className="text-secondary">View on the scanner</div>
+
+          <Button
+          variant="secondary"
+              size="lg"
+              className="mt-3"
+              onClick={() => {
+                console.log(walletContext);
+                watchTransaction(transactionContext.data, walletContext.network?.value);
+              }}
+            >
+              View transaction
+          </Button>
+
         </div>
       ) : (
         <Loading />
