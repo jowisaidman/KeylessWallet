@@ -1,5 +1,6 @@
 import { Eip1193Provider } from "ethers";
 import { Command } from "../../models";
+import EventEmitter from "events";
 
 const ACCOUNT = "0xc573952EFF8FA663Cbc9CdA02f85BddBEeD275F3";
 const NETWORK_ID = "0x14A34"; // Sepolia
@@ -18,20 +19,20 @@ interface RequestArguments {
 }
 
 enum RpcErrorCode {
-    // The user rejected the request.
-    UserRejectedRequest = 4001,
+  // The user rejected the request.
+  UserRejectedRequest = 4001,
 
-    // The requested method and/or account has not been authorized by the user.
-    Unauthorized = 4100,
+  // The requested method and/or account has not been authorized by the user.
+  Unauthorized = 4100,
 
-    // The Provider does not support the requested method.
-    UnsupportedMethod = 4200,
+  // The Provider does not support the requested method.
+  UnsupportedMethod = 4200,
 
-    // The Provider is disconnected from all chains.
-    Disconnected = 4900,
+  // The Provider is disconnected from all chains.
+  Disconnected = 4900,
 
-    // 	The Provider is not connected to the requested chain.
-    ChainDisconnected = 4901
+  // 	The Provider is not connected to the requested chain.
+  ChainDisconnected = 4901,
 }
 
 interface ProviderRpcError extends Error {
@@ -39,7 +40,14 @@ interface ProviderRpcError extends Error {
   data?: unknown;
 }
 
-class Provider implements Eip1193Provider {
+enum Event {
+  AccountsChanged = "accountsChanged",
+  ChainChanged = "chainChanged",
+  NetworkChanged = "networkChanged",
+  Connect = "connect",
+}
+
+class Provider extends EventEmitter implements Eip1193Provider {
   // Function used to dispatch events to the extension
   dispatchEvent: (c: Command) => void;
 
@@ -49,6 +57,7 @@ class Provider implements Eip1193Provider {
   // isMetaMask = true;
 
   constructor(dispatchEvent: (c: Command) => void) {
+    super();
     this.dispatchEvent = dispatchEvent;
   }
 
@@ -69,24 +78,26 @@ class Provider implements Eip1193Provider {
     );
   }
 
-  on(event: string, callback: any) {
+  on(event: Event, callback: (...args: any[]) => void): this {
     console.log("event:", event, callback);
     switch (event) {
-      case "accountsChanged":
+      case Event.AccountsChanged:
         accountsChanged = callback;
         break;
-      case "chainChanged":
+      case Event.ChainChanged:
         chainChanged = callback;
         break;
-      case "networkChanged":
+      case Event.NetworkChanged:
         networkChanged = callback;
         break;
-      case "connect":
+      case Event.Connect:
         connect = callback;
         break;
       default:
         break;
     }
+
+    return this;
   }
 
   process_request(
