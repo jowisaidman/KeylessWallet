@@ -14,31 +14,34 @@ export type IWalletContext = {
     address: string;
   };
   network: {
-    value: string; 
-    label: string
+    value: string;
+    label: string;
   };
 };
 
 export const DefaultContext: IWalletContext = {
   source: Screen.Welcome,
-  network: {value: "84532", label: "Base Sepolia"},
+  network: { value: "84532", label: "Base Sepolia" },
 };
 
 export async function getSavedState(): Promise<IWalletContext> {
   let newState = DefaultContext;
-  await chrome.storage.local.get([SOURCE, CURRENT_ACCOUNT, NETWORK], async (result) => {
-    if (result[SOURCE] != null) {
-      newState[SOURCE] = result[SOURCE];
-    }
+  await chrome.storage.local.get(
+    [SOURCE, CURRENT_ACCOUNT, NETWORK],
+    async (result) => {
+      if (result[SOURCE] != null) {
+        newState[SOURCE] = result[SOURCE];
+      }
 
-    if (result[CURRENT_ACCOUNT] != null) {
-      newState[CURRENT_ACCOUNT] = result[CURRENT_ACCOUNT];
-    }
+      if (result[CURRENT_ACCOUNT] != null) {
+        newState[CURRENT_ACCOUNT] = result[CURRENT_ACCOUNT];
+      }
 
-    if (result[NETWORK] != null) {
-      newState[NETWORK] = result[NETWORK];
+      if (result[NETWORK] != null) {
+        newState[NETWORK] = result[NETWORK];
+      }
     }
-  });
+  );
 
   return newState;
 }

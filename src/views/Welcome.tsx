@@ -4,8 +4,13 @@ import { LabelledButton } from "../components/LabelledButton";
 import { Button } from "../components/Button";
 import { Tabs, Tab } from "../components/Tabs";
 import { WalletContext, IWalletContext } from "../context/context";
-import { watchAddress, changeScreen, Screen, changeNetwork } from "../utils/navigation";
-import { getBalance, sendToChain } from '../utils/transaction';
+import {
+  watchAddress,
+  changeScreen,
+  Screen,
+  changeNetwork,
+} from "../utils/navigation";
+import { getBalance, sendToChain } from "../utils/transaction";
 import Select from "react-select";
 
 export const Welcome: FC<{ syncedWithStorage: boolean }> = ({
@@ -13,7 +18,7 @@ export const Welcome: FC<{ syncedWithStorage: boolean }> = ({
 }) => {
   const walletContext = useContext<IWalletContext>(WalletContext);
   const [balance, setBalance] = useState<string>();
-  
+
   const networks = [
     { value: "1", label: "Ethereum" },
     { value: "11155111", label: "Ethereum Sepolia" },
@@ -26,12 +31,12 @@ export const Welcome: FC<{ syncedWithStorage: boolean }> = ({
       changeScreen(Screen.SyncAddress);
     }
   }, [walletContext]);
-  
-   useEffect(() => {
+
+  useEffect(() => {
     if (syncedWithStorage && walletContext.currentAccount != null) {
-            getBalance(walletContext.currentAccount?.address).then(setBalance);
-        }
-   }, [walletContext.currentAccount, walletContext.network]);
+      getBalance(walletContext.currentAccount?.address).then(setBalance);
+    }
+  }, [walletContext.currentAccount, walletContext.network]);
 
   return (
     <div className="flex flex-col items-center gap-5 grow mt-5 pb-5 h-full">
@@ -39,11 +44,11 @@ export const Welcome: FC<{ syncedWithStorage: boolean }> = ({
         <div className="text-primary font-bold">Network</div>
 
         <Select
-            className="text-secondary"
-            id="networkSelector"
-            options={networks}
-            onChange={changeNetwork}
-            defaultValue={walletContext.network}
+          className="text-secondary"
+          id="networkSelector"
+          options={networks}
+          onChange={changeNetwork}
+          defaultValue={walletContext.network}
         />
 
         <div className="text-primary font-bold">Account</div>
@@ -57,7 +62,10 @@ export const Welcome: FC<{ syncedWithStorage: boolean }> = ({
           className="mt-3"
           onClick={() => {
             console.log(walletContext);
-            watchAddress(walletContext.currentAccount?.address, walletContext.network?.value);
+            watchAddress(
+              walletContext.currentAccount?.address,
+              walletContext.network?.value
+            );
           }}
         >
           Address information

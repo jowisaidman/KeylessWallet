@@ -13,7 +13,9 @@ export const enum Screen {
   Send = "send",
 }
 
-export async function changeNetwork(network: SingleValue<{ value: string; label: string }>) {
+export async function changeNetwork(
+  network: SingleValue<{ value: string; label: string }>
+) {
   console.log("changeNetwork", network);
   await updateState((currentState) => {
     if (network !== null) {
@@ -26,14 +28,18 @@ export async function changeNetwork(network: SingleValue<{ value: string; label:
   }
 }
 
-export function watchAddress(address: string | undefined, chainId: string | undefined) {
+export function watchAddress(
+  address: string | undefined,
+  chainId: string | undefined
+) {
   let baseUrl = "";
 
   console.log("chainId", chainId);
   console.log("address", address);
-  
+
   if (chainId == "1") baseUrl = "https://eth.blockscout.com/";
-  else if (chainId == "11155111") baseUrl = "https://eth-sepolia.blockscout.com";
+  else if (chainId == "11155111")
+    baseUrl = "https://eth-sepolia.blockscout.com";
   else if (chainId == "8453") baseUrl = "https://base.blockscout.com/";
   else if (chainId == "84532") baseUrl = "https://base-sepolia.blockscout.com/";
 
@@ -42,16 +48,20 @@ export function watchAddress(address: string | undefined, chainId: string | unde
   chrome.tabs.create({ url: newURL });
 }
 
-export function watchTransaction(raw: string| null, chainId: string | undefined) {
+export function watchTransaction(
+  raw: string | null,
+  chainId: string | undefined
+) {
   let baseUrl = "";
 
   console.log("chainId", chainId);
   console.log("raw", raw);
 
   let txHash = Transaction.from(raw!).hash;
-  
+
   if (chainId == "1") baseUrl = "https://eth.blockscout.com/";
-  else if (chainId == "11155111") baseUrl = "https://eth-sepolia.blockscout.com";
+  else if (chainId == "11155111")
+    baseUrl = "https://eth-sepolia.blockscout.com";
   else if (chainId == "8453") baseUrl = "https://base.blockscout.com/";
   else if (chainId == "84532") baseUrl = "https://base-sepolia.blockscout.com/";
 

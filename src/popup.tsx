@@ -57,12 +57,15 @@ const Popup = () => {
 
   // Effect 2: Sync local state with storage data on mount
   useEffect(() => {
-    chrome.storage.local.get([SOURCE, CURRENT_ACCOUNT, NETWORK, "command"], (result) => {
-      console.log(2, result);
-      setWalletContext({ ...result } as IWalletContext);
-      setSyncedWithStorage(true);
-      setCommand(result["command"]);
-    });
+    chrome.storage.local.get(
+      [SOURCE, CURRENT_ACCOUNT, NETWORK, "command"],
+      (result) => {
+        console.log(2, result);
+        setWalletContext({ ...result } as IWalletContext);
+        setSyncedWithStorage(true);
+        setCommand(result["command"]);
+      }
+    );
   }, []);
 
   // Process commands
