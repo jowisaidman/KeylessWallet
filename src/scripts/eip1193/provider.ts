@@ -1,6 +1,9 @@
 import { Eip1193Provider } from "ethers";
 import { Command } from "../../models";
-import EventEmitter from "events";
+
+// Type describing callback functions
+type callbackFunction = (...args: any[]) => void;
+type eventFunction = (e: Event) => void;
 
 const ACCOUNT = "0xc573952EFF8FA663Cbc9CdA02f85BddBEeD275F3";
 const NETWORK_ID = "0x14A34"; // Sepolia
@@ -40,35 +43,36 @@ interface ProviderRpcError extends Error {
   data?: unknown;
 }
 
-enum Event {
-  AccountsChanged = "accountsChanged",
-  ChainChanged = "chainChanged",
-  NetworkChanged = "networkChanged",
-  Connect = "connect",
-}
-
-class Provider extends EventEmitter implements Eip1193Provider {
+class Provider implements Eip1193Provider {
   // Function used to dispatch events to the extension
   dispatchEvent: (c: Command) => void;
 
+  // Dictionary that contains a list of callbacks when an event is emitted
+  events: EventTarget;
+
+  // We keep track of which callback functions we registered in the event emitter to be able to remove them later
+  registeredFunctions: Map<callbackFunction, eventFunction>;
+
+  // We keep track of how many listeners are registered for specific events to be able to return true or false in the emit function. According to the official documentation, the EvenetEmitter's function returns true if there are listeners for the events or false otherwise
+  registeredEvents: Map<string, number>;
+
   wallet = "Keyless";
 
-  // For testing, we say we are metamask
-  // isMetaMask = true;
-
   constructor(dispatchEvent: (c: Command) => void) {
-    super();
     this.dispatchEvent = dispatchEvent;
+    this.events = new EventTarget();
+    this.registeredFunctions = new Map();
+    this.registeredEvents = new Map();
   }
 
   // Process RPC
   request(request: RequestArguments): Promise<any> {
-    return this.process_request(request.method, request.params);
+    return this.processRequest(request.method, request.params);
   }
 
   // This method is deprecated but still used by some dApps
   send(method: string, params: readonly unknown[] | object): Promise<any> {
-    return this.process_request(method, params);
+    return this.processRequest(method, params);
   }
 
   enable() {
@@ -78,29 +82,50 @@ class Provider extends EventEmitter implements Eip1193Provider {
     );
   }
 
-  on(event: Event, callback: (...args: any[]) => void): this {
-    console.log("event:", event, callback);
-    switch (event) {
-      case Event.AccountsChanged:
-        accountsChanged = callback;
-        break;
-      case Event.ChainChanged:
-        chainChanged = callback;
-        break;
-      case Event.NetworkChanged:
-        networkChanged = callback;
-        break;
-      case Event.Connect:
-        connect = callback;
-        break;
-      default:
-        break;
+  // EventEmitter's minimal implementation. We don't extend this from
+  // node:events because it is not available in web context
+  // We use native EventTarget
+  on(event: string, callback: callbackFunction): this {
+    const fn = (e: Event) => callback(...(<CustomEvent>e).detail);
+    this.registeredFunctions.set(callback, fn);
+    let registeredEvent = this.registeredEvents.get(event);
+    this.registeredEvents.set(
+      event,
+      registeredEvent == null ? 1 : registeredEvent + 1
+    );
+    this.events.addEventListener(event, fn);
+    return this;
+  }
+
+  removeListener(event: string, callback: callbackFunction): this {
+    const fn = this.registeredFunctions.get(callback);
+    if (fn != null) {
+      let registeredEvent = this.registeredEvents.get(event);
+
+      // If we are here this should never be null.. but you know how it is...
+      if (registeredEvent != null) {
+        if (registeredEvent == 1) {
+          this.registeredEvents.delete(event);
+        } else {
+          this.registeredEvents.set(event, registeredEvent - 1);
+        }
+      }
+      this.events.removeEventListener(event, fn);
     }
 
     return this;
   }
 
-  process_request(
+  emit(event: string, ...args: any[]): boolean {
+    this.events.dispatchEvent(new CustomEvent(event, { detail: args }));
+    return this.registeredEvents.has(event);
+  }
+
+  /*
+   * Private functions
+   */
+
+  processRequest(
     method: string,
     params?: Array<any> | Record<string, any>
   ): Promise<any> {

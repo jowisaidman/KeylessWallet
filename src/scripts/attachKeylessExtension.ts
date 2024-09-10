@@ -12,6 +12,7 @@ declare global {
 }
 
 async function attachKeylessExtension() {
+  console.log("ejejej");
   const customProvider = new Provider(dispatchEvent);
   window.ethereum = customProvider;
   console.log(window.ethereum);
