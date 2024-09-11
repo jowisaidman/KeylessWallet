@@ -92,6 +92,23 @@ const closeWindowWithTarget = (targetId: number, listeningId: number) => {
   chrome.tabs.onRemoved.addListener(listener);
 };
 */
+declare global {
+  interface Window {
+    postMessage: {
+      (
+        message: any,
+        targetOrigin: string,
+        transfer?: Transferable[] | undefined
+      ): void;
+      (message: any, options?: WindowPostMessageOptions | undefined): void;
+      (
+        message: any,
+        targetOrigin: string,
+        transfer?: Transferable[] | undefined
+      ): void;
+    };
+  }
+}
 
 export async function configureAndRenderExtension(command: Command) {
   let position = await calculatePosition();
@@ -111,7 +128,7 @@ export async function configureAndRenderExtension(command: Command) {
   });
   */
   const { top, left } = await calculatePosition();
-  await chrome.storage.local.set({ source: "wallet" });
+  await chrome.storage.local.set({ source: "none" });
 
   const extension = await chrome.windows.create({
     url: chrome.runtime.getURL("popup.html"),
@@ -120,6 +137,10 @@ export async function configureAndRenderExtension(command: Command) {
     height: HEIGHT,
     focused: true,
   });
+
+  console.log("ehhh", extension);
+
+  // console.log("ehh2", extension.postMessage)
   if (extension.id) {
     chrome.windows.update(extension.id, {
       focused: true,

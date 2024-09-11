@@ -1,4 +1,7 @@
+// https://docs.metamask.io/wallet/concepts/wallet-interoperability/
+// https://eips.ethereum.org/EIPS/eip-6963
 "use strict";
+
 import { Eip1193Provider } from "ethers";
 import { configureAndRenderExtension } from "../utils/popup";
 import { dispatchEvent } from "../utils/utils";
@@ -12,7 +15,7 @@ declare global {
 }
 
 async function attachKeylessExtension() {
-  console.log("ejejej");
+    console.log("jejeje");
   const customProvider = new Provider(dispatchEvent);
   window.ethereum = customProvider;
   console.log(window.ethereum);

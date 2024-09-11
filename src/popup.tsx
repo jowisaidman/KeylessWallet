@@ -36,6 +36,16 @@ const Popup = () => {
 
   const [command, setCommand] = useState<Command | null>(null);
 
+  useEffect(() => {
+    chrome.runtime.onMessage.addListener(
+      async (message, _sender, sendResponse) => {
+        const command: Command = message;
+        console.log("DESDE EL POPUP AMIGO");
+        sendResponse({ status: "ok?" });
+      }
+    );
+  }, []);
+
   // Effect 1: Add listener to sync persisted state with local state
   useEffect(() => {
     const listener = async () => {
@@ -69,10 +79,11 @@ const Popup = () => {
   }, []);
 
   // Process commands
+  /*
   useEffect(() => {
     if (syncedWithStorage && command) {
       console.log(walletContext, syncedWithStorage);
-      console.log("Processing ", command, JSON.stringify(command.data[0]));
+      // console.log("Processing ", command, JSON.stringify(command.data[0]));
       const commandType = command["type"];
       const commandData = command.data[0];
 
@@ -91,7 +102,7 @@ const Popup = () => {
       });
     }
   }, [command, syncedWithStorage]);
-
+*/
   function getScreen() {
     switch (walletContext?.source) {
       case Screen.SyncAddress: {

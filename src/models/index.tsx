@@ -13,3 +13,10 @@ export interface JsonRpcRequest<TRequest> {
 export type ProviderRequest<T> = (
   request: JsonRpcRequest<T>
 ) => Promise<unknown>;
+
+export enum RpcCall {
+  EthSendTransaction = "eth_sendTransaction",
+  EthRequestAccounts = "eth_requestAccounts",
+  EthAccounts = "eth_accounts",
+  EthChainId = "eth_chainId",
+}

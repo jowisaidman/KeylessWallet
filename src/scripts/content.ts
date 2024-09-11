@@ -19,8 +19,14 @@ async function injectExtensionScript(url: string) {
 window.addEventListener(
   "KeylessInterception",
   (event: CustomEventInit<Command>) => {
-    chrome.runtime.sendMessage(event.detail, (_response) => {
-      console.log(`** Keyless interception - message sent **`);
+    chrome.runtime.sendMessage(event.detail, (response) => {
+      console.log(
+        `** Keyless interception - message sent ** ${JSON.stringify(
+          response,
+          null,
+          2
+        )}`
+      );
     });
   },
   false

@@ -1,5 +1,6 @@
 import { Eip1193Provider } from "ethers";
-import { Command } from "../../models";
+import { Command, RpcCall } from "../../models";
+import { sendMessagePromise } from "../../utils/utils";
 
 // Type describing callback functions
 type callbackFunction = (...args: any[]) => void;
@@ -45,7 +46,7 @@ interface ProviderRpcError extends Error {
 
 class Provider implements Eip1193Provider {
   // Function used to dispatch events to the extension
-  dispatchEvent: (c: Command) => void;
+  dispatchEvent: (c: Command) => Promise<any>;
 
   // Dictionary that contains a list of callbacks when an event is emitted
   events: EventTarget;
@@ -58,7 +59,7 @@ class Provider implements Eip1193Provider {
 
   wallet = "Keyless";
 
-  constructor(dispatchEvent: (c: Command) => void) {
+  constructor(dispatchEvent: (c: Command) => Promise<any>) {
     this.dispatchEvent = dispatchEvent;
     this.events = new EventTarget();
     this.registeredFunctions = new Map();
@@ -140,8 +141,18 @@ class Provider implements Eip1193Provider {
         });
         return new Promise(() => {});
       case "eth_requestAccounts":
+          // const response = Promise;
+        this.dispatchEvent({
+          type: method,
+          data: params,
+        }).then((r) => console.log("respuesta dispatch event:", r));
+
+        // this.dispatchEvent();
+        console.log("WASAAAA");
+        return Promise.resolve([ACCOUNT]);
+        // return response;
       case "eth_accounts":
-        return eth_requestAccounts();
+        return Promise.resolve([]);
       case "net_version":
         return net_version();
       case "wallet_requestPermissions":
@@ -174,15 +185,6 @@ async function requestPermissions(): Promise<any> {
 
 async function eth_accounts(): Promise<any> {
   return ACCOUNT;
-}
-
-async function eth_requestAccounts(): Promise<any> {
-  console.log(chainChanged);
-  if (accountsChanged) {
-    await accountsChanged(ACCOUNT);
-  }
-  return [ACCOUNT];
-  // return {"jsonrpc":"2.0","result":[ACCOUNT]};
 }
 
 async function eth_chainId(): Promise<any> {
