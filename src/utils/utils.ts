@@ -15,11 +15,6 @@ export function dispatchEvent(command: Command) {
     detail: { id: commandId, ...command },
   });
 
-  const event2 = new CustomEvent("KeylessInterception", {
-    detail: command,
-  });
-
-  window.dispatchEvent(event2);
   window.dispatchEvent(event);
 
   return new Promise((resolve, reject) => {
@@ -32,7 +27,7 @@ export function dispatchEvent(command: Command) {
       }
     };
 
-    window.addEventListener(commandId, listener);
+    window.addEventListener(commandId, listener, true);
   });
 }
 

@@ -17,23 +17,6 @@ async function injectExtensionScript(url: string) {
   }
 }
 
-/*
-window.addEventListener(
-  "KeylessInterception",
-  (event: CustomEventInit<Command>) => {
-    chrome.runtime.sendMessage(event.detail, (response) => {
-      console.log(
-        `** Keyless interception - message sent ** ${JSON.stringify(
-          response,
-          null,
-          2
-        )}`
-      );
-    });
-  },
-  false
-);*/
-
 window.addEventListener(
   "message",
   async (event: CustomEventInit<Command>) => {
@@ -42,17 +25,18 @@ window.addEventListener(
     switch (command.type) {
       case "eth_requestAccounts":
       case "eth_sendTransaction":
-        chrome.runtime.sendMessage("open-popup", async (response) => {
+        chrome.runtime.sendMessage("open-popup", (response) => {
           console.log("open-popup response", response);
 
-          let extensionResponse = await sendMessageToExtension(command);
+          sendMessageToExtension(command)
+            .then((extensionResponse) => {
+              const responseEvent = new CustomEvent(command.id, {
+                detail: extensionResponse,
+              });
 
-          const responseEvent = new CustomEvent(command.id, {
-            detail: extensionResponse,
-          });
-
-          window.dispatchEvent(responseEvent);
-          console.log("extension response ", extensionResponse);
+              window.dispatchEvent(responseEvent);
+              console.log("extension response ", extensionResponse);
+            });
         });
         break;
     }
