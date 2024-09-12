@@ -1,4 +1,8 @@
-import { Command } from "../models";
+// This module is in charge of the communication between the injected script in the DOM
+// and the popup
+import { Command, CommandDestiny, CommandResult } from './types';
+
+export { Command, CommandDestiny, CommandResult };
 
 // Dispatches an event that is listened by the background script.
 //
@@ -8,7 +12,7 @@ import { Command } from "../models";
 // by the background script and it sends an event with the commandId, that is
 // caight by the listener created in this function and resolves the promise
 // with the response so the injected script can read it
-export function dispatchEvent(command: Command) {
+export function dispatchEvent(command: Command): Promise<unknown> {
   const id = Math.floor(Math.random() * 1000000);
   const commandId = `command_${id}`;
   const event = new CustomEvent("message", {
@@ -32,9 +36,11 @@ export function dispatchEvent(command: Command) {
 }
 
 // Sends message to extension
-// This function uses the chrome.runtime api to send a message to the popup.
-// Returns a promise that encapsulates the response from the popup
-export function sendMessageToExtension(event: CustomEvent) {
+//
+// This function is used by the content script to send a message to the popup. When the message is
+// replied, the Promise returned by this function is resolved and, with that resolution, the
+// content script sends an event with the command id so it can be caught by the injected script
+export function sendMessageToExtension(event: CustomEvent): Promise<unknown> {
   return new Promise((resolve, reject) => {
     console.log("sending", event);
     chrome.runtime.sendMessage(event.detail, (response) => {

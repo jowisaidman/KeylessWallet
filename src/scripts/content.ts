@@ -27,7 +27,6 @@ window.addEventListener(
       case "eth_sendTransaction":
         chrome.runtime.sendMessage("open-popup", (response) => {
           console.log("open-popup response", response);
-
           sendMessageToExtension(command)
             .then((extensionResponse) => {
               const responseEvent = new CustomEvent(command.id, {
