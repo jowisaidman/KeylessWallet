@@ -36,6 +36,24 @@ const Popup = () => {
 
   const [command, setCommand] = useState<Command | null>(null);
 
+  useEffect(() => {
+    console.log("working?");
+    window.addEventListener(
+      "message",
+      (event) => {
+        console.log("received message", event);
+      },
+      false
+    );
+    chrome.runtime.onMessage.addListener(
+      async (message, _sender, sendResponse) => {
+        const command: Command = message;
+        console.log("DESDE EL POPUP AMIGO");
+        sendResponse({ status: "ok?" });
+      }
+    );
+  }, []);
+
   // Effect 1: Add listener to sync persisted state with local state
   useEffect(() => {
     const listener = async () => {

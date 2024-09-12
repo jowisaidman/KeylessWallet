@@ -140,6 +140,11 @@ class Provider implements Eip1193Provider {
         });
         return new Promise(() => {});
       case "eth_requestAccounts":
+        this.dispatchEvent({
+          type: method,
+          data: params,
+        });
+        return Promise.resolve([ACCOUNT]);
       case "eth_accounts":
         return eth_requestAccounts();
       case "net_version":
@@ -173,14 +178,10 @@ async function requestPermissions(): Promise<any> {
 }
 
 async function eth_accounts(): Promise<any> {
-  return ACCOUNT;
+  return [ACCOUNT];
 }
 
 async function eth_requestAccounts(): Promise<any> {
-  console.log(chainChanged);
-  if (accountsChanged) {
-    await accountsChanged(ACCOUNT);
-  }
   return [ACCOUNT];
   // return {"jsonrpc":"2.0","result":[ACCOUNT]};
 }
