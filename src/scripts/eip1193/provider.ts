@@ -125,7 +125,7 @@ class Provider implements Eip1193Provider {
    * Private functions
    */
 
-  processRequest(
+  async processRequest(
     method: string,
     params?: Array<any> | Record<string, any>
   ): Promise<any> {
@@ -134,10 +134,11 @@ class Provider implements Eip1193Provider {
       case "eth_chainId":
         return eth_chainId();
       case "eth_sendTransaction":
-        this.dispatchEvent({
+        let response = this.dispatchEvent({
           type: method,
           data: params,
         });
+        console.log("response from popup:", JSON.stringify(response));
         return new Promise(() => {});
       case "eth_requestAccounts":
         this.dispatchEvent({

@@ -38,18 +38,11 @@ const Popup = () => {
 
   useEffect(() => {
     console.log("working?");
-    window.addEventListener(
-      "message",
-      (event) => {
-        console.log("received message", event);
-      },
-      false
-    );
     chrome.runtime.onMessage.addListener(
       async (message, _sender, sendResponse) => {
         const command: Command = message;
-        console.log("DESDE EL POPUP AMIGO");
-        sendResponse({ status: "ok?" });
+        console.log("popup", message);
+        sendResponse({ data: ["0x9A85ed0190C0946C7aF69C11c184A1598199d0c3"] });
       }
     );
   }, []);
@@ -86,6 +79,7 @@ const Popup = () => {
     );
   }, []);
 
+  /*
   // Process commands
   useEffect(() => {
     if (syncedWithStorage && command) {
@@ -109,7 +103,7 @@ const Popup = () => {
       });
     }
   }, [command, syncedWithStorage]);
-
+*/
   function getScreen() {
     switch (walletContext?.source) {
       case Screen.SyncAddress: {

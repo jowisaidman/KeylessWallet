@@ -49,54 +49,10 @@ const waitForWalletWindowId = async () => {
   }
 };
 
-/*
-const closeWindowWithTarget = (targetId: number, listeningId: number) => {
-  function listener(_tabId: number, removeInfo: chrome.tabs.TabRemoveInfo) {
-    if (removeInfo.windowId === listeningId) {
-        /*
-      chrome.storage.local
-        .set({
-          source: "none",
-          event: undefined,
-          chainId: undefined,
-        })
-        .then((_) => console.log(`Extension reset`))
-        .catch((error) =>
-          console.error(
-            `Error resetting extension: ${JSON.stringify(error, null, 4)}`
-          )
-        );
-      chrome.windows.remove(targetId);
-      chrome.tabs.onRemoved.removeListener(listener);
-    }
-
-    if (removeInfo.windowId === targetId) {
-      chrome.storage.local
-        .set({
-          source: "none",
-          event: undefined,
-          chainId: undefined,
-        })
-        .then((_) => console.log(`Extension reset`))
-        .catch((error) =>
-          console.error(
-            `Error resetting extension: ${JSON.stringify(error, null, 4)}`
-          )
-        );
-
-      chrome.windows.remove(targetId);
-      chrome.tabs.onRemoved.removeListener(listener);
-    }
-  }
-
-  chrome.tabs.onRemoved.addListener(listener);
-};
-*/
-
 export async function configureAndRenderExtension(command: Command) {
   let position = await calculatePosition();
 
-  await chrome.storage.local.set({ command });
+  // await chrome.storage.local.set({ command });
 
   await chrome.windows.getCurrent();
 
@@ -111,7 +67,7 @@ export async function configureAndRenderExtension(command: Command) {
   });
   */
   const { top, left } = await calculatePosition();
-  await chrome.storage.local.set({ source: "wallet" });
+  await chrome.storage.local.set({ source: "none" });
 
   const extension = await chrome.windows.create({
     url: chrome.runtime.getURL("popup.html"),

@@ -1,5 +1,6 @@
 import { Web3 } from "web3";
 import { Command } from "../models";
+import { sendMessageToExtension } from "../utils/utils";
 
 async function injectExtensionScript(url: string) {
   try {
@@ -16,12 +17,45 @@ async function injectExtensionScript(url: string) {
   }
 }
 
+/*
 window.addEventListener(
   "KeylessInterception",
   (event: CustomEventInit<Command>) => {
-    chrome.runtime.sendMessage(event.detail, (_response) => {
-      console.log(`** Keyless interception - message sent **`);
+    chrome.runtime.sendMessage(event.detail, (response) => {
+      console.log(
+        `** Keyless interception - message sent ** ${JSON.stringify(
+          response,
+          null,
+          2
+        )}`
+      );
     });
+  },
+  false
+);*/
+
+window.addEventListener(
+  "message",
+  async (event: CustomEventInit<Command>) => {
+    const command: any = event.detail;
+    console.log("from content script", JSON.stringify(command));
+    switch (command.type) {
+      case "eth_requestAccounts":
+      case "eth_sendTransaction":
+        chrome.runtime.sendMessage("open-popup", async (response) => {
+          console.log("open-popup response", response);
+
+          let extensionResponse = await sendMessageToExtension(command);
+
+          const responseEvent = new CustomEvent(command.id, {
+            detail: extensionResponse,
+          });
+
+          window.dispatchEvent(responseEvent);
+          console.log("extension response ", extensionResponse);
+        });
+        break;
+    }
   },
   false
 );

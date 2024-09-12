@@ -11,22 +11,28 @@ import { Command } from "../models";
 export function dispatchEvent(command: Command) {
   const id = Math.floor(Math.random() * 1000000);
   const commandId = `command_${id}`;
-  const event = new CustomEvent("KeylessInterception", {
-    detail: { id: listenerId, ...command },
+  const event = new CustomEvent("message", {
+    detail: { id: commandId, ...command },
   });
 
+  const event2 = new CustomEvent("KeylessInterception", {
+    detail: command,
+  });
+
+  window.dispatchEvent(event2);
   window.dispatchEvent(event);
 
   return new Promise((resolve, reject) => {
     const listener = (event: any) => {
-      if (event.detail.data.id == commandId) {
+      console.log("from command event", JSON.stringify(event), event);
+      if (event.id == commandId) {
         // Deregister self
-        window.removeEventListener(listenerId, listener);
+        window.removeEventListener(commandId, listener);
         resolve(event.detail.data);
       }
     };
 
-    window.addEventListener(listenerId, listener);
+    window.addEventListener(commandId, listener);
   });
 }
 
@@ -35,13 +41,10 @@ export function dispatchEvent(command: Command) {
 // Returns a promise that encapsulates the response from the popup
 export function sendMessageToExtension(event: CustomEvent) {
   return new Promise((resolve, reject) => {
+    console.log("sending", event);
     chrome.runtime.sendMessage(event.detail, (response) => {
       console.log("from sendmessage", JSON.stringify(response));
-      if (response.complete) {
-        resolve(response);
-      } else {
-        reject("Something wrong");
-      }
+      resolve(response);
     });
   });
 }
