@@ -9,10 +9,8 @@ import { Command } from "../models";
 // caight by the listener created in this function and resolves the promise
 // with the response so the injected script can read it
 export function dispatchEvent(command: Command): Promise<unknown> {
-  const id = Math.floor(Math.random() * 1000000);
-  const commandId = `command_${id}`;
   const event = new CustomEvent("message", {
-    detail: { id: commandId, ...command },
+    detail: command,
   });
 
   window.dispatchEvent(event);
@@ -20,14 +18,14 @@ export function dispatchEvent(command: Command): Promise<unknown> {
   return new Promise((resolve, reject) => {
     const listener = (event: any) => {
       console.log("from command event", JSON.stringify(event), event);
-      if (event.type == commandId) {
+      if (event.type == command.id) {
         // Deregister self
-        window.removeEventListener(commandId, listener);
+        window.removeEventListener(command.id, listener);
         resolve(event.detail.data);
       }
     };
 
-    window.addEventListener(commandId, listener, true);
+    window.addEventListener(command.id, listener, true);
   });
 }
 
