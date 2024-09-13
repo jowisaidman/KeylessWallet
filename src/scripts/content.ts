@@ -1,6 +1,5 @@
 import { Web3 } from "web3";
-import { Command } from "../models";
-import { sendMessageToExtension } from "../utils/utils";
+import { Command, sendMessageToExtension } from "../communication";
 
 async function injectExtensionScript(url: string) {
   try {
@@ -19,12 +18,13 @@ async function injectExtensionScript(url: string) {
 
 window.addEventListener(
   "message",
-  async (event: CustomEventInit<Command>) => {
+  (event: CustomEventInit<Command>) => {
     const command: any = event.detail;
     console.log("from content script", JSON.stringify(command));
     switch (command.type) {
       case "eth_requestAccounts":
       case "eth_sendTransaction":
+        console.log("aca?");
         chrome.runtime.sendMessage("open-popup", (response) => {
           console.log("open-popup response", response);
           sendMessageToExtension(command)

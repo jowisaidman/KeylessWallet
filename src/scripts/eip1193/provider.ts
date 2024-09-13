@@ -1,5 +1,5 @@
 import { Eip1193Provider } from "ethers";
-import { Command } from "../../models";
+import { Command } from "../../communication";
 
 // Type describing callback functions
 type callbackFunction = (...args: any[]) => void;
@@ -134,17 +134,11 @@ class Provider implements Eip1193Provider {
       case "eth_chainId":
         return eth_chainId();
       case "eth_sendTransaction":
-        let response = this.dispatchEvent({
-          type: method,
-          data: params,
-        });
+        let response = await this.dispatchEvent(new Command(method, params));
         console.log("response from popup:", JSON.stringify(response));
         return new Promise(() => {});
       case "eth_requestAccounts":
-        this.dispatchEvent({
-          type: method,
-          data: params,
-        });
+        return this.dispatchEvent(new Command(method, params));
         return Promise.resolve([ACCOUNT]);
       case "eth_accounts":
         return eth_requestAccounts();

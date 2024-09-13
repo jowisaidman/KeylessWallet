@@ -1,6 +1,5 @@
-import { Command } from "./models";
-import { configureAndRenderExtension, setChainId } from "./utils/popup";
-import { sendMessageToExtension } from "./utils/utils";
+import { configureAndRenderExtension } from "./utils/popup";
+import { Command, sendMessageToExtension } from "./communication";
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   console.log(

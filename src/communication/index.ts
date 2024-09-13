@@ -13,10 +13,8 @@ export { Command, CommandDestiny, CommandResult };
 // caight by the listener created in this function and resolves the promise
 // with the response so the injected script can read it
 export function dispatchEvent(command: Command): Promise<unknown> {
-  const id = Math.floor(Math.random() * 1000000);
-  const commandId = `command_${id}`;
   const event = new CustomEvent("message", {
-    detail: { id: commandId, ...command },
+    detail: command,
   });
 
   window.dispatchEvent(event);
@@ -24,14 +22,14 @@ export function dispatchEvent(command: Command): Promise<unknown> {
   return new Promise((resolve, reject) => {
     const listener = (event: any) => {
       console.log("from command event", JSON.stringify(event), event);
-      if (event.id == commandId) {
+      if (event.id == command.id) {
         // Deregister self
-        window.removeEventListener(commandId, listener);
-        resolve(event.detail.data);
+        window.removeEventListener(command.id, listener);
+        resolve(event.detail);
       }
     };
 
-    window.addEventListener(commandId, listener, true);
+    window.addEventListener(command.id, listener, true);
   });
 }
 
@@ -40,10 +38,10 @@ export function dispatchEvent(command: Command): Promise<unknown> {
 // This function is used by the content script to send a message to the popup. When the message is
 // replied, the Promise returned by this function is resolved and, with that resolution, the
 // content script sends an event with the command id so it can be caught by the injected script
-export function sendMessageToExtension(event: CustomEvent): Promise<unknown> {
+export function sendMessageToExtension(event: CustomEventInit<Command>): Promise<unknown> {
   return new Promise((resolve, reject) => {
     console.log("sending", event);
-    chrome.runtime.sendMessage(event.detail, (response) => {
+    chrome.runtime.sendMessage(event?.detail, (response) => {
       console.log("from sendmessage", JSON.stringify(response));
       resolve(response);
     });

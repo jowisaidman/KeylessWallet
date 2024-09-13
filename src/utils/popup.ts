@@ -1,4 +1,4 @@
-import { Command } from "../models";
+import { Command } from "../communication";
 
 const WIDTH = 400;
 const HEIGHT = 645;
@@ -116,8 +116,4 @@ export async function configureAndRenderExtension2(command: Command) {
       });
     }
   }
-}
-
-export async function setChainId(command: Command) {
-  await chrome.storage.local.set({ chainId: command.data.chainId });
 }
