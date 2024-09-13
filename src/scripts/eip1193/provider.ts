@@ -45,7 +45,7 @@ interface ProviderRpcError extends Error {
 
 class Provider implements Eip1193Provider {
   // Function used to dispatch events to the extension
-  dispatchEvent: (c: Command) => void;
+  dispatchEvent: (c: Command) => Promise<unknown>;
 
   // Dictionary that contains a list of callbacks when an event is emitted
   events: EventTarget;
@@ -58,7 +58,7 @@ class Provider implements Eip1193Provider {
 
   wallet = "Keyless";
 
-  constructor(dispatchEvent: (c: Command) => void) {
+  constructor(dispatchEvent: (c: Command) => Promise<unknown>) {
     this.dispatchEvent = dispatchEvent;
     this.events = new EventTarget();
     this.registeredFunctions = new Map();
@@ -125,7 +125,7 @@ class Provider implements Eip1193Provider {
    * Private functions
    */
 
-  async processRequest(
+  processRequest(
     method: string,
     params?: Array<any> | Record<string, any>
   ): Promise<any> {
@@ -134,18 +134,20 @@ class Provider implements Eip1193Provider {
       case "eth_chainId":
         return eth_chainId();
       case "eth_sendTransaction":
-        let response = this.dispatchEvent({
+         this.dispatchEvent({
           type: method,
           data: params,
         });
-        console.log("response from popup:", JSON.stringify(response));
         return new Promise(() => {});
       case "eth_requestAccounts":
-        this.dispatchEvent({
+        return this.dispatchEvent({
           type: method,
           data: params,
+        }).then((r: any) => {
+            console.log("response from popup:", JSON.stringify(r));
+            return r.data;
         });
-        return Promise.resolve([ACCOUNT]);
+        // return Promise.resolve([ACCOUNT]);
       case "eth_accounts":
         return eth_requestAccounts();
       case "net_version":

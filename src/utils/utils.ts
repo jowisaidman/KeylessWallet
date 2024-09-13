@@ -8,7 +8,7 @@ import { Command } from "../models";
 // by the background script and it sends an event with the commandId, that is
 // caight by the listener created in this function and resolves the promise
 // with the response so the injected script can read it
-export function dispatchEvent(command: Command) {
+export function dispatchEvent(command: Command): Promise<unknown> {
   const id = Math.floor(Math.random() * 1000000);
   const commandId = `command_${id}`;
   const event = new CustomEvent("message", {
@@ -20,7 +20,7 @@ export function dispatchEvent(command: Command) {
   return new Promise((resolve, reject) => {
     const listener = (event: any) => {
       console.log("from command event", JSON.stringify(event), event);
-      if (event.id == commandId) {
+      if (event.type == commandId) {
         // Deregister self
         window.removeEventListener(commandId, listener);
         resolve(event.detail.data);
@@ -37,7 +37,7 @@ export function dispatchEvent(command: Command) {
 export function sendMessageToExtension(event: CustomEvent) {
   return new Promise((resolve, reject) => {
     console.log("sending", event);
-    chrome.runtime.sendMessage(event.detail, (response) => {
+    chrome.runtime.sendMessage(event, (response) => {
       console.log("from sendmessage", JSON.stringify(response));
       resolve(response);
     });

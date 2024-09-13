@@ -1,6 +1,5 @@
 "use strict";
 import { Eip1193Provider } from "ethers";
-import { configureAndRenderExtension } from "../utils/popup";
 import { dispatchEvent } from "../utils/utils";
 import Provider from "./eip1193";
 

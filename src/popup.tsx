@@ -39,10 +39,16 @@ const Popup = () => {
   useEffect(() => {
     console.log("working?");
     chrome.runtime.onMessage.addListener(
-      async (message, _sender, sendResponse) => {
-        const command: Command = message;
-        console.log("popup", message);
-        sendResponse({ data: ["0x9A85ed0190C0946C7aF69C11c184A1598199d0c3"] });
+      (message, _sender, sendResponse) => {
+          if (message != null) {
+            const command: Command = message;
+            console.log("popup", message);
+            sendResponse({ data: ["0x9A85ed0190C0946C7aF69C11c184A1598199d0c3"] });
+          } else {
+              console.log("received null command");
+          }
+
+          return true;
       }
     );
   }, []);

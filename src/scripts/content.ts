@@ -19,7 +19,7 @@ async function injectExtensionScript(url: string) {
 
 window.addEventListener(
   "message",
-  async (event: CustomEventInit<Command>) => {
+  (event: CustomEventInit<Command>) => {
     const command: any = event.detail;
     console.log("from content script", JSON.stringify(command));
     switch (command.type) {

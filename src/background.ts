@@ -1,5 +1,5 @@
 import { Command } from "./models";
-import { configureAndRenderExtension, setChainId } from "./utils/popup";
+import { renderExtension } from "./utils/popup";
 import { sendMessageToExtension } from "./utils/utils";
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
@@ -13,13 +13,14 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   // Depending on which command is executed, we need to render the popup
   switch (message) {
     case "open-popup":
-      configureAndRenderExtension(command).then(() =>
+      renderExtension(command).then(() =>
         sendResponse({ status: "ok" })
       );
+      return true;
       break;
     default:
       break;
   }
 
-  return true;
+  return false;
 });
