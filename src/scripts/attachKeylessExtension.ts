@@ -1,6 +1,6 @@
 "use strict";
 import { Eip1193Provider } from "ethers";
-import { dispatchEvent } from "../utils/utils";
+import { dispatchEvent } from "../communication";
 import Provider from "./eip1193";
 
 // We need this declaration to be able to inject our provider in window.ethereum
