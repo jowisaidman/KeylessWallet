@@ -5,6 +5,8 @@ import {
   BackgroundCommand,
   RpcCall,
 } from "../communication";
+import { NETWORK } from "../context/context";
+import convertToHex from "../utils/convertToHex";
 
 async function injectExtensionScript(url: string) {
   try {
@@ -51,6 +53,19 @@ window.addEventListener(
             }
           }
         );
+        break;
+      case RpcCall.EthChainId:
+        chrome.storage.local.get(
+            [NETWORK],
+              (result) => {
+                  console.log("chain id request", result);
+                const responseEvent = new CustomEvent(command.id, {
+                  detail: convertToHex(result.network.value),
+                });
+
+                window.dispatchEvent(responseEvent);
+              }
+            );
         break;
     }
   },

@@ -131,11 +131,10 @@ class Provider implements Eip1193Provider {
   ): Promise<any> {
     console.log("process =====>", method, JSON.stringify(params, undefined, 2));
     switch (method) {
-      case "eth_chainId":
-        return eth_chainId();
       case "eth_sendTransaction":
         this.dispatchEvent(new Command(method, params));
         return new Promise(() => {});
+      case "eth_chainId":
       case "eth_requestAccounts":
         const p = params || { origin: window.origin };
         return this.dispatchEvent(new Command(method, p)).then((r: any) => {
