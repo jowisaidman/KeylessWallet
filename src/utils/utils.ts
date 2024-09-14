@@ -35,7 +35,7 @@ export function dispatchEvent(command: Command): Promise<unknown> {
 // Sends message to extension
 // This function uses the chrome.runtime api to send a message to the popup.
 // Returns a promise that encapsulates the response from the popup.
-export function sendMessageToExtension(event: CustomEvent): Promise<unknown> {
+export function sendMessageToExtension(event: CustomEventInit<Command>): Promise<unknown> {
   return new Promise((resolve, reject) => {
     console.log("sending", event);
     chrome.runtime.sendMessage(event, (response) => {
