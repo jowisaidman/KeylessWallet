@@ -1,4 +1,4 @@
-import { Command } from "./models";
+import { Command } from "./communication";
 import { renderExtension } from "./utils/popup";
 import { sendMessageToExtension } from "./utils/utils";
 

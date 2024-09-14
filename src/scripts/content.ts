@@ -1,5 +1,5 @@
 import { Web3 } from "web3";
-import { Command } from "../models";
+import { Command } from "../communication";
 import { sendMessageToExtension } from "../utils/utils";
 
 async function injectExtensionScript(url: string) {

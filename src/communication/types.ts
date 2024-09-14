@@ -5,7 +5,7 @@ export class Command {
 
     data: any;
 
-    constructor(type: string, data?: object) {
+    constructor(type: string, data?: any) {
         this.id = `command_${Math.floor(Math.random() * 1000000)}`;
         this.type = type;
         this.data = data;

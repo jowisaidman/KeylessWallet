@@ -1,5 +1,5 @@
 import { Eip1193Provider } from "ethers";
-import { Command } from "../../models";
+import { Command } from "../../communication";
 
 // Type describing callback functions
 type callbackFunction = (...args: any[]) => void;

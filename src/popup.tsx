@@ -8,7 +8,7 @@ import QrToRead from "./views/QrToRead";
 import SendToChain from "./views/SendToChain";
 import Send from "./views/Send";
 import { changeScreen, Screen, goToSignScreenWithQr } from "./utils/navigation";
-import { Command } from "./models";
+import { Command } from "./communication";
 import {
   WalletContext,
   IWalletContext,
