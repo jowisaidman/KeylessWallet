@@ -28,7 +28,7 @@ export function dispatchEvent(command: Command): Promise<unknown> {
       if (event.type == command.id) {
         // Deregister self
         window.removeEventListener(command.id, listener);
-        resolve(event.detail.data);
+        resolve(event.detail);
       }
     };
 
