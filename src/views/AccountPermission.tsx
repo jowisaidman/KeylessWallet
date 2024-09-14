@@ -10,14 +10,14 @@ import { WalletContext, IWalletContext } from "../context/context";
 import { changeScreen, Screen } from "../utils/navigation";
 
 type EventData = {
-    origin: string;
-}
+  origin: string;
+};
 
-export const AccountPermission: FC<{ syncedWithStorage: boolean, sendResponse: (r: object) => void, eventData: EventData }> = ({
-  syncedWithStorage,
-  sendResponse,
-  eventData,
-}) => {
+export const AccountPermission: FC<{
+  syncedWithStorage: boolean;
+  sendResponse: (r: object) => void;
+  eventData: EventData;
+}> = ({ syncedWithStorage, sendResponse, eventData }) => {
   const walletContext = useContext<IWalletContext>(WalletContext);
   const transactionContext =
     useContext<ITransactionContext>(TransactionContext);
@@ -27,18 +27,19 @@ export const AccountPermission: FC<{ syncedWithStorage: boolean, sendResponse: (
   }
 
   async function ok() {
-      console.log("ehhh");
+    console.log("ehhh");
     sendResponse([walletContext.currentAccount?.address]);
     await changeScreen(Screen.Welcome);
   }
 
   return (
-      <div className="flex flex-col items-center gap-5 grow px-5 h-full">
+    <div className="flex flex-col items-center gap-5 grow px-5 h-full">
       <div className="text-primary font-bold text-2xl my-2">
         Account Permission
       </div>
       <p>
-      The site {eventData.origin} is requesting permission to connect to {walletContext.currentAccount?.address}
+        The site {eventData.origin} is requesting permission to connect to{" "}
+        {walletContext.currentAccount?.address}
       </p>
       <div className="flex items-center space-x-3 items-end mt-auto mb-6">
         <Button
@@ -59,7 +60,7 @@ export const AccountPermission: FC<{ syncedWithStorage: boolean, sendResponse: (
         >
           Ok
         </Button>
-    </div>
+      </div>
     </div>
   );
 };

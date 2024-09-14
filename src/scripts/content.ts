@@ -1,5 +1,10 @@
 import { Web3 } from "web3";
-import { sendMessageToExtension, Command, BackgroundCommand, RpcCall } from "../communication";
+import {
+  sendMessageToExtension,
+  Command,
+  BackgroundCommand,
+  RpcCall,
+} from "../communication";
 
 async function injectExtensionScript(url: string) {
   try {

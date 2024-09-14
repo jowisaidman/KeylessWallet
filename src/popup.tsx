@@ -49,26 +49,28 @@ const Popup = () => {
 
   useEffect(() => {
     console.log("working?");
-    chrome.runtime.onMessage.addListener((message: Command, _sender, sendResponse) => {
+    chrome.runtime.onMessage.addListener(
+      (message: Command, _sender, sendResponse) => {
         console.log("popup", message);
-      if (message != null) {
-        const command: Command = message;
+        if (message != null) {
+          const command: Command = message;
           switch (command.type) {
             case RpcCall.EthRequestAccounts:
-                console.log("requesting permission to account...");
-                sendResp = sendResponse;
-                setEventData(command.data);
-                changeScreen(Screen.AccountPermission);
-                break;
+              console.log("requesting permission to account...");
+              sendResp = sendResponse;
+              setEventData(command.data);
+              changeScreen(Screen.AccountPermission);
+              break;
             default:
-                break;
+              break;
           }
-      } else {
-        console.log("received null command");
-      }
+        } else {
+          console.log("received null command");
+        }
 
-      return true;
-    });
+        return true;
+      }
+    );
   }, []);
 
   // Effect 1: Add listener to sync persisted state with local state
@@ -149,11 +151,13 @@ const Popup = () => {
         return <Loading />;
       }
       case Screen.AccountPermission: {
-        return <AccountPermission
+        return (
+          <AccountPermission
             syncedWithStorage={syncedWithStorage}
             sendResponse={sendResp!}
             eventData={eventData as any}
-        />;
+          />
+        );
       }
       default: {
         return <Welcome syncedWithStorage={syncedWithStorage} />;
