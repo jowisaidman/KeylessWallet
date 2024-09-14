@@ -33,6 +33,10 @@ const Popup = () => {
 
   const [transaction, setTransaction] = useState<string | null>(null);
 
+  // This state is used to propagate the event data received from the DOM to the screen that will
+  // solve the request
+  const [eventData, setEventData] = useState<object | null>(null);
+
   const transactionContext = {
     data: transaction,
     setData: setTransaction,
@@ -53,6 +57,7 @@ const Popup = () => {
             case RpcCall.EthRequestAccounts:
                 console.log("requesting permission to account...");
                 sendResp = sendResponse;
+                setEventData(command.data);
                 changeScreen(Screen.AccountPermission);
                 break;
             default:
@@ -147,6 +152,7 @@ const Popup = () => {
         return <AccountPermission
             syncedWithStorage={syncedWithStorage}
             sendResponse={sendResp!}
+            eventData={eventData as any}
         />;
       }
       default: {

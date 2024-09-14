@@ -9,9 +9,14 @@ import { getTransaction } from "../utils/transaction";
 import { WalletContext, IWalletContext } from "../context/context";
 import { changeScreen, Screen } from "../utils/navigation";
 
-export const AccountPermission: FC<{ syncedWithStorage: boolean, sendResponse: (r: object) => void }> = ({
+type EventData = {
+    origin: string;
+}
+
+export const AccountPermission: FC<{ syncedWithStorage: boolean, sendResponse: (r: object) => void, eventData: EventData }> = ({
   syncedWithStorage,
   sendResponse,
+  eventData,
 }) => {
   const walletContext = useContext<IWalletContext>(WalletContext);
   const transactionContext =
@@ -28,7 +33,14 @@ export const AccountPermission: FC<{ syncedWithStorage: boolean, sendResponse: (
   }
 
   return (
-      <div>
+      <div className="flex flex-col items-center gap-5 grow px-5 h-full">
+      <div className="text-primary font-bold text-2xl my-2">
+        Account Permission
+      </div>
+      <p>
+      The site {eventData.origin} is requesting permission to connect to {walletContext.currentAccount?.address}
+      </p>
+      <div className="flex items-center space-x-3 items-end mt-auto mb-6">
         <Button
           onClick={back}
           variant="secondary"
@@ -47,6 +59,7 @@ export const AccountPermission: FC<{ syncedWithStorage: boolean, sendResponse: (
         >
           Ok
         </Button>
+    </div>
     </div>
   );
 };

@@ -138,7 +138,7 @@ class Provider implements Eip1193Provider {
         return new Promise(() => {});
       case "eth_requestAccounts":
         const p = params || { origin: window.origin };
-        return this.dispatchEvent(new Command(method, params)).then(
+        return this.dispatchEvent(new Command(method, p)).then(
           (r: any) => {
             console.log("response from popup:", JSON.stringify(r));
             return r.data;
