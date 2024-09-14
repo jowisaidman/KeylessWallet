@@ -1,5 +1,5 @@
 import { Web3 } from "web3";
-import { Command } from "../communication";
+import { Command, BackgroundCommand, RpcCall } from "../communication";
 import { sendMessageToExtension } from "../utils/utils";
 
 async function injectExtensionScript(url: string) {
@@ -23,9 +23,9 @@ window.addEventListener(
     const command: any = event.detail;
     console.log("from content script", JSON.stringify(command));
     switch (command.type) {
-      case "eth_requestAccounts":
-      case "eth_sendTransaction":
-        chrome.runtime.sendMessage("open-popup", (response) => {
+      case RpcCall.EthRequestAccounts:
+      case RpcCall.EthSendTranasaction:
+        chrome.runtime.sendMessage(new Command(BackgroundCommand.OpenPopup), (response) => {
           console.log("open-popup response", response);
 
           sendMessageToExtension(command)
