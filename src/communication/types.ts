@@ -18,6 +18,7 @@ export enum RpcCall {
   EthRequestAccounts = "eth_requestAccounts",
   EthSendTranasaction = "eth_sendTransaction",
   EthChainId = "eth_chainId",
+  NetVersion = "net_version",
 }
 
 export enum BackgroundCommand {

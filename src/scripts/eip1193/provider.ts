@@ -135,6 +135,7 @@ class Provider implements Eip1193Provider {
         this.dispatchEvent(new Command(method, params));
         return new Promise(() => {});
       case "eth_chainId":
+      case "net_version":
       case "eth_requestAccounts":
         const p = params || { origin: window.origin };
         return this.dispatchEvent(new Command(method, p)).then((r: any) => {
@@ -144,8 +145,6 @@ class Provider implements Eip1193Provider {
       // return Promise.resolve([ACCOUNT]);
       case "eth_accounts":
         return eth_requestAccounts();
-      case "net_version":
-        return net_version();
       case "wallet_requestPermissions":
         return requestPermissions();
       default:

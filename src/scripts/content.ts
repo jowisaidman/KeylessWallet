@@ -67,6 +67,19 @@ window.addEventListener(
               }
             );
         break;
+      case RpcCall.NetVersion:
+        chrome.storage.local.get(
+            [NETWORK],
+              (result) => {
+                  console.log("chain id request", result);
+                const responseEvent = new CustomEvent(command.id, {
+                  detail: result.network.value,
+                });
+
+                window.dispatchEvent(responseEvent);
+              }
+            );
+        break;
     }
   },
   false
