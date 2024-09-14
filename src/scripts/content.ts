@@ -25,19 +25,23 @@ window.addEventListener(
     switch (command.type) {
       case RpcCall.EthRequestAccounts:
       case RpcCall.EthSendTranasaction:
-        chrome.runtime.sendMessage(new Command(BackgroundCommand.OpenPopup), (response) => {
-          console.log("open-popup response", response);
+        chrome.runtime.sendMessage(
+          new Command(BackgroundCommand.OpenPopup),
+          (response) => {
+            console.log("open-popup response", response);
 
-          sendMessageToExtension(command)
-            .then((extensionResponse) => {
-              const responseEvent = new CustomEvent(command.id, {
-                detail: extensionResponse,
+            if (response.success) {
+              sendMessageToExtension(command).then((extensionResponse) => {
+                const responseEvent = new CustomEvent(command.id, {
+                  detail: extensionResponse,
+                });
+
+                window.dispatchEvent(responseEvent);
+                console.log("extension response ", extensionResponse);
               });
-
-              window.dispatchEvent(responseEvent);
-              console.log("extension response ", extensionResponse);
-            });
-        });
+            }
+          }
+        );
         break;
     }
   },

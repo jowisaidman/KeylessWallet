@@ -1,5 +1,3 @@
-
-
 export interface JsonRpcRequest<TRequest> {
   id: string | number | undefined;
   jsonrpc: "2.0";

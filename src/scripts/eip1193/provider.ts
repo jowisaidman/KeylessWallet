@@ -134,15 +134,16 @@ class Provider implements Eip1193Provider {
       case "eth_chainId":
         return eth_chainId();
       case "eth_sendTransaction":
-         this.dispatchEvent(new Command(method, params));
+        this.dispatchEvent(new Command(method, params));
         return new Promise(() => {});
       case "eth_requestAccounts":
-         return this.dispatchEvent(new Command(method, params))
-        .then((r: any) => {
+        return this.dispatchEvent(new Command(method, params)).then(
+          (r: any) => {
             console.log("response from popup:", JSON.stringify(r));
             return r.data;
-        });
-        // return Promise.resolve([ACCOUNT]);
+          }
+        );
+      // return Promise.resolve([ACCOUNT]);
       case "eth_accounts":
         return eth_requestAccounts();
       case "net_version":
