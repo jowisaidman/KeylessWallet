@@ -6,11 +6,13 @@ import { ethers, Transaction } from "ethers";
 
 export const enum Screen {
   Welcome = "none",
+  AccountPermission = "account_permission",
   SyncAddress = "sync_address",
   QrToSign = "sign",
   QrToRead = "scan_qr_to_send",
   SendToChain = "send_to_chain",
   Send = "send",
+  Loading = "loading",
 }
 
 export async function changeNetwork(

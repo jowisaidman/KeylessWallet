@@ -2,13 +2,15 @@ import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import Welcome from "./views/Welcome";
+import AccountPermission from "./views/AccountPermission";
+import Loading from "./views/Loading";
 import SyncAddress from "./views/SyncAddress";
 import QrToSign from "./views/QrToSign";
 import QrToRead from "./views/QrToRead";
 import SendToChain from "./views/SendToChain";
 import Send from "./views/Send";
 import { changeScreen, Screen, goToSignScreenWithQr } from "./utils/navigation";
-import { Command } from "./communication";
+import { Command, RpcCall } from "./communication";
 import {
   WalletContext,
   IWalletContext,
@@ -19,6 +21,11 @@ import {
   NETWORK,
 } from "./context/context";
 import { TransactionContext, ITransactionContext } from "./context/transaction";
+
+// We set the sendResponse function from the chrome.runtime.addListener callback here to be able to
+// pass it to the view that has to request the action from the user
+// TODO: Check a better way of doing this...
+var sendResp: any = null;
 
 const Popup = () => {
   const [walletContext, setWalletContext] =
@@ -38,11 +45,19 @@ const Popup = () => {
 
   useEffect(() => {
     console.log("working?");
-    chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+    chrome.runtime.onMessage.addListener((message: Command, _sender, sendResponse) => {
+        console.log("popup", message);
       if (message != null) {
         const command: Command = message;
-        console.log("popup", message);
-        sendResponse({ data: ["0x9A85ed0190C0946C7aF69C11c184A1598199d0c3"] });
+          switch (command.type) {
+            case RpcCall.EthRequestAccounts:
+                console.log("requesting permission to account...");
+                sendResp = sendResponse;
+                changeScreen(Screen.AccountPermission);
+                break;
+            default:
+                break;
+          }
       } else {
         console.log("received null command");
       }
@@ -124,6 +139,15 @@ const Popup = () => {
       }
       case Screen.Send: {
         return <Send />;
+      }
+      case Screen.Loading: {
+        return <Loading />;
+      }
+      case Screen.AccountPermission: {
+        return <AccountPermission
+            syncedWithStorage={syncedWithStorage}
+            sendResponse={sendResp!}
+        />;
       }
       default: {
         return <Welcome syncedWithStorage={syncedWithStorage} />;
