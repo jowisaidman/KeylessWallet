@@ -56,12 +56,12 @@ const Popup = () => {
         if (command != null) {
           switch (command.type) {
             case RpcCall.EthRequestAccounts:
-              console.log("requesting permission to account...");
               sendResp = sendResponse;
               setEventData(command.data);
               changeScreen(Screen.AccountPermission);
               break;
             default:
+              changeScreen(Screen.Welcome);
               break;
           }
         } else {

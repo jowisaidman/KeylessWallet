@@ -30,63 +30,62 @@ async function injectExtensionScript(url: string) {
 // To communicate with the injected script in the dom it uses window.dispatchEvent|addEventListener
 window.addEventListener(
   "message",
-  (event: CustomEventInit<Command>) => {
-      // TODO Type correclty
+  async (event: CustomEventInit<Command>) => {
+    // TODO Type correclty
     const command: any = event.detail;
     console.log("from content script", JSON.stringify(command));
     switch (command.type) {
-      case RpcCall.EthAccounts:
-        chrome.storage.local.get([CONNECTED_DAPPS], (result) => {
-          console.log("connected DAPPS", result);
-          let connectedAccounts = result[CONNECTED_DAPPS] != null
-              ? result[CONNECTED_DAPPS][command.data.origin]
-              : [];
-          const responseEvent = new CustomEvent(command.id, {
-            detail: connectedAccounts,
-          });
-
-          window.dispatchEvent(responseEvent);
+      case RpcCall.EthAccounts: {
+        let result = await chrome.storage.local.get([CONNECTED_DAPPS]);
+        console.log("connected DAPPS", result);
+        let connectedAccounts =
+          result[CONNECTED_DAPPS] != null
+            ? result[CONNECTED_DAPPS][command.data.origin]
+            : [];
+        const responseEvent = new CustomEvent(command.id, {
+          detail: connectedAccounts,
         });
+        window.dispatchEvent(responseEvent);
+        break;
+      }
       // Rpc calls that need to open the popup to do some action
       case RpcCall.EthRequestAccounts:
-      case RpcCall.EthSendTranasaction:
-        chrome.runtime.sendMessage(
-          new Command(BackgroundCommand.OpenPopup),
-          (response) => {
-            console.log("open-popup response", response);
-            if (response.success) {
-              sendMessageToExtension(command).then((extensionResponse) => {
-                const responseEvent = new CustomEvent(command.id, {
-                  detail: extensionResponse,
-                });
-
-                window.dispatchEvent(responseEvent);
-                console.log("extension response ", extensionResponse);
-              });
-            }
-          }
+      case RpcCall.EthSendTranasaction: {
+        let response: any = await chrome.runtime.sendMessage(
+          new Command(BackgroundCommand.OpenPopup)
         );
-        break;
-      case RpcCall.EthChainId:
-        chrome.storage.local.get([NETWORK], (result) => {
-          console.log("chain id request", result);
+        console.log("open-popup response", response);
+        if (response.success) {
+          let extensionResponse = await sendMessageToExtension(command);
           const responseEvent = new CustomEvent(command.id, {
-            detail: convertToHex(result.network.value),
+            detail: extensionResponse,
           });
 
           window.dispatchEvent(responseEvent);
-        });
+          console.log("extension response ", extensionResponse);
+        }
         break;
-      case RpcCall.NetVersion:
-        chrome.storage.local.get([NETWORK], (result) => {
-          console.log("chain id request", result);
-          const responseEvent = new CustomEvent(command.id, {
-            detail: result.network.value,
-          });
+      }
+      case RpcCall.EthChainId: {
+        let result = await chrome.storage.local.get([NETWORK]);
+        console.log("chain id request", result);
+        const responseEvent = new CustomEvent(command.id, {
+          detail: convertToHex(result.network.value),
+        });
 
-          window.dispatchEvent(responseEvent);
-        });
+        window.dispatchEvent(responseEvent);
         break;
+      }
+      case RpcCall.NetVersion: {
+        let result = await chrome.storage.local.get([NETWORK]);
+        console.log("chain id request", result);
+        const responseEvent = new CustomEvent(command.id, {
+          detail: result.network.value,
+        });
+
+        window.dispatchEvent(responseEvent);
+        break;
+      }
     }
   },
   false

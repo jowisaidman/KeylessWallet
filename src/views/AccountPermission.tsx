@@ -52,7 +52,8 @@ export const AccountPermission: FC<{
         Account Permission
       </div>
       <p>
-        The site {eventData.origin} is requesting permission to connect to
+        The site {eventData.origin} is requesting permission to connect to{" "}
+        <br />
         {walletContext.currentAccount?.address}
       </p>
       <div className="flex items-center space-x-3 items-end mt-auto mb-6">
