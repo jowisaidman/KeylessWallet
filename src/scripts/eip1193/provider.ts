@@ -94,6 +94,7 @@ class Provider implements Eip1193Provider {
       registeredEvent == null ? 1 : registeredEvent + 1
     );
     this.events.addEventListener(event, fn);
+    console.log("event", event);
     return this;
   }
 
@@ -117,6 +118,7 @@ class Provider implements Eip1193Provider {
   }
 
   emit(event: string, ...args: any[]): boolean {
+    console.log("emmited", event, "with args", args);
     this.events.dispatchEvent(new CustomEvent(event, { detail: args }));
     return this.registeredEvents.has(event);
   }
@@ -130,27 +132,19 @@ class Provider implements Eip1193Provider {
     params?: Array<any> | Record<string, any>
   ): Promise<any> {
     console.log("process =====>", method, JSON.stringify(params, undefined, 2));
-    switch (method) {
-      case "eth_sendTransaction":
-        this.dispatchEvent(new Command(method, params));
-        return new Promise(() => {});
-      case "eth_chainId":
-      case "net_version":
-      case "eth_requestAccounts":
-        const p = params || { origin: window.origin };
-        return this.dispatchEvent(new Command(method, p)).then((r: any) => {
-          console.log("response from popup:", JSON.stringify(r));
-          return r;
-        });
-      // return Promise.resolve([ACCOUNT]);
-      case "eth_accounts":
-        return eth_requestAccounts();
-      case "wallet_requestPermissions":
-        return requestPermissions();
-      default:
-        console.log("default");
-        return Promise.resolve(1);
-    }
+    const p = params || { origin: window.origin };
+    return this.dispatchEvent(new Command(method, p)).then((r: any) => {
+      console.log("response from popup:", JSON.stringify(r));
+      switch (method) {
+        case "eth_chainId":
+          this.emit("chainChanged", r);
+          break;
+        case "net_version":
+          this.emit("networkChanged", r);
+          break;
+      }
+      return r;
+    });
   }
 }
 

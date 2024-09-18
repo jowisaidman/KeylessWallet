@@ -6,8 +6,13 @@ import {
   ITransactionContext,
 } from "../context/transaction";
 import { getTransaction } from "../utils/transaction";
-import { WalletContext, IWalletContext } from "../context/context";
+import {
+  WalletContext,
+  IWalletContext,
+  CONNECTED_DAPPS,
+} from "../context/context";
 import { changeScreen, Screen } from "../utils/navigation";
+import { updateState } from "../context/context";
 
 type EventData = {
   origin: string;
@@ -27,7 +32,16 @@ export const AccountPermission: FC<{
   }
 
   async function ok() {
-    console.log("ehhh");
+    const address = walletContext.currentAccount?.address!;
+    const url = eventData.origin;
+    await updateState((currentState) => {
+      if (currentState.connectedDapps[url] == null) {
+        currentState.connectedDapps[url] = [address];
+      } else if (!currentState.connectedDapps[url].includes(address)) {
+        currentState.connectedDapps[url].push(address);
+      }
+      return currentState;
+    });
     sendResponse([walletContext.currentAccount?.address]);
     await changeScreen(Screen.Welcome);
   }
@@ -38,7 +52,7 @@ export const AccountPermission: FC<{
         Account Permission
       </div>
       <p>
-        The site {eventData.origin} is requesting permission to connect to{" "}
+        The site {eventData.origin} is requesting permission to connect to
         {walletContext.currentAccount?.address}
       </p>
       <div className="flex items-center space-x-3 items-end mt-auto mb-6">

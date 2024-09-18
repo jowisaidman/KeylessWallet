@@ -19,6 +19,7 @@ import {
   SOURCE,
   CURRENT_ACCOUNT,
   NETWORK,
+  SAVED_STATE_KEYS,
 } from "./context/context";
 import { TransactionContext, ITransactionContext } from "./context/transaction";
 
@@ -50,10 +51,9 @@ const Popup = () => {
   useEffect(() => {
     console.log("working?");
     chrome.runtime.onMessage.addListener(
-      (message: Command, _sender, sendResponse) => {
-        console.log("popup", message);
-        if (message != null) {
-          const command: Command = message;
+      (command: Command | undefined, _sender, sendResponse) => {
+        console.log("popup", command);
+        if (command != null) {
           switch (command.type) {
             case RpcCall.EthRequestAccounts:
               console.log("requesting permission to account...");
@@ -76,17 +76,11 @@ const Popup = () => {
   // Effect 1: Add listener to sync persisted state with local state
   useEffect(() => {
     const listener = async () => {
-      await chrome.storage.local.get(
-        [SOURCE, CURRENT_ACCOUNT, NETWORK, "command"],
-        (result) => {
-          console.log(1, result);
-          setWalletContext({ ...result } as IWalletContext);
-          setCommand(result["command"]);
-        }
-      );
+      const result = await chrome.storage.local.get(SAVED_STATE_KEYS);
+      setWalletContext({ ...result } as IWalletContext);
     };
-
     chrome.storage.onChanged.addListener(listener);
+
     return () => {
       chrome.storage.onChanged.removeListener(listener);
     };
@@ -94,42 +88,13 @@ const Popup = () => {
 
   // Effect 2: Sync local state with storage data on mount
   useEffect(() => {
-    chrome.storage.local.get(
-      [SOURCE, CURRENT_ACCOUNT, NETWORK, "command"],
-      (result) => {
-        console.log(2, result);
-        setWalletContext({ ...result } as IWalletContext);
-        setSyncedWithStorage(true);
-        setCommand(result["command"]);
-      }
-    );
+    chrome.storage.local.get(SAVED_STATE_KEYS, (result) => {
+      console.log(2, result);
+      setWalletContext({ ...result } as IWalletContext);
+      setSyncedWithStorage(true);
+    });
   }, []);
 
-  /*
-  // Process commands
-  useEffect(() => {
-    if (syncedWithStorage && command) {
-      console.log(walletContext, syncedWithStorage);
-      console.log("Processing ", command, JSON.stringify(command.data[0]));
-      const commandType = command["type"];
-      const commandData = command.data[0];
-
-      // Remove command after processing it
-      chrome.storage.local.set({ command: null }).then(async () => {
-        switch (commandType) {
-          case "eth_sendTransaction": {
-            setTransaction(JSON.stringify(command.data[0]));
-            changeScreen(Screen.QrToSign);
-            break;
-          }
-          default:
-            console.warn("Unknown command", command);
-            break;
-        }
-      });
-    }
-  }, [command, syncedWithStorage]);
-*/
   function getScreen() {
     switch (walletContext?.source) {
       case Screen.SyncAddress: {

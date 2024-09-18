@@ -13,20 +13,21 @@ import {
 import { getBalance, sendToChain } from "../utils/transaction";
 import Select from "react-select";
 
+const networks = [
+  { value: "1", label: "Ethereum" },
+  { value: "11155111", label: "Ethereum Sepolia" },
+  { value: "84532", label: "Base Sepolia" },
+  { value: "8453", label: "Base" },
+];
+
 export const Welcome: FC<{ syncedWithStorage: boolean }> = ({
   syncedWithStorage,
 }) => {
   const walletContext = useContext<IWalletContext>(WalletContext);
   const [balance, setBalance] = useState<string>();
 
-  const networks = [
-    { value: "1", label: "Ethereum" },
-    { value: "11155111", label: "Ethereum Sepolia" },
-    { value: "8453", label: "Base" },
-    { value: "84532", label: "Base Sepolia" },
-  ];
-
   useEffect(() => {
+    console.log("contexto", walletContext);
     if (syncedWithStorage && walletContext.currentAccount == null) {
       changeScreen(Screen.SyncAddress);
     }
@@ -42,6 +43,9 @@ export const Welcome: FC<{ syncedWithStorage: boolean }> = ({
     <div className="flex flex-col items-center gap-5 grow mt-5 pb-5 h-full">
       <div className={`flex flex-col items-center justify-center`}>
         <div className="text-primary font-bold">Network</div>
+
+        {walletContext.network.label}
+        {walletContext.network.value}
 
         <Select
           className="text-secondary"

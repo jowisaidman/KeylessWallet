@@ -5,7 +5,7 @@ import {
   BackgroundCommand,
   RpcCall,
 } from "../communication";
-import { NETWORK } from "../context/context";
+import { NETWORK, CONNECTED_DAPPS } from "../context/context";
 import convertToHex from "../utils/convertToHex";
 
 async function injectExtensionScript(url: string) {
@@ -31,9 +31,22 @@ async function injectExtensionScript(url: string) {
 window.addEventListener(
   "message",
   (event: CustomEventInit<Command>) => {
+      // TODO Type correclty
     const command: any = event.detail;
     console.log("from content script", JSON.stringify(command));
     switch (command.type) {
+      case RpcCall.EthAccounts:
+        chrome.storage.local.get([CONNECTED_DAPPS], (result) => {
+          console.log("connected DAPPS", result);
+          let connectedAccounts = result[CONNECTED_DAPPS] != null
+              ? result[CONNECTED_DAPPS][command.data.origin]
+              : [];
+          const responseEvent = new CustomEvent(command.id, {
+            detail: connectedAccounts,
+          });
+
+          window.dispatchEvent(responseEvent);
+        });
       // Rpc calls that need to open the popup to do some action
       case RpcCall.EthRequestAccounts:
       case RpcCall.EthSendTranasaction:
@@ -55,30 +68,24 @@ window.addEventListener(
         );
         break;
       case RpcCall.EthChainId:
-        chrome.storage.local.get(
-            [NETWORK],
-              (result) => {
-                  console.log("chain id request", result);
-                const responseEvent = new CustomEvent(command.id, {
-                  detail: convertToHex(result.network.value),
-                });
+        chrome.storage.local.get([NETWORK], (result) => {
+          console.log("chain id request", result);
+          const responseEvent = new CustomEvent(command.id, {
+            detail: convertToHex(result.network.value),
+          });
 
-                window.dispatchEvent(responseEvent);
-              }
-            );
+          window.dispatchEvent(responseEvent);
+        });
         break;
       case RpcCall.NetVersion:
-        chrome.storage.local.get(
-            [NETWORK],
-              (result) => {
-                  console.log("chain id request", result);
-                const responseEvent = new CustomEvent(command.id, {
-                  detail: result.network.value,
-                });
+        chrome.storage.local.get([NETWORK], (result) => {
+          console.log("chain id request", result);
+          const responseEvent = new CustomEvent(command.id, {
+            detail: result.network.value,
+          });
 
-                window.dispatchEvent(responseEvent);
-              }
-            );
+          window.dispatchEvent(responseEvent);
+        });
         break;
     }
   },
