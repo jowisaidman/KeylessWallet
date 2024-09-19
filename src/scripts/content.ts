@@ -34,8 +34,16 @@ function dispatchResponseEvent(command: Command, detail: any) {
 
 // Gets an specific key from the current state of the wallet
 async function getCurrentStateValue(key: keyof IWalletContext): Promise<any> {
-    let result = await chrome.storage.local.get([key]);
-    return result[key];
+  let result = await chrome.storage.local.get([key]);
+  return result[key];
+}
+
+// Gets an specific key from the current state of the wallet
+async function updateCurrentStateValue(
+  key: keyof IWalletContext,
+  newValue: any
+) {
+  await chrome.storage.local.set({ [key]: newValue });
 }
 
 // This listener is the nexus between the injected script in the DOM and the popup, because it has
@@ -53,9 +61,7 @@ window.addEventListener(
       case RpcCall.EthAccounts: {
         let connectedDapps = await getCurrentStateValue(CONNECTED_DAPPS);
         let connectedAccounts =
-          connectedDapps != null
-            ? connectedDapps[command.data.origin]
-            : [];
+          connectedDapps != null ? connectedDapps[command.data.origin] : [];
         dispatchResponseEvent(command, connectedAccounts);
         break;
       }
@@ -104,6 +110,17 @@ window.addEventListener(
       case RpcCall.NetVersion: {
         let currentNetwork = await getCurrentStateValue(NETWORK);
         dispatchResponseEvent(command, currentNetwork.value);
+        break;
+      }
+      case RpcCall.WalletRevokePermissions: {
+        let connectedDapps = await getCurrentStateValue(CONNECTED_DAPPS);
+        console.log("before", connectedDapps, command.data.origin);
+        // TODO: At the moment we remove the whole key, when we support multiple address we will
+        // have to remove the current address
+        delete connectedDapps[command.data.origin];
+        console.log("after", connectedDapps);
+        await updateCurrentStateValue(CONNECTED_DAPPS, connectedDapps);
+        dispatchResponseEvent(command, null);
         break;
       }
     }

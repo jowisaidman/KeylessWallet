@@ -132,7 +132,7 @@ class Provider implements Eip1193Provider {
     params?: Array<any> | Record<string, any>
   ): Promise<any> {
     console.log("process =====>", method, JSON.stringify(params, undefined, 2));
-    const p = params || { origin: window.origin };
+    const p = { origin: window.origin, ...params };
     return this.dispatchEvent(new Command(method, p)).then((r: any) => {
       console.log("response from popup:", JSON.stringify(r));
       switch (method) {

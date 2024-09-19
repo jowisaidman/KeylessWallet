@@ -1,4 +1,4 @@
-import React, { useContext, FC } from "react";
+import React, { useContext, FC, useEffect } from "react";
 import { Button } from "../components/Button";
 import { Tabs, Tab } from "../components/Tabs";
 import {
@@ -11,6 +11,7 @@ import {
   IWalletContext,
   CONNECTED_DAPPS,
 } from "../context/context";
+import Loading from "../components/Loading";
 import { changeScreen, Screen } from "../utils/navigation";
 import { updateState } from "../context/context";
 
@@ -26,6 +27,16 @@ export const AccountPermission: FC<{
   const walletContext = useContext<IWalletContext>(WalletContext);
   const transactionContext =
     useContext<ITransactionContext>(TransactionContext);
+
+  useEffect(() => {
+    console.log("llego?");
+    // If the origin is null we probably have a bug, to not leave the addon blank, we move back
+    // to welcome
+    if (eventData == null) {
+      console.log("llego?");
+      changeScreen(Screen.Welcome);
+    }
+  }, []);
 
   async function back() {
     await changeScreen(Screen.Welcome);
@@ -48,34 +59,40 @@ export const AccountPermission: FC<{
 
   return (
     <div className="flex flex-col items-center gap-5 grow px-5 h-full">
-      <div className="text-primary font-bold text-2xl my-2">
-        Account Permission
-      </div>
-      <p>
-        The site {eventData.origin} is requesting permission to connect to{" "}
-        <br />
-        {walletContext.currentAccount?.address}
-      </p>
-      <div className="flex items-center space-x-3 items-end mt-auto mb-6">
-        <Button
-          onClick={back}
-          variant="secondary"
-          className="px-10"
-          centered
-          size="lg"
-        >
-          Cancel
-        </Button>
-        <Button
-          onClick={ok}
-          variant="primary"
-          centered
-          className="px-10"
-          size="lg"
-        >
-          Ok
-        </Button>
-      </div>
+      {eventData == null ? (
+        <Loading />
+      ) : (
+        <>
+          <div className="text-primary font-bold text-2xl my-2">
+            Account Permission
+          </div>
+          <p>
+            The site {eventData.origin} is requesting permission to connect to{" "}
+            <br />
+            {walletContext.currentAccount?.address}
+          </p>
+          <div className="flex items-center space-x-3 items-end mt-auto mb-6">
+            <Button
+              onClick={back}
+              variant="secondary"
+              className="px-10"
+              centered
+              size="lg"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={ok}
+              variant="primary"
+              centered
+              className="px-10"
+              size="lg"
+            >
+              Ok
+            </Button>
+          </div>
+        </>
+      )}
     </div>
   );
 };

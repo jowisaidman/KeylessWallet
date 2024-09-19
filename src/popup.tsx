@@ -96,6 +96,7 @@ const Popup = () => {
   }, []);
 
   function getScreen() {
+    console.log(walletContext?.source);
     switch (walletContext?.source) {
       case Screen.SyncAddress: {
         return <SyncAddress />;
