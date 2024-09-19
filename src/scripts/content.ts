@@ -90,7 +90,8 @@ window.addEventListener(
         }
         break;
       }
-      case RpcCall.EthSendTranasaction: {
+      case RpcCall.EthSendTranasaction:
+      case RpcCall.WalletSwitchEthereumChain : {
         let response: any = await chrome.runtime.sendMessage(
           new Command(BackgroundCommand.OpenPopup)
         );
@@ -114,11 +115,9 @@ window.addEventListener(
       }
       case RpcCall.WalletRevokePermissions: {
         let connectedDapps = await getCurrentStateValue(CONNECTED_DAPPS);
-        console.log("before", connectedDapps, command.data.origin);
         // TODO: At the moment we remove the whole key, when we support multiple address we will
         // have to remove the current address
         delete connectedDapps[command.data.origin];
-        console.log("after", connectedDapps);
         await updateCurrentStateValue(CONNECTED_DAPPS, connectedDapps);
         dispatchResponseEvent(command, null);
         break;

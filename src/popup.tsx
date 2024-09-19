@@ -8,6 +8,7 @@ import SyncAddress from "./views/SyncAddress";
 import QrToSign from "./views/QrToSign";
 import QrToRead from "./views/QrToRead";
 import SendToChain from "./views/SendToChain";
+import SwitchChain from "./views/SwitchChain";
 import Send from "./views/Send";
 import { changeScreen, Screen, goToSignScreenWithQr } from "./utils/navigation";
 import { Command, RpcCall } from "./communication";
@@ -59,6 +60,11 @@ const Popup = () => {
               sendResp = sendResponse;
               setEventData(command.data);
               changeScreen(Screen.AccountPermission);
+              break;
+            case RpcCall.WalletSwitchEthereumChain:
+              sendResp = sendResponse;
+              setEventData(command.data);
+              changeScreen(Screen.SwitchChain);
               break;
             default:
               changeScreen(Screen.Welcome);
@@ -119,6 +125,15 @@ const Popup = () => {
       case Screen.AccountPermission: {
         return (
           <AccountPermission
+            syncedWithStorage={syncedWithStorage}
+            sendResponse={sendResp!}
+            eventData={eventData as any}
+          />
+        );
+      }
+      case Screen.SwitchChain: {
+        return (
+          <SwitchChain
             syncedWithStorage={syncedWithStorage}
             sendResponse={sendResp!}
             eventData={eventData as any}

@@ -21,7 +21,30 @@ interface RequestArguments {
   readonly params?: readonly unknown[] | object;
 }
 
-enum RpcErrorCode {
+interface ProviderRpcError extends Error {
+  message: string;
+  code: number;
+  data?: unknown;
+}
+
+export class RpcError implements ProviderRpcError {
+    message: string;
+
+    code: number;
+
+    data?: unknown;
+
+    name: string;
+
+    constructor(code: RpcErrorCode, message: string, data?: unknown) {
+        this.message = message;
+        this.code = code as number;
+        this.data = data;
+        this.name = RpcErrorCode[code as number];
+    }
+}
+
+export enum RpcErrorCode {
   // The user rejected the request.
   UserRejectedRequest = 4001,
 
@@ -34,13 +57,11 @@ enum RpcErrorCode {
   // The Provider is disconnected from all chains.
   Disconnected = 4900,
 
-  // 	The Provider is not connected to the requested chain.
+  // The Provider is not connected to the requested chain.
   ChainDisconnected = 4901,
-}
 
-interface ProviderRpcError extends Error {
-  code: RpcErrorCode;
-  data?: unknown;
+  // Unrecognized chain Id. Used if the chain id is not supported
+  UnrecognizedChainId = 4902,
 }
 
 class Provider implements Eip1193Provider {
@@ -73,13 +94,6 @@ class Provider implements Eip1193Provider {
   // This method is deprecated but still used by some dApps
   send(method: string, params: readonly unknown[] | object): Promise<any> {
     return this.processRequest(method, params);
-  }
-
-  enable() {
-    console.log("connecting");
-    return new Promise((f: any) => f()).then((a: any) =>
-      console.log("===>", a)
-    );
   }
 
   // EventEmitter's minimal implementation. We don't extend this from

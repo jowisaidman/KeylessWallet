@@ -12,6 +12,7 @@ export const enum Screen {
   QrToRead = "scan_qr_to_send",
   SendToChain = "send_to_chain",
   Send = "send",
+  SwitchChain = "switch_chain",
   Loading = "loading",
 }
 

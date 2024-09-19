@@ -11,14 +11,8 @@ import {
   changeNetwork,
 } from "../utils/navigation";
 import { getBalance, sendToChain } from "../utils/transaction";
+import { networks } from "../utils/networks";
 import Select from "react-select";
-
-const networks = [
-  { value: "1", label: "Ethereum" },
-  { value: "11155111", label: "Ethereum Sepolia" },
-  { value: "84532", label: "Base Sepolia" },
-  { value: "8453", label: "Base" },
-];
 
 export const Welcome: FC<{ syncedWithStorage: boolean }> = ({
   syncedWithStorage,
