@@ -56,7 +56,6 @@ window.addEventListener(
   async (event: CustomEventInit<Command>) => {
     // TODO Type correclty
     const command: any = event.detail;
-    console.log("From content script", JSON.stringify(command));
     switch (command.type) {
       case RpcCall.EthAccounts: {
         let connectedDapps = await getCurrentStateValue(CONNECTED_DAPPS);
@@ -70,21 +69,16 @@ window.addEventListener(
         // TODO Check that the current account is the one that is trying to connect
         // ATM we support one account so it is the same
         // Respond directly if the dApp is already connected
-        console.log("CONNECTED DAPPS FROM REQUEST ACCOUNTS", connectedDapps);
         if (command.data.origin in connectedDapps) {
           dispatchResponseEvent(command, connectedDapps[command.data.origin]);
-          console.log("1");
         }
         // Otherwise open the popup to give permission to the dApp
         else {
-          console.log("2");
           let response: any = await chrome.runtime.sendMessage(
             new Command(BackgroundCommand.OpenPopup)
           );
-          console.log("open-popup response", response);
           if (response.success) {
             let extensionResponse = await sendMessageToExtension(command);
-            console.log("extension response ", extensionResponse);
             dispatchResponseEvent(command, extensionResponse);
           }
         }
@@ -95,10 +89,8 @@ window.addEventListener(
         let response: any = await chrome.runtime.sendMessage(
           new Command(BackgroundCommand.OpenPopup)
         );
-        console.log("open-popup response", response);
         if (response.success) {
           let extensionResponse = await sendMessageToExtension(command);
-          console.log("extension response ", extensionResponse);
           dispatchResponseEvent(command, extensionResponse);
         }
         break;

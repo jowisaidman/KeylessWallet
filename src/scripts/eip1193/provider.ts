@@ -1,20 +1,9 @@
 import { Eip1193Provider } from "ethers";
-import { Command } from "../../communication";
+import { Command, RpcCall } from "../../communication";
 
 // Type describing callback functions
 type callbackFunction = (...args: any[]) => void;
 type eventFunction = (e: Event) => void;
-
-const ACCOUNT = "0xc573952EFF8FA663Cbc9CdA02f85BddBEeD275F3";
-const NETWORK_ID = "0x14A34"; // Sepolia
-// const NETWORK_ID ="0x1";
-
-// Callback functions injected by the dApp.
-// They are initialized as indefined and filled when the dApp injects them
-let accountsChanged: any = undefined;
-let chainChanged: any = undefined;
-let networkChanged: any = undefined;
-let connect: any = undefined;
 
 interface RequestArguments {
   readonly method: string;
@@ -108,7 +97,6 @@ class Provider implements Eip1193Provider {
       registeredEvent == null ? 1 : registeredEvent + 1
     );
     this.events.addEventListener(event, fn);
-    console.log("event", event);
     return this;
   }
 
@@ -132,80 +120,27 @@ class Provider implements Eip1193Provider {
   }
 
   emit(event: string, ...args: any[]): boolean {
-    console.log("emmited", event, "with args", args);
     this.events.dispatchEvent(new CustomEvent(event, { detail: args }));
     return this.registeredEvents.has(event);
   }
-
-  /*
-   * Private functions
-   */
 
   processRequest(
     method: string,
     params?: Array<any> | Record<string, any>
   ): Promise<any> {
-    console.log("process =====>", method, JSON.stringify(params, undefined, 2));
     const p = { origin: window.origin, ...params };
     return this.dispatchEvent(new Command(method, p)).then((r: any) => {
-      console.log("response from popup:", JSON.stringify(r));
       switch (method) {
-        case "eth_chainId":
+        case RpcCall.EthChainId:
           this.emit("chainChanged", r);
           break;
-        case "net_version":
+        case RpcCall.NetVersion:
           this.emit("networkChanged", r);
           break;
       }
       return r;
     });
   }
-}
-
-async function requestPermissions(): Promise<any> {
-  return {
-    jsonrpc: "2.0",
-    result: [
-      {
-        parentCapability: "eth_accounts",
-        invoker: "https://www.sushi.com",
-        caveats: [
-          {
-            type: "restrictReturnedAccounts",
-            value: [ACCOUNT],
-          },
-        ],
-        date: Date.now(),
-      },
-    ],
-  };
-}
-
-async function eth_accounts(): Promise<any> {
-  return [ACCOUNT];
-}
-
-async function eth_requestAccounts(): Promise<any> {
-  return [ACCOUNT];
-  // return {"jsonrpc":"2.0","result":[ACCOUNT]};
-}
-
-async function eth_chainId(): Promise<any> {
-  console.log(chainChanged);
-  if (chainChanged) {
-    await chainChanged(NETWORK_ID);
-  }
-
-  return NETWORK_ID;
-}
-
-async function net_version(): Promise<any> {
-  console.log(networkChanged);
-  if (networkChanged) {
-    await networkChanged(NETWORK_ID);
-  }
-
-  return NETWORK_ID;
 }
 
 export default Provider;

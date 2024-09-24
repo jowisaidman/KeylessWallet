@@ -30,11 +30,9 @@ export const AccountPermission: FC<{
     useContext<ITransactionContext>(TransactionContext);
 
   useEffect(() => {
-    console.log("llego?");
     // If the origin is null we probably have a bug, to not leave the addon blank, we move back
     // to welcome
     if (eventData == null) {
-      console.log("llego?");
       changeScreen(Screen.Welcome);
     }
   }, []);

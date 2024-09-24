@@ -3,12 +3,6 @@ import { renderExtension } from "./utils/popup";
 
 chrome.runtime.onMessage.addListener(
   (command: Command, _sender, sendResponse) => {
-    console.log(
-      "from background",
-      JSON.stringify(command, undefined, 2),
-      _sender
-    );
-
     // Depending on which command is executed, we need to render the popup
     switch (command.type) {
       case BackgroundCommand.OpenPopup:

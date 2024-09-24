@@ -24,7 +24,6 @@ export function dispatchEvent(command: Command): Promise<unknown> {
 
   return new Promise((resolve, reject) => {
     const listener = (event: any) => {
-      console.log("from command event", JSON.stringify(event), event);
       if (event.type == command.id) {
         // Deregister self
         window.removeEventListener(command.id, listener);
@@ -43,9 +42,7 @@ export function sendMessageToExtension(
   event: CustomEventInit<Command>
 ): Promise<unknown> {
   return new Promise((resolve, reject) => {
-    console.log("sending", event);
     chrome.runtime.sendMessage(event, (response) => {
-      console.log("from sendmessage", JSON.stringify(response));
       resolve(response);
     });
   });
