@@ -6,40 +6,47 @@ import { Screen } from "../utils/navigation";
 export const SOURCE = "source";
 export const CURRENT_ACCOUNT = "currentAccount";
 export const NETWORK = "network";
+export const CONNECTED_DAPPS = "connectedDapps";
+
+export const SAVED_STATE_KEYS = [
+  SOURCE,
+  CURRENT_ACCOUNT,
+  NETWORK,
+  CONNECTED_DAPPS,
+];
 
 export type IWalletContext = {
-  source: Screen;
-  currentAccount?: {
+  [SOURCE]: Screen;
+  [CURRENT_ACCOUNT]?: {
     type: string;
     address: string;
   };
-  network: {
-    value: string; 
-    label: string
+  [NETWORK]: {
+    value: string;
+    label: string;
+  };
+  [CONNECTED_DAPPS]: {
+    [url: string]: string[];
   };
 };
 
 export const DefaultContext: IWalletContext = {
-  source: Screen.Welcome,
-  network: {value: "84532", label: "Base Sepolia"},
+  [SOURCE]: Screen.Welcome,
+  [NETWORK]: { value: "84532", label: "Base Sepolia" },
+  [CONNECTED_DAPPS]: {},
 };
 
 export async function getSavedState(): Promise<IWalletContext> {
   let newState = DefaultContext;
-  await chrome.storage.local.get([SOURCE, CURRENT_ACCOUNT, NETWORK], async (result) => {
-    if (result[SOURCE] != null) {
-      newState[SOURCE] = result[SOURCE];
+  let result = await chrome.storage.local.get(SAVED_STATE_KEYS);
+  for (let key of SAVED_STATE_KEYS) {
+    console.log(key, result[key], newState[key as keyof IWalletContext]);
+    if (result[key] != null) {
+      newState[key as keyof IWalletContext] = result[key];
     }
+  }
 
-    if (result[CURRENT_ACCOUNT] != null) {
-      newState[CURRENT_ACCOUNT] = result[CURRENT_ACCOUNT];
-    }
-
-    if (result[NETWORK] != null) {
-      newState[NETWORK] = result[NETWORK];
-    }
-  });
-
+  console.log("new state!", newState);
   return newState;
 }
 
