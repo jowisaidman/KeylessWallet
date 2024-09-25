@@ -30,14 +30,12 @@
     },
     "permissions": [
       "storage",
-      "activeTab",
-      "scripting",
-      "tabs"
+      "scripting"
     ],
     "web_accessible_resources": [
       {
         "resources": [
-          "js/attachKeylessExtension.js"
+          "js/injected.js"
         ],
         "matches": [
           "<all_urls>"

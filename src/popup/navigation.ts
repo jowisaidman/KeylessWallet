@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { updateState } from "../context/context";
+import { updateState } from "./context/context";
 import { SingleValue } from "react-select";
 import { updateProvider } from "./transaction";
 import { ethers, Transaction } from "ethers";

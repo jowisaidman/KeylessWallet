@@ -5,8 +5,9 @@ import {
   BackgroundCommand,
   RpcCall,
 } from "../communication";
-import { NETWORK, CONNECTED_DAPPS, IWalletContext } from "../context/context";
+import {  IWalletContext } from "../popup/context/context";
 import convertToHex from "../utils/convertToHex";
+import { NETWORK, CONNECTED_DAPPS } from "../storage";
 
 async function injectExtensionScript(url: string) {
   try {
@@ -121,6 +122,6 @@ window.addEventListener(
   false
 );
 
-injectExtensionScript("js/attachKeylessExtension.js");
+injectExtensionScript("js/injected.js");
 
 console.log("Content script loaded");

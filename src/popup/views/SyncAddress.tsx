@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Button } from "../components/Button";
 import { Tabs, Tab } from "../components/Tabs";
 import { QrReader } from "../components/QrReader";
-import { changeScreen, Screen } from "../utils/navigation";
+import { changeScreen, Screen } from "../navigation";
 import { updateState } from "../context/context";
 
 export default () => {

@@ -1,5 +1,5 @@
-import { Command, BackgroundCommand } from "./communication";
-import { renderExtension } from "./utils/popup";
+import { Command, BackgroundCommand } from "../communication";
+import renderExtension from "../popup/renderExtension";
 
 chrome.runtime.onMessage.addListener(
   (command: Command, _sender, sendResponse) => {

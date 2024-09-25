@@ -10,18 +10,20 @@ import QrToRead from "./views/QrToRead";
 import SendToChain from "./views/SendToChain";
 import SwitchChain from "./views/SwitchChain";
 import Send from "./views/Send";
-import { changeScreen, Screen, goToSignScreenWithQr } from "./utils/navigation";
-import { Command, RpcCall } from "./communication";
+import { changeScreen, Screen, goToSignScreenWithQr } from "./navigation";
+import { Command, RpcCall } from "../communication";
 import {
   WalletContext,
   IWalletContext,
   getSavedState,
   DefaultContext,
+} from "./context/context";
+import {
   SOURCE,
   CURRENT_ACCOUNT,
   NETWORK,
   SAVED_STATE_KEYS,
-} from "./context/context";
+} from "../storage";
 import { TransactionContext, ITransactionContext } from "./context/transaction";
 
 // We set the sendResponse function from the chrome.runtime.addListener callback here to be able to

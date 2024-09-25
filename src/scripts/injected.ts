@@ -1,3 +1,4 @@
+// This script is injected in the DOM and is the nexus between the extension and the dApp
 "use strict";
 import { Eip1193Provider } from "ethers";
 import { dispatchEvent } from "../communication";

@@ -5,7 +5,7 @@ import {
   ITransactionContext,
 } from "../context/transaction";
 import { QrReader } from "../components/QrReader";
-import { changeScreen, Screen } from "../utils/navigation";
+import { changeScreen, Screen } from "../navigation";
 
 export default () => {
   const transactionContext =

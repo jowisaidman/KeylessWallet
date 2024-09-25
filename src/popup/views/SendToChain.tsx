@@ -7,8 +7,8 @@ import { WalletContext, IWalletContext } from "../context/context";
 import { Button } from "../components/Button";
 import { Tabs, Tab } from "../components/Tabs";
 import Loading from "../components/Loading";
-import { changeScreen, Screen, watchTransaction } from "../utils/navigation";
-import { sendToChain } from "../utils/transaction";
+import { changeScreen, Screen, watchTransaction } from "../navigation";
+import { sendToChain } from "../transaction";
 
 export default () => {
   const transactionContext =
