@@ -6,8 +6,8 @@ import {
   TransactionContext,
   ITransactionContext,
 } from "../context/transaction";
-import { changeScreen, Screen } from "../utils/navigation";
-import { getNextNonce } from "../utils/transaction";
+import { changeScreen, Screen } from "../navigation";
+import { getNextNonce } from "../transaction";
 import QRCode from "qrcode";
 
 export default () => {

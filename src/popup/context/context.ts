@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { Screen } from "../utils/navigation";
+import { Screen } from "../navigation";
 
 // Persisted state keys
 // These are keys from chrome.storage.local

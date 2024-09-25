@@ -5,9 +5,9 @@ import {
   TransactionContext,
   ITransactionContext,
 } from "../context/transaction";
-import { getTransaction } from "../utils/transaction";
+import { getTransaction } from "../transaction";
 import { WalletContext, IWalletContext } from "../context/context";
-import { changeScreen, Screen } from "../utils/navigation";
+import { changeScreen, Screen } from "../navigation";
 
 export default () => {
   const walletContext = useContext<IWalletContext>(WalletContext);

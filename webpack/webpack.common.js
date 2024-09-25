@@ -5,10 +5,9 @@ const srcDir = path.join(__dirname, "..", "src");
 
 module.exports = {
   entry: {
-    popup: path.join(srcDir, "popup.tsx"),
-    background: path.join(srcDir, "background.ts"),
-    attachKeylessExtension: path.join(srcDir, "scripts/attachKeylessExtension.ts"),
-    //requestMetamask: path.join(srcDir, "scripts/requestMetamask.ts"),
+    popup: path.join(srcDir, "popup/index.tsx"),
+    background: path.join(srcDir, "scripts/background.ts"),
+    injected: path.join(srcDir, "scripts/injected.ts"),
     content: path.join(srcDir, "scripts/content.ts"),
   },
   output: {

@@ -9,9 +9,9 @@ import {
   changeScreen,
   Screen,
   changeNetwork,
-} from "../utils/navigation";
-import { getBalance, sendToChain } from "../utils/transaction";
-import { networks } from "../utils/networks";
+} from "../navigation";
+import { getBalance, sendToChain } from "../transaction";
+import { networks } from "../networks";
 import Select from "react-select";
 
 export const Welcome: FC<{ syncedWithStorage: boolean }> = ({
