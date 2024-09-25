@@ -9,7 +9,6 @@ import { getTransaction } from "../transaction";
 import {
   WalletContext,
   IWalletContext,
-  CONNECTED_DAPPS,
 } from "../context/context";
 import Loading from "../components/Loading";
 import { changeScreen, Screen } from "../navigation";

@@ -17,11 +17,13 @@ import {
   IWalletContext,
   getSavedState,
   DefaultContext,
+} from "./context/context";
+import {
   SOURCE,
   CURRENT_ACCOUNT,
   NETWORK,
   SAVED_STATE_KEYS,
-} from "./context/context";
+} from "../storage";
 import { TransactionContext, ITransactionContext } from "./context/transaction";
 
 // We set the sendResponse function from the chrome.runtime.addListener callback here to be able to

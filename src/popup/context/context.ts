@@ -1,19 +1,18 @@
+// The wallet context is tightly related with the keys saved in chrome.local.storage
+//
+// The state can be changed from other places than the popup (i.e: the content script)
+// The WalletContext puts in a context the state of the whole extension.
+
 import { createContext } from "react";
 import { Screen } from "../navigation";
-
-// Persisted state keys
-// These are keys from chrome.storage.local
-export const SOURCE = "source";
-export const CURRENT_ACCOUNT = "currentAccount";
-export const NETWORK = "network";
-export const CONNECTED_DAPPS = "connectedDapps";
-
-export const SAVED_STATE_KEYS = [
+import {
   SOURCE,
   CURRENT_ACCOUNT,
   NETWORK,
   CONNECTED_DAPPS,
-];
+  SAVED_STATE_KEYS
+} from "../../storage";
+
 
 export type IWalletContext = {
   [SOURCE]: Screen;
@@ -46,7 +45,6 @@ export async function getSavedState(): Promise<IWalletContext> {
     }
   }
 
-  console.log("new state!", newState);
   return newState;
 }
 
