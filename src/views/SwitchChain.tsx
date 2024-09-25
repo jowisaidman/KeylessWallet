@@ -32,7 +32,9 @@ export const SwitchChain: FC<{
   const transactionContext =
     useContext<ITransactionContext>(TransactionContext);
 
-  const [networkToSwitch, setNetworkToSwitch] = useState<{ value: string; label: string; } | undefined>();
+  const [networkToSwitch, setNetworkToSwitch] = useState<
+    { value: string; label: string } | undefined
+  >();
 
   useEffect(() => {
     // If the origin is null we probably have a bug, to not leave the addon blank, we move back
@@ -41,25 +43,34 @@ export const SwitchChain: FC<{
     if (eventData == null) {
       changeScreen(Screen.Welcome);
     } else {
-        const chainIdToChange = eventData[0].chainId;
-        const network = networks.find((n) => convertToHex(n.value) == chainIdToChange);
-        if (network != null) {
-            setNetworkToSwitch(network);
-        } else {
-            sendResponse(new RpcError(RpcErrorCode.UnrecognizedChainId , "unssuported chain"));
-            changeScreen(Screen.Welcome);
-        }
+      const chainIdToChange = eventData[0].chainId;
+      const network = networks.find(
+        (n) => convertToHex(n.value) == chainIdToChange
+      );
+      if (network != null) {
+        setNetworkToSwitch(network);
+      } else {
+        sendResponse(
+          new RpcError(RpcErrorCode.UnrecognizedChainId, "unssuported chain")
+        );
+        changeScreen(Screen.Welcome);
+      }
     }
   }, []);
 
   async function back() {
-    sendResponse(new RpcError(RpcErrorCode.UserRejectedRequest, "user rejected the request"));
+    sendResponse(
+      new RpcError(
+        RpcErrorCode.UserRejectedRequest,
+        "user rejected the request"
+      )
+    );
     await changeScreen(Screen.Welcome);
   }
 
   async function ok() {
     await updateState((currentState) => {
-        currentState.network = networkToSwitch!;
+      currentState.network = networkToSwitch!;
       return currentState;
     });
     sendResponse(null);

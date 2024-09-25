@@ -85,7 +85,7 @@ window.addEventListener(
         break;
       }
       case RpcCall.EthSendTranasaction:
-      case RpcCall.WalletSwitchEthereumChain : {
+      case RpcCall.WalletSwitchEthereumChain: {
         let response: any = await chrome.runtime.sendMessage(
           new Command(BackgroundCommand.OpenPopup)
         );

@@ -38,7 +38,12 @@ export const AccountPermission: FC<{
   }, []);
 
   async function back() {
-    sendResponse(new RpcError(RpcErrorCode.UserRejectedRequest, "user rejected the request"));
+    sendResponse(
+      new RpcError(
+        RpcErrorCode.UserRejectedRequest,
+        "user rejected the request"
+      )
+    );
     await changeScreen(Screen.Welcome);
   }
 

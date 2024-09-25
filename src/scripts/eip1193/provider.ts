@@ -17,20 +17,20 @@ interface ProviderRpcError extends Error {
 }
 
 export class RpcError implements ProviderRpcError {
-    message: string;
+  message: string;
 
-    code: number;
+  code: number;
 
-    data?: unknown;
+  data?: unknown;
 
-    name: string;
+  name: string;
 
-    constructor(code: RpcErrorCode, message: string, data?: unknown) {
-        this.message = message;
-        this.code = code as number;
-        this.data = data;
-        this.name = RpcErrorCode[code as number];
-    }
+  constructor(code: RpcErrorCode, message: string, data?: unknown) {
+    this.message = message;
+    this.code = code as number;
+    this.data = data;
+    this.name = RpcErrorCode[code as number];
+  }
 }
 
 export enum RpcErrorCode {
