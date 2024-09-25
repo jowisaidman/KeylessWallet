@@ -128,6 +128,7 @@ class Provider implements Eip1193Provider {
     method: string,
     params?: Array<any> | Record<string, any>
   ): Promise<any> {
+      console.log("ee ", method, params);
     const p = { origin: window.origin, ...params };
     return this.dispatchEvent(new Command(method, p)).then((r: any) => {
       switch (method) {

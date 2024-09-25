@@ -56,19 +56,23 @@ const Popup = () => {
         console.log("popup", command);
         if (command != null) {
           switch (command.type) {
-            case RpcCall.EthRequestAccounts:
+            case RpcCall.WalletRequestPermissions:
+            case RpcCall.EthRequestAccounts: {
               sendResp = sendResponse;
               setEventData(command.data);
               changeScreen(Screen.AccountPermission);
               break;
-            case RpcCall.WalletSwitchEthereumChain:
+            }
+            case RpcCall.WalletSwitchEthereumChain: {
               sendResp = sendResponse;
               setEventData(command.data);
               changeScreen(Screen.SwitchChain);
               break;
-            default:
+            }
+            default: {
               changeScreen(Screen.Welcome);
               break;
+            }
           }
         } else {
           console.log("received null command");

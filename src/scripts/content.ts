@@ -64,6 +64,7 @@ window.addEventListener(
         dispatchResponseEvent(command, connectedAccounts);
         break;
       }
+      case RpcCall.WalletRequestPermissions:
       case RpcCall.EthRequestAccounts: {
         let connectedDapps = await getCurrentStateValue(CONNECTED_DAPPS);
         // TODO Check that the current account is the one that is trying to connect
@@ -77,6 +78,7 @@ window.addEventListener(
           let response: any = await chrome.runtime.sendMessage(
             new Command(BackgroundCommand.OpenPopup)
           );
+
           if (response.success) {
             let extensionResponse = await sendMessageToExtension(command);
             dispatchResponseEvent(command, extensionResponse);

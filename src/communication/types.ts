@@ -22,6 +22,7 @@ export enum RpcCall {
   NetVersion = "net_version",
   WalletRevokePermissions = "wallet_revokePermissions",
   WalletSwitchEthereumChain = "wallet_switchEthereumChain",
+  WalletRequestPermissions = "wallet_requestPermissions",
 }
 
 export enum BackgroundCommand {
