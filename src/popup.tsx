@@ -50,10 +50,8 @@ const Popup = () => {
   const [command, setCommand] = useState<Command | null>(null);
 
   useEffect(() => {
-    console.log("working?");
     chrome.runtime.onMessage.addListener(
       (command: Command | undefined, _sender, sendResponse) => {
-        console.log("popup", command);
         if (command != null) {
           switch (command.type) {
             case RpcCall.WalletRequestPermissions:
@@ -180,12 +178,11 @@ const Popup = () => {
 
 const container = document.getElementById("root")!;
 const root = createRoot(container);
-/*
+
 root.render(
   <React.StrictMode>
     <Popup />
   </React.StrictMode>
 );
-*/
 
-root.render(<Popup />);
+// root.render(<Popup />);
