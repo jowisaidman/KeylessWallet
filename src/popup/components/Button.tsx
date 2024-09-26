@@ -3,9 +3,9 @@ import React, { ButtonHTMLAttributes, FC, forwardRef } from "react";
 export interface IButtonProperties
   extends ButtonHTMLAttributes<HTMLButtonElement> {
   "data-testid"?: string;
-  size?: "lg" | "sm";
+  size?: "lg" | "sm" | "md";
   disabled?: boolean;
-  variant?: "primary" | "secondary";
+  variant?: "accent" | "primary" | "secondary" | "default";
   centered?: boolean;
 }
 
@@ -20,9 +20,9 @@ export const Button: FC<IButtonProperties> = forwardRef<
       className,
       disabled,
       onClick,
-      size = "sm",
+      size = "md",
       type = "button",
-      variant = "primary",
+      variant = "default",
       centered,
       ...rest
     },
@@ -30,26 +30,26 @@ export const Button: FC<IButtonProperties> = forwardRef<
   ) => {
     const variants = {
       parent: {
-        primary:
-          "active:outline-accent-hover-action outline-none bg-highlight text-on-highlight hover:bg-highlight/[.6]",
-        secondary:
-          "outline-default outline-width-[0.5px] bg-transparent outline-1 text-default hover:bg-white/[.1] active:outline-highlight",
+        accent: "btn-accent",
+        primary: "btn-primary",
+        secondary: "btn-secondary",
+        default: "",
       },
       sizes: {
-        sm: "px-3 py-1",
-        lg: "px-3 py-3",
+        sm: "btn-sm",
+        lg: "btn-lg",
+        md: "",
       },
     };
     return (
       <button
-        data-testid={dataTestId}
         disabled={disabled}
         onClick={onClick}
         type={type}
         ref={ref}
         className={[
           className,
-          "rounded-full active:outline-1 leading-snug transition-all text-base outline disabled:cursor-not-allowed !disabled:outline-none",
+          "btn",
           variants.parent[variant],
           variants.sizes[size],
         ].join(" ")}

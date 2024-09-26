@@ -4,6 +4,9 @@ import { LabelledButton } from "../components/LabelledButton";
 import { Button } from "../components/Button";
 import { Tabs, Tab } from "../components/Tabs";
 import { WalletContext, IWalletContext } from "../context/context";
+import NetworkSelector from "../components/NetworkSelector";
+import AccountLabel from "../components/AccountLabel";
+import ButtonIcon from "../components/ButtonIcon";
 import {
   watchAddress,
   changeScreen,
@@ -34,20 +37,27 @@ export const Welcome: FC<{ syncedWithStorage: boolean }> = ({
   }, [walletContext.currentAccount, walletContext.network]);
 
   return (
-    <div className="flex flex-col items-center gap-5 grow mt-5 pb-5 h-full">
-      <div className={`flex flex-col items-center justify-center`}>
+    <>
+      <div className="flex w-full p-2 justify-between">
+        <NetworkSelector
+          selectedChain={walletContext.network.value}
+          changeNetwork={changeNetwork}
+        />
+      </div>
+
+      <div className="flex flex-col items-center">
+        <AccountLabel label={walletContext.currentAccount?.address || "asd"} />
+        <div>
+          <ButtonIcon icon="clone" tooltip="Copy address" />
+          <ButtonIcon icon="share-square-o" tooltip="Share address" />
+          <ButtonIcon icon="search" tooltip="Open block explorer" />
+        </div>
+      </div>
+      <div className="flex flex-col items-center justify-center">
         <div className="text-primary font-bold">Network</div>
 
         {walletContext.network.label}
         {walletContext.network.value}
-
-        <Select
-          className="text-secondary"
-          id="networkSelector"
-          options={networks}
-          onChange={changeNetwork}
-          defaultValue={walletContext.network}
-        />
 
         <div className="text-primary font-bold">Account</div>
 
@@ -113,7 +123,7 @@ export const Welcome: FC<{ syncedWithStorage: boolean }> = ({
           </Tab>
         </Tabs>
       </div>
-    </div>
+    </>
   );
 };
 

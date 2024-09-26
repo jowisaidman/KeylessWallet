@@ -5,7 +5,7 @@ import {
   BackgroundCommand,
   RpcCall,
 } from "../communication";
-import {  IWalletContext } from "../popup/context/context";
+import { IWalletContext } from "../popup/context/context";
 import convertToHex from "../utils/convertToHex";
 import { NETWORK, CONNECTED_DAPPS } from "../storage";
 

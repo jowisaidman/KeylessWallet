@@ -10,6 +10,7 @@ import QrToRead from "./views/QrToRead";
 import SendToChain from "./views/SendToChain";
 import SwitchChain from "./views/SwitchChain";
 import Send from "./views/Send";
+import NetworkSelector from "./components/NetworkSelector";
 import { changeScreen, Screen, goToSignScreenWithQr } from "./navigation";
 import { Command, RpcCall } from "../communication";
 import {
@@ -18,12 +19,7 @@ import {
   getSavedState,
   DefaultContext,
 } from "./context/context";
-import {
-  SOURCE,
-  CURRENT_ACCOUNT,
-  NETWORK,
-  SAVED_STATE_KEYS,
-} from "../storage";
+import { SOURCE, CURRENT_ACCOUNT, NETWORK, SAVED_STATE_KEYS } from "../storage";
 import { TransactionContext, ITransactionContext } from "./context/transaction";
 
 // We set the sendResponse function from the chrome.runtime.addListener callback here to be able to
@@ -154,24 +150,7 @@ const Popup = () => {
     <WalletContext.Provider value={walletContext}>
       <TransactionContext.Provider value={transactionContext}>
         <div className="bg-default min-w-[390px] min-h-[600px] text-default flex flex-col text-sm">
-          <div className="flex py-2.5 bg-layer justify-between pl-3 pr-2">
-            <div className="flex">
-              <img src="/icon_nb_48.png" alt="Keyless logo" />
-              <div className="font-bold text-2xl mt-2 mb-2">&nbsp; Keyless</div>
-              <div className="text-center px-3 py-1 m-3 rounded-2xl text-[#66EFF0] bg-[#66EFF0]/[0.1]">
-                Alpha
-              </div>
-            </div>
-            <img
-              src="/close.svg"
-              alt="Close icon"
-              className="cursor-pointer"
-              onClick={() => window.close()}
-            />
-          </div>
-          <div className="flex flex-col grow justify-center items-center m-3 px-5">
-            {getScreen()}
-          </div>
+          {getScreen()}
         </div>
       </TransactionContext.Provider>
     </WalletContext.Provider>

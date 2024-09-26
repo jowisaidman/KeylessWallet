@@ -10,15 +10,16 @@ import {
   CURRENT_ACCOUNT,
   NETWORK,
   CONNECTED_DAPPS,
-  SAVED_STATE_KEYS
+  SAVED_STATE_KEYS,
 } from "../../storage";
-
 
 export type IWalletContext = {
   [SOURCE]: Screen;
   [CURRENT_ACCOUNT]?: {
     type: string;
     address: string;
+    avatar: string;
+    label?: string;
   };
   [NETWORK]: {
     value: string;
