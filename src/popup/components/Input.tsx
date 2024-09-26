@@ -16,7 +16,7 @@ export const Input = forwardRef<HTMLInputElement, IInput>((props, ref) => {
         type="text"
         placeholder={placeholder}
         ref={ref}
-        className="input w-full max-w-xs"
+        className="input input-bordered w-full max-w-xs"
       />
     </>
   );

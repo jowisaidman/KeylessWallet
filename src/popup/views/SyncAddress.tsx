@@ -25,11 +25,11 @@ export default () => {
 
   async function confirmAccount() {
     await updateState((currentState) => {
-      const label = accountLabel.current?.value;
+      const label = accountLabel.current?.value || "";
       currentState.currentAccount = {
         address: account!,
         type: "offline_wallet",
-        label,
+        label: label.trim().length === 0 ? undefined : label,
         avatar,
       };
       return currentState;
@@ -68,7 +68,7 @@ export default () => {
             subtitle="Check that the first and last digits are ok"
           />
           <AccountAvatar imageData={avatar} />
-          <AccountLabel label={account!} />
+          <AccountLabel account={account!} />
           <label className="form-control w-full max-w-xs">
             <Input
               label="Account name (optional)"
