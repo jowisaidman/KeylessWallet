@@ -35,7 +35,7 @@ export const NetworkSelector: FC<{
   return (
     <div className="dropdown" ref={dropdown}>
       <div tabIndex={0} role="button" className="btn btn-rounded m-1">
-        <img src={currentChain.icon} width="32px"></img>
+        <img src={currentChain.icon || "generic_chain.svg"} width="32px"></img>
         <label className="text-bold">{currentChain.label}</label>
       </div>
       <ul

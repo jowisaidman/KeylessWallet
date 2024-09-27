@@ -8,6 +8,7 @@ import NetworkSelector from "../components/NetworkSelector";
 import OptionsMenu from "../components/OptionsMenu";
 import AccountLabel from "../components/AccountLabel";
 import AccountAvatar from "../components/AccountAvatar";
+import EmptyState from "../components/EmptyState";
 import ButtonIcon from "../components/ButtonIcon";
 import {
   watchAddress,
@@ -102,8 +103,21 @@ export const Welcome: FC<{ syncedWithStorage: boolean }> = ({
           />
         </div>
         <Tabs>
-          <Tab label="Tokens">Token list</Tab>
-          <Tab label="History">Transaction history</Tab>
+          <Tab label="Tokens">
+            <EmptyState
+              icon="coins-line"
+              text="No balance yet"
+              subtext="To see your tokens you must add them"
+              actionText="Add tokens"
+            />
+          </Tab>
+          <Tab label="History">
+            <EmptyState
+              icon="file-paper-line"
+              text="No transactions yet"
+              subtext="This account did not performed any transaction yet"
+            />
+          </Tab>
         </Tabs>
       </div>
     </>
