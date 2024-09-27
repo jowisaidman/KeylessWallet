@@ -5,6 +5,7 @@ import { Button } from "../components/Button";
 import { Tabs, Tab } from "../components/Tabs";
 import { WalletContext, IWalletContext } from "../context/context";
 import NetworkSelector from "../components/NetworkSelector";
+import OptionsMenu from "../components/OptionsMenu";
 import AccountLabel from "../components/AccountLabel";
 import AccountAvatar from "../components/AccountAvatar";
 import ButtonIcon from "../components/ButtonIcon";
@@ -43,69 +44,66 @@ export const Welcome: FC<{ syncedWithStorage: boolean }> = ({
           selectedChain={walletContext.network.value}
           changeNetwork={changeNetwork}
         />
+        <OptionsMenu />
       </div>
 
       <div className="flex flex-col items-center">
         <div className="text-center">
-        <AccountAvatar
+          <AccountAvatar
             imageData={walletContext.currentAccount?.avatar || ""}
             className="mb-3"
-        />
-        <AccountLabel
+          />
+          <AccountLabel
             account={walletContext.currentAccount?.address || ""}
-            label={walletContext.currentAccount?.label|| ""}
+            label={walletContext.currentAccount?.label || ""}
             className="mb-2"
-        />
-        <div>
-          <ButtonIcon icon="clone" tooltip="Copy address" />
-          <ButtonIcon icon="share-square-o" tooltip="Share address" />
-          <ButtonIcon icon="search" tooltip="Open block explorer" />
-        </div>
+          />
+          <div className="flex justify-center">
+            <ButtonIcon
+              icon="file-copy-line"
+              tooltip="Copy address"
+              size="sm"
+            />
+            <ButtonIcon
+              icon="search-line"
+              tooltip="Open block explorer"
+              size="sm"
+            />
+          </div>
         </div>
       </div>
       <div className="flex flex-col items-center justify-center">
         <div className="font-bold text-3xl mt-3 mb-3">{balance} Eth</div>
 
         <div className="flex items-center space-x-3">
-          <LabelledButton
+          <ButtonIcon
             variant="primary"
-            centered
-            size="lg"
-            className="px-5"
+            size="md"
             label="Send"
-            onClick={async () => await changeScreen(Screen.Send)}
-          >
-            ↗
-          </LabelledButton>
-          <LabelledButton
+            tooltip="Send tokens"
+            icon="arrow-left-up-line"
+            onClick={() => changeScreen(Screen.Send)}
+          />
+          <ButtonIcon
             variant="primary"
-            centered
-            size="lg"
-            className="px-5"
+            size="md"
             label="Receive"
-          >
-            ↙
-          </LabelledButton>
-          <LabelledButton
+            tooltip="Show a QR of your address"
+            icon="arrow-left-down-line"
+            onClick={() => changeScreen(Screen.Send)}
+          />
+          <ButtonIcon
             variant="primary"
-            centered
-            size="lg"
-            className="px-5"
-            label="Sync Account"
-            onClick={async () => await changeScreen(Screen.SyncAddress)}
-          >
-            &#8634;
-          </LabelledButton>
+            size="md"
+            label="Resync"
+            icon="loop-right-line"
+            tooltip="Re-sync offline acount"
+            onClick={() => changeScreen(Screen.SyncAddress)}
+          />
         </div>
-        <br />
-
         <Tabs>
-          <Tab label="Tokens">
-            <div className="py-4">Token list</div>
-          </Tab>
-          <Tab label="History">
-            <div className="py-4">Transaction history</div>
-          </Tab>
+          <Tab label="Tokens">Token list</Tab>
+          <Tab label="History">Transaction history</Tab>
         </Tabs>
       </div>
     </>

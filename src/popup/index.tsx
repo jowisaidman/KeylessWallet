@@ -149,7 +149,7 @@ const Popup = () => {
   return (
     <WalletContext.Provider value={walletContext}>
       <TransactionContext.Provider value={transactionContext}>
-        <div className="bg-default min-w-[390px] min-h-[600px] text-default flex flex-col text-sm">
+        <div className="bg-default min-w-[390px] min-h-[600px] text-default flex flex-col">
           {getScreen()}
         </div>
       </TransactionContext.Provider>

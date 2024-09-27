@@ -1,7 +1,10 @@
 import React, { FC, useRef, useEffect } from "react";
 import DOMPurify from "dompurify";
 
-export const AccountAvatar: FC<{ imageData: string, className?: string }> = ({ imageData, className }) => {
+export const AccountAvatar: FC<{ imageData: string; className?: string }> = ({
+  imageData,
+  className,
+}) => {
   let container = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

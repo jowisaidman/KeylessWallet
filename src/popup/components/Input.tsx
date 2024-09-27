@@ -1,12 +1,12 @@
 import React, { FC, forwardRef } from "react";
 
 interface IInput {
-    label: string;
-    placeholder: string
+  label: string;
+  placeholder: string;
 }
 
 export const Input = forwardRef<HTMLInputElement, IInput>((props, ref) => {
-    const { label, placeholder } = props;
+  const { label, placeholder } = props;
   return (
     <>
       <div className="label">
