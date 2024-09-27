@@ -22,7 +22,9 @@ export const EmptyState: FC<IEmptyState> = ({
   <div className="flex flex-col justify-center items-center">
     <i className={`ri-${icon} text-6xl text-secondary`}></i>
     <div className="text-neutral font-bold text-2xl">{text}</div>
-    {subtext && <div className="text-primary-content text-center text-lg">{subtext}</div>}
+    {subtext && (
+      <div className="text-primary-content text-center text-lg">{subtext}</div>
+    )}
     {actionText && (
       <button
         className="btn btn-link text-accent text-lg no-underline"

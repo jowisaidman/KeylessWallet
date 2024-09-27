@@ -8,6 +8,9 @@ import {
 import { getTransaction } from "../transaction";
 import { WalletContext, IWalletContext } from "../context/context";
 import Loading from "../components/Loading";
+import AccountAvatar from "../components/AccountAvatar";
+import AccountLabel from "../components/AccountLabel";
+import Title from "../components/Title";
 import { changeScreen, Screen } from "../navigation";
 import { updateState } from "../context/context";
 import { RpcError, RpcErrorCode } from "../../scripts/eip1193/provider";
@@ -59,37 +62,51 @@ export const AccountPermission: FC<{
   }
 
   return (
-    <div className="flex flex-col items-center gap-5 grow px-5 h-full">
+    <div className="flex flex-col items-center gap-5 grow p-5 h-full justify-between">
       {eventData == null ? (
         <Loading />
       ) : (
         <>
-          <div className="text-primary font-bold text-2xl my-2">
-            Account Permission
-          </div>
-          <p>
-            The site {eventData.origin} is requesting permission to connect to{" "}
-            <br />
-            {walletContext.currentAccount?.address}
+          <Title title="Account Permission" />
+          <i className="ri-plug-line text-8xl text-secondary bg-base-300 rounded-full p-5"></i>
+          <p className="text-center text-lg">
+            The site{" "}
+            <span className="font-bold text-accent">{eventData.origin}</span> is
+            requesting permission access your accounts
           </p>
-          <div className="flex items-center space-x-3 items-end mt-auto mb-6">
-            <Button
-              onClick={back}
-              variant="secondary"
-              className="px-10"
-              centered
-              size="lg"
-            >
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Allow</th>
+                <th>Account</th>
+              </tr>
+            </thead>
+            <tr>
+              <th>
+                <label>
+                  <input type="checkbox" className="checkbox checkbox-primary checkbox-sm" />
+                </label>
+              </th>
+              <td>
+                <div className="flex items-center gap-3">
+                  <AccountAvatar
+                    imageData={walletContext.currentAccount?.avatar || ""}
+                    size="md"
+                  />
+                  <AccountLabel
+                    account={walletContext.currentAccount?.address || ""}
+                    label={walletContext.currentAccount?.label || ""}
+                  />
+                </div>
+              </td>
+            </tr>
+          </table>
+          <div className="flex items-center space-x-3 items-end mt-auto">
+            <Button onClick={back} className="px-10" centered>
               Cancel
             </Button>
-            <Button
-              onClick={ok}
-              variant="primary"
-              centered
-              className="px-10"
-              size="lg"
-            >
-              Ok
+            <Button onClick={ok} variant="primary" centered className="px-10">
+              Allow
             </Button>
           </div>
         </>

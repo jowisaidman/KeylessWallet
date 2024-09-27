@@ -82,7 +82,7 @@ export const Welcome: FC<{ syncedWithStorage: boolean }> = ({
             size="md"
             label="Send"
             tooltip="Send tokens"
-            icon="arrow-left-up-line"
+            icon="arrow-right-up-line"
             onClick={() => changeScreen(Screen.Send)}
           />
           <ButtonIcon

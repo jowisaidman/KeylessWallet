@@ -1,10 +1,20 @@
 import React, { FC, useRef, useEffect } from "react";
 import DOMPurify from "dompurify";
 
-export const AccountAvatar: FC<{ imageData: string; className?: string }> = ({
-  imageData,
-  className,
-}) => {
+interface IAccountAvatar {
+  imageData: string;
+  className?: string;
+  size?: "md" | "lg";
+}
+
+const variants = {
+  sizes: {
+    md: "w-6",
+    lg: "w-12",
+  },
+};
+
+export const AccountAvatar: FC<IAccountAvatar> = ({ imageData, className, size = "lg" }) => {
   let container = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -16,7 +26,7 @@ export const AccountAvatar: FC<{ imageData: string; className?: string }> = ({
   return (
     <div className={`avatar ${className || ""}`}>
       <div
-        className="ring-primary ring-offset-base-100 w-12 rounded-full ring ring-offset-2"
+        className={`ring-primary ring-offset-base-100 ${variants.sizes[size]} rounded-full ring ring-offset-2`}
         ref={container}
       ></div>
     </div>
