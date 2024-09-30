@@ -8,7 +8,7 @@ export const Title: FC<{ title: string; subtitle?: string }> = ({
     <div className="text-center my-2">
       <div className="text-neutral font-bold text-3xl">{title}</div>
       {subtitle && (
-        <div className="text-primary-content text-lg">{subtitle}</div>
+        <div className="text-neutral text-lg">{subtitle}</div>
       )}
     </div>
   );

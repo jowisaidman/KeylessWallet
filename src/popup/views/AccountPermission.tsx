@@ -72,7 +72,7 @@ export const AccountPermission: FC<{
           <p className="text-center text-lg">
             The site{" "}
             <span className="font-bold text-accent">{eventData.origin}</span> is
-            requesting permission access your accounts
+            requesting permission to access your accounts
           </p>
           <table className="table">
             <thead>
@@ -84,7 +84,7 @@ export const AccountPermission: FC<{
             <tr>
               <th>
                 <label>
-                  <input type="checkbox" className="checkbox checkbox-primary checkbox-sm" />
+                  <input type="checkbox" className="checkbox checkbox-primary checkbox-sm" checked disabled/>
                 </label>
               </th>
               <td>

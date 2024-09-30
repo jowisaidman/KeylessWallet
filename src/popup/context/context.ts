@@ -24,6 +24,7 @@ export type IWalletContext = {
   [NETWORK]: {
     value: string;
     label: string;
+    icon?: string;
   };
   [CONNECTED_DAPPS]: {
     [url: string]: string[];
