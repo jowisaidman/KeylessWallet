@@ -29,9 +29,7 @@ export const SwitchChain: FC<{
   const transactionContext =
     useContext<ITransactionContext>(TransactionContext);
 
-  const [networkToSwitch, setNetworkToSwitch] = useState<
-    Network | undefined
-  >();
+  const [networkToSwitch, setNetworkToSwitch] = useState<Network | undefined>();
 
   useEffect(() => {
     // If the origin is null we probably have a bug, to not leave the addon blank, we move back
@@ -82,14 +80,28 @@ export const SwitchChain: FC<{
         <>
           <Title title="Switch chain" />
           <div className="flex">
-            <img src={walletContext.network.icon || "generic_chain.svg"} width="64px"></img>
+            <img
+              src={walletContext.network.icon || "generic_chain.svg"}
+              width="64px"
+            ></img>
             <i className="ri-arrow-right-line text-8xl text-secondary p-5"></i>
-            <img src={networkToSwitch.icon || "generic_chain.svg"} width="64px"></img>
+            <img
+              src={networkToSwitch.icon || "generic_chain.svg"}
+              width="64px"
+            ></img>
           </div>
           <p className="text-center text-lg">
-            The site <span className="font-bold text-accent">{eventData.origin}</span> wants to switch
-            from <span className="font-bold text-accent">{walletContext.network.label}{" "}</span> to
-            <span className="font-bold text-accent">{" "}{networkToSwitch.label}</span>
+            The site{" "}
+            <span className="font-bold text-accent">{eventData.origin}</span>{" "}
+            wants to switch from{" "}
+            <span className="font-bold text-accent">
+              {walletContext.network.label}{" "}
+            </span>{" "}
+            to
+            <span className="font-bold text-accent">
+              {" "}
+              {networkToSwitch.label}
+            </span>
           </p>
           <div className="flex items-center space-x-3 items-end mt-auto">
             <Button onClick={back} className="px-10" centered>

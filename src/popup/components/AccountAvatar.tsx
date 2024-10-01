@@ -14,7 +14,11 @@ const variants = {
   },
 };
 
-export const AccountAvatar: FC<IAccountAvatar> = ({ imageData, className, size = "lg" }) => {
+export const AccountAvatar: FC<IAccountAvatar> = ({
+  imageData,
+  className,
+  size = "lg",
+}) => {
   let container = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

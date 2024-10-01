@@ -84,7 +84,12 @@ export const AccountPermission: FC<{
             <tr>
               <th>
                 <label>
-                  <input type="checkbox" className="checkbox checkbox-primary checkbox-sm" checked disabled/>
+                  <input
+                    type="checkbox"
+                    className="checkbox checkbox-primary checkbox-sm"
+                    checked
+                    disabled
+                  />
                 </label>
               </th>
               <td>

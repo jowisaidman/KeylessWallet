@@ -10,6 +10,7 @@ import QrToRead from "./views/QrToRead";
 import SendToChain from "./views/SendToChain";
 import SwitchChain from "./views/SwitchChain";
 import Send from "./views/Send";
+import SendReview from "./views/SendReview";
 import NetworkSelector from "./components/NetworkSelector";
 import { changeScreen, Screen, goToSignScreenWithQr } from "./navigation";
 import { Command, RpcCall } from "../communication";
@@ -118,6 +119,9 @@ const Popup = () => {
       }
       case Screen.Send: {
         return <Send />;
+      }
+      case Screen.SendReview: {
+        return <SendReview />;
       }
       case Screen.Loading: {
         return <Loading />;
