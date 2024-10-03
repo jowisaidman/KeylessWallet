@@ -1,14 +1,13 @@
 import { createContext } from "react";
 import { Screen } from "../navigation";
+import { EIP1559TransactionBuilder } from "../../utils/transaction";
 
 export type ITransactionContext = {
-  data: string | null;
-  setData: (data: string | null) => void;
+  transaction: EIP1559TransactionBuilder;
 };
 
 export const DefaultTransactionContext: ITransactionContext = {
-  data: null,
-  setData: (d) => {},
+  transaction: new EIP1559TransactionBuilder(),
 };
 
 export const TransactionContext = createContext<ITransactionContext>(

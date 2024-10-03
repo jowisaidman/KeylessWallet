@@ -5,6 +5,8 @@ import {
   ITransactionContext,
 } from "../context/transaction";
 import { QrReader } from "../components/QrReader";
+import ScreenContainer, { Footer } from "../components/ScreenContainer";
+import Title from "../components/Title";
 import { changeScreen, Screen } from "../navigation";
 
 export default () => {
@@ -16,35 +18,32 @@ export default () => {
   }
 
   function onScanSignature(signedTx: string) {
-    transactionContext.setData(signedTx);
-    changeScreen(Screen.SendToChain);
+    // transactionContext.setData(signedTx);
+    // changeScreen(Screen.SendToChain);
   }
 
   return (
-    <div className="flex flex-col items-center gap-5 grow pb-5 h-full justify-between">
-      <div className="text-center my-2">
-        <div className="text-primary font-bold text-2xl">
-          Scan the signed transaction
-        </div>
-        <div className="text-secondary">
-          Scan the QR code showed in the offline wallet to send the transaction
-          to chain
-        </div>
-      </div>
+    <ScreenContainer>
+      <Title title="Scan the signed transaction" />
 
+      <ul className="steps lg:steps-horizontal">
+        <li className="step step-primary font-bold">Choose&#10;&#13;Account</li>
+        <li className="step step-primary font-bold">Review</li>
+        <li className="step step-primary font-bold">Sign</li>
+        <li className="step step-primary font-bold">Send</li>
+      </ul>
+
+      <p className="text-neutral text-lg text-center">
+        Scan the QR code showed in the offline wallet to send the transaction to
+        chain
+      </p>
       <QrReader readInterval={500} onSuccess={onScanSignature} />
 
-      <div className="flex items-center space-x-3 items-end mb-1">
-        <Button
-          onClick={cancel}
-          variant="primary"
-          centered
-          className="px-10"
-          size="lg"
-        >
+      <Footer>
+        <Button onClick={cancel} centered>
           Cancel
         </Button>
-      </div>
-    </div>
+      </Footer>
+    </ScreenContainer>
   );
 };

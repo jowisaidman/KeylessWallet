@@ -13,27 +13,24 @@ export const Input = forwardRef<HTMLInputElement, IInput>((props, ref) => {
       <div className="label">
         <span className="label-text font-bold">{label}</span>
       </div>
-      {
-          insideLabel == null
-          ? (
-            <input
-                type="text"
-                placeholder={placeholder}
-                ref={ref}
-                className="input input-bordered w-full max-w-xs"
-              />
-          ) : (
-          <label className="input input-bordered flex items-center gap-2">
-              <input
-                type="text"
-                placeholder={placeholder}
-                ref={ref}
-                className="w-full max-w-xs"
-              />
-              { insideLabel }
-            </label>
-          )
-      }
+      {insideLabel == null ? (
+        <input
+          type="text"
+          placeholder={placeholder}
+          ref={ref}
+          className="input input-bordered w-full max-w-xs"
+        />
+      ) : (
+        <label className="input input-bordered flex items-center gap-2">
+          <input
+            type="text"
+            placeholder={placeholder}
+            ref={ref}
+            className="w-full max-w-xs"
+          />
+          {insideLabel}
+        </label>
+      )}
     </>
   );
 });

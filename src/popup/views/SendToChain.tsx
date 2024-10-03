@@ -11,13 +11,14 @@ import { changeScreen, Screen, watchTransaction } from "../navigation";
 import { sendToChain } from "../transaction";
 
 export default () => {
-  const transactionContext =
-    useContext<ITransactionContext>(TransactionContext);
+  // const transactionContext =
+  //  useContext<ITransactionContext>(TransactionContext);
   const walletContext = useContext<IWalletContext>(WalletContext);
 
   const [transactionSent, setTransactionSent] = useState<boolean>(false);
 
   useEffect(() => {
+    /*
     if (transactionContext.data != null) {
       sendToChain(transactionContext.data)
         .then(() => {
@@ -27,12 +28,13 @@ export default () => {
         .catch((e) => {
           console.log(e);
           setTransactionSent(true);
-        });
+        });}
     }
+        */
   }, []);
 
   function ok() {
-    transactionContext.setData(null);
+    // transactionContext.setData(null);
     changeScreen(Screen.Welcome);
   }
 
@@ -53,10 +55,10 @@ export default () => {
             className="mt-3"
             onClick={() => {
               console.log(walletContext);
-              watchTransaction(
-                transactionContext.data,
-                walletContext.network?.value
-              );
+              // watchTransaction(
+              //  transactionContext.data,
+              //  walletContext.network?.value
+              //);
             }}
           >
             View transaction
