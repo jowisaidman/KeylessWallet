@@ -3,7 +3,7 @@ import React, { FC, forwardRef } from "react";
 interface IInput {
   label: string;
   insideLabel?: string;
-  placeholder: string;
+  placeholder?: string;
 }
 
 export const Input = forwardRef<HTMLInputElement, IInput>((props, ref) => {

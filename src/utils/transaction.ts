@@ -1,3 +1,8 @@
+import { ethers } from "ethers";
+
+const SEPOLIA_NODE_URL = "https://ethereum-sepolia-rpc.publicnode.com";
+export let provider = new ethers.JsonRpcProvider(SEPOLIA_NODE_URL);
+
 export interface EIP1559Transaction {
   // The type field indicates that it's an EIP-1559 transaction (usually type 2).
   type: number; // Should be 2 for EIP-1559
@@ -125,4 +130,39 @@ export class EIP1559TransactionBuilder {
     // TypeScript will infer the types of the completed transaction due to the Partial type.
     return this.transaction as EIP1559Transaction;
   }
+}
+
+export type GasFee = {
+  maxFeePerGas: bigint;
+  masPriorityFeePerGas: bigint;
+};
+
+// Calculates the maxFeePerGas and the maxPriorityFeePerGas using the average of the 90th
+// percentile of the last 10 blocks
+export async function estimateGasFee(): Promise<GasFee> {
+  /*
+  // Query the blockchain (replace example parameters)
+  const history = await provider.feeHistory({
+    block_count: 10,
+    newest_block: "latest",
+    reward_percentiles: [90],
+  });
+
+  console.log(history);
+
+  let rewards = history.result.reward.map((r: string) => parseInt(r[0], 16));
+  let rewardsAvg = rewards.reduce((x: number, y: number) => x * y, 0) / rewards.length;
+
+  let baseFee = history.result.baseFeePerGas.map((b: string) => parseInt(b, 16));
+  let baseFeeAvg = baseFee.reduce((x: number, y: number) => x * y, 0) / baseFee.length;
+
+  console.log(rewards, rewardsAvg);
+  console.log(baseFee, baseFeeAvg);
+  */
+  let feeData = await provider.getFeeData();
+
+  return {
+    maxFeePerGas: feeData.maxFeePerGas!,
+    masPriorityFeePerGas: feeData.maxPriorityFeePerGas!,
+  };
 }

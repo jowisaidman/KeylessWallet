@@ -10,6 +10,7 @@ import Title from "../components/Title";
 import Loading from "../components/Loading";
 import { changeScreen, Screen } from "../navigation";
 import { getNextNonce } from "../transaction";
+import { estimateGasFee } from "../../utils/transaction";
 import ScreenContainer, { Footer } from "../components/ScreenContainer";
 import QRCode from "qrcode";
 
@@ -41,10 +42,11 @@ export default () => {
   async function buildQrToSing() {
     const canvas = document.getElementById("qr");
     const nonce = await getNextNonce(walletContext.currentAccount!.address);
+    console.log(await estimateGasFee());
     transactionContext.transaction.setNonce(nonce);
     transactionContext.transaction.setMaxPriorityFeePerGas("882358428");
     transactionContext.transaction.setMaxFeePerGas("42874510220");
-    transactionContext.transaction.setGasLimit("22000");
+    transactionContext.transaction.setGasLimit("21000");
     transactionContext.transaction.setData("0x");
 
     console.log(JSON.stringify(transactionContext.transaction));

@@ -4,7 +4,7 @@ interface IButtonIcon {
   icon: string;
   tooltip?: string;
   label?: string;
-  size?: "lg" | "md" | "sm";
+  size?: "lg" | "md" | "sm" | "xs";
   variant?: "accent" | "primary" | "secondary" | "default";
   onClick?: (...args: any[]) => any;
 }
@@ -17,11 +17,13 @@ const variants = {
     default: "",
   },
   sizes: {
+    xs: "btn-xs",
     sm: "btn-sm",
     lg: "btn-lg",
     md: "",
   },
   textSizes: {
+    xs: "text-sm",
     sm: "text-base",
     md: "text-lg",
     lg: "text-xl",

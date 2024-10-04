@@ -1,5 +1,7 @@
-import React, { useContext, useRef } from "react";
+import React, { useContext, useState, useRef, useEffect } from "react";
+import { ethers } from "ethers";
 import { Button } from "../components/Button";
+import ButtonIcon from "../components/ButtonIcon";
 import { Tabs, Tab } from "../components/Tabs";
 import {
   TransactionContext,
@@ -13,14 +15,32 @@ import ScreenContainer, { Footer } from "../components/ScreenContainer";
 import { getTransaction } from "../transaction";
 import { WalletContext, IWalletContext } from "../context/context";
 import { changeScreen, Screen } from "../navigation";
+import { estimateGasFee, GasFee } from "../../utils/transaction";
 
 export default () => {
   const walletContext = useContext<IWalletContext>(WalletContext);
   const transactionContext =
     useContext<ITransactionContext>(TransactionContext);
 
+  const [loadingFees, setLoadingFees] = useState(true);
+  const [fees, setFees] = useState<GasFee | null>(null);
+
   let addressTo = useRef<HTMLInputElement>(null);
   let valueToSend = useRef<HTMLInputElement>(null);
+
+  let feeModal = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    estimateGasFee().then((fees) => {
+      console.log(fees);
+      setFees(fees);
+      setLoadingFees(false);
+    });
+  }, []);
+
+  function openFeeModal() {
+    (feeModal.current as any)?.showModal();
+  }
 
   async function back() {
     await changeScreen(Screen.Welcome);
@@ -96,6 +116,22 @@ export default () => {
           insideLabel="ETH"
           ref={valueToSend}
         />
+        <div className="label">
+          <span className="label-text font-bold mt-2">Transaction Fee</span>
+        </div>
+
+        {loadingFees && <div className="skeleton h-5 w-full"></div>}
+        {!loadingFees && (
+          <div className="flex justify-between">
+            <label className="text-lg">
+              {ethers.formatUnits(fees!.maxFeePerGas, "ether")}
+            </label>
+            <label className="text-lg flex">
+              ETH{" "}
+              <ButtonIcon icon="pencil-line" onClick={openFeeModal} size="xs" />
+            </label>
+          </div>
+        )}
       </label>
       <Footer>
         <Button onClick={back} className="px-10" centered>
@@ -105,30 +141,63 @@ export default () => {
           Next
         </Button>
       </Footer>
+
+      <dialog id="my_modal_1" className="modal" ref={feeModal}>
+        <div className="modal-box">
+          <h3 className="font-bold text-lg">Change transaction fee</h3>
+
+          <div role="tablist" className="tabs tabs-boxed mt-3">
+            <a
+              role="tab"
+              className="tab tooltip tooltip-bottom"
+              data-tip="Slow"
+            >
+              <i className="ri-slow-down-line text-lg"></i>
+            </a>
+            <a
+              role="tab"
+              className="tab tab-active tooltip tooltip-bottom"
+              data-tip="Normal"
+            >
+              <i className="ri-timer-line text-lg"></i>
+            </a>
+            <a
+              role="tab"
+              className="tab tooltip tooltip-bottom"
+              data-tip="Fast"
+            >
+              <i className="ri-speed-up-line text-lg"></i>
+            </a>
+            <a
+              role="tab"
+              className="tab tooltip tooltip-bottom text-lg"
+              data-tip="Custom"
+            >
+              <i className="ri-question-mark"></i>
+            </a>
+          </div>
+          <div className="flex flex-col p-3">
+            <Input
+              label="Max base fee"
+              placeholder="2.35"
+              insideLabel="GWEI"
+              ref={valueToSend}
+            />
+            <Input
+              label="Priority tip"
+              placeholder="2.35"
+              insideLabel="GWEI"
+              ref={valueToSend}
+            />
+          </div>
+          <div className="modal-action">
+            <form method="dialog">
+              <button className="btn">Cancel</button>
+              <button className="btn btn-primary mx-2">Ok</button>
+            </form>
+          </div>
+        </div>
+      </dialog>
     </ScreenContainer>
   );
 };
-
-/*
- *
-      <ul className="menu bg-base-200 menu-horizontal rounded-box">
-        <li className="mx-2">
-          <a>
-            <i className="ri-slow-down-line"></i>
-            Slow
-          </a>
-        </li>
-        <li className="mx-2">
-          <a>
-            <i className="ri-timer-line"></i>
-            Normal
-          </a>
-        </li>
-        <li className="mx-2">
-          <a>
-            <i className="ri-speed-up-line"></i>
-            Fast
-          </a>
-        </li>
-      </ul>
-      */
