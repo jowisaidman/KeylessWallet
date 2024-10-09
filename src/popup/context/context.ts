@@ -5,11 +5,13 @@
 
 import { createContext } from "react";
 import { Screen } from "../navigation";
+import { TransactionItem } from "../../utils/transaction";
 import {
   SOURCE,
   CURRENT_ACCOUNT,
   NETWORK,
   CONNECTED_DAPPS,
+  TRANSACTION_HISTORY,
   SAVED_STATE_KEYS,
 } from "../../storage";
 
@@ -29,19 +31,23 @@ export type IWalletContext = {
   [CONNECTED_DAPPS]: {
     [url: string]: string[];
   };
+  [TRANSACTION_HISTORY]: {
+    [address: string]: TransactionItem[];
+  };
 };
 
 export const DefaultContext: IWalletContext = {
   [SOURCE]: Screen.Welcome,
   [NETWORK]: { value: "84532", label: "Base Sepolia" },
   [CONNECTED_DAPPS]: {},
+  [TRANSACTION_HISTORY]: {},
 };
 
 export async function getSavedState(): Promise<IWalletContext> {
   let newState = DefaultContext;
   let result = await chrome.storage.local.get(SAVED_STATE_KEYS);
   for (let key of SAVED_STATE_KEYS) {
-    console.log(key, result[key], newState[key as keyof IWalletContext]);
+    // console.log(key, result[key], newState[key as keyof IWalletContext]);
     if (result[key] != null) {
       newState[key as keyof IWalletContext] = result[key];
     }

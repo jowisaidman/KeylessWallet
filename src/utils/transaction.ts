@@ -1,8 +1,84 @@
-import { ethers } from "ethers";
+import { ethers, Transaction } from "ethers";
 
 const SEPOLIA_NODE_URL = "https://ethereum-sepolia-rpc.publicnode.com";
 const SEPOLIA_BASE_NODE_URL = "https://base-sepolia-rpc.publicnode.com";
 export let provider = new ethers.JsonRpcProvider(SEPOLIA_BASE_NODE_URL);
+
+// Status of the tx
+export enum TransactionItemStatus {
+  Successful,
+  Error,
+  Pending,
+}
+
+// Type of the tx
+export enum TransactionItemType {
+  // Native coin transfers
+  Common,
+  // ERC-20 transfers
+  Erc20,
+  // Dapp transaction
+  Dapp,
+}
+
+// This is the detail for common transactions. We will have other types, for example for ERC-20
+// transactions
+type TransactionItemDetail = {
+  to: string;
+  value: bigint;
+};
+
+// This is an item from a transaction performed with the plugin. We use this in the list of
+// performed transactions
+export interface TransactionItem {
+    date: number;
+
+  status: TransactionItemStatus;
+
+  hash: string;
+
+  type: TransactionItemType;
+
+  detail: TransactionItemDetail;
+}
+
+export class TransactionItemBuilder {
+  private item: Partial<TransactionItem> = {};
+
+  setStatus(status: TransactionItemStatus): TransactionItemBuilder {
+    this.item.status = status;
+    return this;
+  }
+
+  setDate(date: number): TransactionItemBuilder {
+    this.item.date = date;
+    return this;
+  }
+
+  setHash(hash: string): TransactionItemBuilder {
+    this.item.hash = hash;
+    return this;
+  }
+
+  setDetail(detail: TransactionItemDetail): TransactionItemBuilder {
+    this.item.type = TransactionItemType.Common;
+    this.item.detail = detail;
+    return this;
+  }
+
+  build(): TransactionItem {
+    if (
+      this.item.status != undefined &&
+      this.item.hash != undefined &&
+      this.item.type != undefined &&
+      this.item.detail != undefined
+    ) {
+      return this.item as TransactionItem;
+    } else {
+      throw new Error("a mandatory field is missing");
+    }
+  }
+}
 
 export interface EIP1559Transaction {
   // The type field indicates that it's an EIP-1559 transaction (usually type 2).
