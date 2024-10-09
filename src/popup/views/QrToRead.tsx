@@ -18,8 +18,8 @@ export default () => {
   }
 
   function onScanSignature(signedTx: string) {
-    // transactionContext.setData(signedTx);
-    // changeScreen(Screen.SendToChain);
+    transactionContext.signedTransaction = signedTx;
+    changeScreen(Screen.SendToChain);
   }
 
   return (

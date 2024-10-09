@@ -17,23 +17,48 @@ import { WalletContext, IWalletContext } from "../context/context";
 import { changeScreen, Screen } from "../navigation";
 import { estimateGasFee, GasFee } from "../../utils/transaction";
 
+enum FeeConfiguration {
+  Slow,
+  Normal,
+  Fast,
+  Custom,
+}
+
 export default () => {
   const walletContext = useContext<IWalletContext>(WalletContext);
   const transactionContext =
     useContext<ITransactionContext>(TransactionContext);
 
   const [loadingFees, setLoadingFees] = useState(true);
-  const [fees, setFees] = useState<GasFee | null>(null);
+
+  // This feees are the ones returned from the node
+  const [fees, setFees] = useState<GasFee>({
+    maxFeePerGas: BigInt(0),
+    maxPriorityFeePerGas: BigInt(0),
+  });
+
+  // At the beginning they are the same as fees state, but they can change if the user selects
+  // other few configuration from the modal
+  const [configuredFees, setConfiguredFees] = useState<GasFee>({
+    maxFeePerGas: BigInt(0),
+    maxPriorityFeePerGas: BigInt(0),
+  });
+
+  const [feeConfiguration, setFeeConfiguration] = useState<FeeConfiguration>(
+    FeeConfiguration.Normal
+  );
 
   let addressTo = useRef<HTMLInputElement>(null);
   let valueToSend = useRef<HTMLInputElement>(null);
+  let maxFee = useRef<HTMLInputElement>(null);
+  let priorityFee = useRef<HTMLInputElement>(null);
 
   let feeModal = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
     estimateGasFee().then((fees) => {
-      console.log(fees);
       setFees(fees);
+      setConfiguredFees(fees);
       setLoadingFees(false);
     });
   }, []);
@@ -50,12 +75,81 @@ export default () => {
     const addressToValue = addressTo.current?.value;
     const valueToSendValue = valueToSend.current?.value;
     if (addressToValue != null && valueToSendValue != null) {
-      transactionContext.transaction.setValue(valueToSendValue);
+      transactionContext.transaction.setValue(
+        String(ethers.parseUnits(valueToSendValue, "ether"))
+      );
       transactionContext.transaction.setTo(addressToValue);
       transactionContext.transaction.setChainId(
         Number(walletContext.network.value)
       );
+      transactionContext.transaction.setMaxFeePerGas(
+        String(configuredFees.maxFeePerGas)
+      );
+      transactionContext.transaction.setMaxPriorityFeePerGas(
+        String(configuredFees.maxPriorityFeePerGas)
+      );
+      transactionContext.transaction.setGasLimit("21000");
+      transactionContext.transaction.setData("0x");
       await changeScreen(Screen.SendReview);
+    }
+  }
+
+  // Gets fee estimation based on the fee configuration
+  function getFeeEstimation(): GasFee {
+    switch (feeConfiguration) {
+      case FeeConfiguration.Slow:
+        return {
+          maxFeePerGas: (fees.maxFeePerGas * BigInt(80)) / BigInt(100),
+          maxPriorityFeePerGas:
+            (fees.maxPriorityFeePerGas * BigInt(80)) / BigInt(100),
+        };
+      case FeeConfiguration.Fast:
+        return {
+          maxFeePerGas: (fees.maxFeePerGas * BigInt(120)) / BigInt(100),
+          maxPriorityFeePerGas:
+            (fees.maxPriorityFeePerGas * BigInt(120)) / BigInt(100),
+        };
+      case FeeConfiguration.Normal:
+      case FeeConfiguration.Custom:
+      default:
+        return {
+          maxFeePerGas: fees.maxFeePerGas,
+          maxPriorityFeePerGas: fees.maxPriorityFeePerGas,
+        };
+    }
+  }
+
+  useEffect(() => {
+    if (maxFee.current != null && priorityFee.current != null) {
+      const estimation = getFeeEstimation();
+      maxFee.current!.value = ethers.formatUnits(
+        estimation.maxFeePerGas,
+        "gwei"
+      );
+      priorityFee.current!.value = ethers.formatUnits(
+        estimation.maxPriorityFeePerGas,
+        "gwei"
+      );
+    }
+  }, [feeConfiguration]);
+
+  // Sets the fee configuration
+  function changeFeesConfiguration() {
+    if (maxFee.current != null && priorityFee.current != null) {
+      setConfiguredFees({
+        maxFeePerGas: BigInt(
+          ethers.formatUnits(
+            ethers.parseUnits(maxFee.current.value, "gwei"),
+            "wei"
+          )
+        ),
+        maxPriorityFeePerGas: BigInt(
+          ethers.formatUnits(
+            ethers.parseUnits(priorityFee.current.value, "gwei"),
+            "wei"
+          )
+        ),
+      });
     }
   }
 
@@ -124,7 +218,7 @@ export default () => {
         {!loadingFees && (
           <div className="flex justify-between">
             <label className="text-lg">
-              {ethers.formatUnits(fees!.maxFeePerGas, "ether")}
+              {ethers.formatUnits(configuredFees.maxFeePerGas, "ether")}
             </label>
             <label className="text-lg flex">
               ETH{" "}
@@ -137,67 +231,115 @@ export default () => {
         <Button onClick={back} className="px-10" centered>
           Cancel
         </Button>
-        <Button onClick={send} variant="primary" centered className="px-10">
+        <Button
+          onClick={send}
+          variant="primary"
+          centered
+          className="px-10"
+          disabled={loadingFees}
+        >
           Next
         </Button>
       </Footer>
 
-      <dialog id="my_modal_1" className="modal" ref={feeModal}>
-        <div className="modal-box">
-          <h3 className="font-bold text-lg">Change transaction fee</h3>
+      {!loadingFees && (
+        <dialog id="my_modal_1" className="modal" ref={feeModal}>
+          <div className="modal-box">
+            <h3 className="font-bold text-lg">Change transaction fee</h3>
 
-          <div role="tablist" className="tabs tabs-boxed mt-3">
-            <a
-              role="tab"
-              className="tab tooltip tooltip-bottom"
-              data-tip="Slow"
-            >
-              <i className="ri-slow-down-line text-lg"></i>
-            </a>
-            <a
-              role="tab"
-              className="tab tab-active tooltip tooltip-bottom"
-              data-tip="Normal"
-            >
-              <i className="ri-timer-line text-lg"></i>
-            </a>
-            <a
-              role="tab"
-              className="tab tooltip tooltip-bottom"
-              data-tip="Fast"
-            >
-              <i className="ri-speed-up-line text-lg"></i>
-            </a>
-            <a
-              role="tab"
-              className="tab tooltip tooltip-bottom text-lg"
-              data-tip="Custom"
-            >
-              <i className="ri-question-mark"></i>
-            </a>
+            <div role="tablist" className="tabs tabs-boxed mt-3">
+              <a
+                role="tab"
+                className={`tab tooltip tooltip-bottom ${
+                  feeConfiguration == FeeConfiguration.Slow ? "tab-active" : ""
+                }`}
+                data-tip="Slow"
+                onClick={() => {
+                  setFeeConfiguration(FeeConfiguration.Slow);
+                }}
+              >
+                <i className="ri-slow-down-line text-lg"></i>
+              </a>
+              <a
+                role="tab"
+                className={`tab tooltip tooltip-bottom ${
+                  feeConfiguration == FeeConfiguration.Normal
+                    ? "tab-active"
+                    : ""
+                }`}
+                data-tip="Normal"
+                onClick={() => {
+                  setFeeConfiguration(FeeConfiguration.Normal);
+                }}
+              >
+                <i className="ri-timer-line text-lg"></i>
+              </a>
+              <a
+                role="tab"
+                className={`tab tooltip tooltip-bottom ${
+                  feeConfiguration == FeeConfiguration.Fast ? "tab-active" : ""
+                }`}
+                data-tip="Fast"
+                onClick={() => {
+                  setFeeConfiguration(FeeConfiguration.Fast);
+                }}
+              >
+                <i className="ri-speed-up-line text-lg"></i>
+              </a>
+              <a
+                role="tab"
+                className={`tab tooltip tooltip-bottom ${
+                  feeConfiguration == FeeConfiguration.Custom
+                    ? "tab-active"
+                    : ""
+                }`}
+                data-tip="Custom"
+                onClick={() => {
+                  setFeeConfiguration(FeeConfiguration.Custom);
+                  maxFee.current?.focus();
+                }}
+              >
+                <i className="ri-question-mark"></i>
+              </a>
+            </div>
+            <div className="flex flex-col p-3">
+              <Input
+                label="Max base fee"
+                insideLabel="GWEI"
+                className="text-neutral"
+                ref={maxFee}
+                defaultValue={ethers.formatUnits(
+                  configuredFees.maxFeePerGas,
+                  "gwei"
+                )}
+                disabled={feeConfiguration != FeeConfiguration.Custom}
+              />
+              <Input
+                label="Priority tip"
+                insideLabel="GWEI"
+                className="text-neutral mt-2"
+                ref={priorityFee}
+                defaultValue={ethers.formatUnits(
+                  configuredFees.maxPriorityFeePerGas,
+                  "gwei"
+                )}
+                disabled={feeConfiguration != FeeConfiguration.Custom}
+              />
+            </div>
+            <div className="modal-action">
+              <form method="dialog">
+                <button className="btn">Cancel</button>
+                <button
+                  className="btn btn-primary mx-2"
+                  onClick={changeFeesConfiguration}
+                >
+                  Ok
+                </button>
+              </form>
+            </div>
           </div>
-          <div className="flex flex-col p-3">
-            <Input
-              label="Max base fee"
-              placeholder="2.35"
-              insideLabel="GWEI"
-              ref={valueToSend}
-            />
-            <Input
-              label="Priority tip"
-              placeholder="2.35"
-              insideLabel="GWEI"
-              ref={valueToSend}
-            />
-          </div>
-          <div className="modal-action">
-            <form method="dialog">
-              <button className="btn">Cancel</button>
-              <button className="btn btn-primary mx-2">Ok</button>
-            </form>
-          </div>
-        </div>
-      </dialog>
+        </dialog>
+      )}
     </ScreenContainer>
   );
 };

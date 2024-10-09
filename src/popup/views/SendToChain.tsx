@@ -11,30 +11,26 @@ import { changeScreen, Screen, watchTransaction } from "../navigation";
 import { sendToChain } from "../transaction";
 
 export default () => {
-  // const transactionContext =
-  //  useContext<ITransactionContext>(TransactionContext);
+  const transactionContext =
+    useContext<ITransactionContext>(TransactionContext);
   const walletContext = useContext<IWalletContext>(WalletContext);
 
   const [transactionSent, setTransactionSent] = useState<boolean>(false);
 
   useEffect(() => {
-    /*
-    if (transactionContext.data != null) {
-      sendToChain(transactionContext.data)
+    if (transactionContext.signedTransaction != null) {
+        console.log(transactionContext.signedTransaction);
+      sendToChain(transactionContext.signedTransaction)
         .then(() => {
-          console.log("success");
           setTransactionSent(true);
         })
         .catch((e) => {
-          console.log(e);
           setTransactionSent(true);
-        });}
+        });
     }
-        */
   }, []);
 
   function ok() {
-    // transactionContext.setData(null);
     changeScreen(Screen.Welcome);
   }
 

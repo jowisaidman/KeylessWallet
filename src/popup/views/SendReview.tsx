@@ -1,4 +1,5 @@
 import React, { useContext, useEffect } from "react";
+import { ethers } from "ethers";
 import { Button } from "../components/Button";
 import { Tabs, Tab } from "../components/Tabs";
 import {
@@ -21,7 +22,6 @@ export default () => {
     useContext<ITransactionContext>(TransactionContext);
 
   useEffect(() => {
-    console.log("TNT");
     if (transactionContext.transaction.preview().to == null) {
       changeScreen(Screen.Welcome);
     }
@@ -119,7 +119,46 @@ export default () => {
             </th>
             <td>
               <label className="font-bold text-lg">
-                {transactionContext.transaction.preview().value}
+                {ethers.formatUnits(
+                  String(transactionContext.transaction.preview().value),
+                  "ether"
+                )}{" "}
+                ETH
+              </label>
+            </td>
+          </tr>
+          <tr>
+            <th>
+              <div className="label">
+                <span className="label-text font-bold">Max fee</span>
+              </div>
+            </th>
+            <td>
+              <label className="text-lg">
+                {ethers.formatUnits(
+                  String(transactionContext.transaction.preview().maxFeePerGas),
+                  "ether"
+                )}{" "}
+                ETH
+              </label>
+            </td>
+          </tr>
+          <tr>
+            <th>
+              <div className="label">
+                <span className="label-text font-bold">Priority Fee</span>
+              </div>
+            </th>
+            <td>
+              <label className="text-lg">
+                {ethers.formatUnits(
+                  String(
+                    transactionContext.transaction.preview()
+                      .maxPriorityFeePerGas
+                  ),
+                  "ether"
+                )}{" "}
+                ETH
               </label>
             </td>
           </tr>
