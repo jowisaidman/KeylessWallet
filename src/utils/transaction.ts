@@ -25,15 +25,17 @@ export enum TransactionItemType {
 // transactions
 type TransactionItemDetail = {
   to: string;
-  value: bigint;
+  value: string;
 };
 
 // This is an item from a transaction performed with the plugin. We use this in the list of
 // performed transactions
 export interface TransactionItem {
-    date: number;
+  date: number;
 
   status: TransactionItemStatus;
+
+  direction: "incoming" | "outgoing";
 
   hash: string;
 
@@ -63,6 +65,11 @@ export class TransactionItemBuilder {
   setDetail(detail: TransactionItemDetail): TransactionItemBuilder {
     this.item.type = TransactionItemType.Common;
     this.item.detail = detail;
+    return this;
+  }
+
+  setDirection(direction: "incoming" | "outgoing"): TransactionItemBuilder {
+    this.item.direction = direction;
     return this;
   }
 

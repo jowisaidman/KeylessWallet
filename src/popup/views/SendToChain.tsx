@@ -31,10 +31,16 @@ export default () => {
       console.log(transactionContext.signedTransaction);
       const decodedTx = Transaction.from(transactionContext.signedTransaction);
 
+      console.log(decodedTx);
+
       const transactionItem = new TransactionItemBuilder()
         .setHash(decodedTx.hash!)
         .setDate(Date.now())
-        .setDetail({ to: decodedTx.to!, value: decodedTx.value });
+        .setDirection("outgoing")
+        .setDetail({
+          to: transactionContext.transaction.preview().to!,
+          value: transactionContext.transaction.preview().value!,
+        });
 
       sendToChain(transactionContext.signedTransaction)
         .then(() => {
