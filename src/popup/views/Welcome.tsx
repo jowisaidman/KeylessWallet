@@ -110,31 +110,21 @@ export const Welcome: FC<{}> = ({}) => {
             onClick={() => changeScreen(Screen.SyncAddress)}
           />
         </div>
-        <Tabs>
-          <Tab label="Tokens">
-            <EmptyState
-              icon="coins-line"
-              text="No balance yet"
-              subtext="To see your tokens you must add them"
-              actionText="Add tokens"
+        <div className="bg-base-200 border-base-300 overflow-y-auto rounded-box my-4 h-full w-[90%]">
+          {getTrasactionHistory() != null ? (
+            <TransactionHistory
+              transactions={getTrasactionHistory()!}
+              explorerUrl={walletContext.network.explorerUrls.hash}
             />
-          </Tab>
-          <Tab label="History">
-            {getTrasactionHistory() != null ? (
-              <TransactionHistory
-                transactions={getTrasactionHistory()!}
-                explorerUrl={walletContext.network.explorerUrls.hash}
-              />
-            ) : (
-              <EmptyState
-                icon="file-paper-line"
-                text="No transactions yet"
-                subtext="This account did not performed any transaction yet"
-                className="p-6"
-              />
-            )}
-          </Tab>
-        </Tabs>
+          ) : (
+            <EmptyState
+              icon="file-paper-line"
+              text="No transactions yet"
+              subtext={`This account did not performed any transaction on ${walletContext.network.label} yet`}
+              className="p-6"
+            />
+          )}
+        </div>
       </div>
     </>
   );

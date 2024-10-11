@@ -19,10 +19,17 @@ export const WrappedRow: FC<IWrappedRow> = ({
 }) => {
   if (transaction.status === TransactionItemStatus.Successful) {
     return (
-      <a href={explorerUrl.replace("<hash>", transaction.hash)}>{children}</a>
+      <tr
+        className="cursor-pointer"
+        onClick={() =>
+          window.open(explorerUrl.replace("<hash>", transaction.hash), "_blank")
+        }
+      >
+        {children}
+      </tr>
     );
   } else {
-    return children;
+    return <tr>{children}</tr>;
   }
 };
 
@@ -34,43 +41,42 @@ interface ITransactionHistory {
 export const TransactionHistory: FC<ITransactionHistory> = ({
   transactions,
   explorerUrl,
-}) => {
-  function getBadge(transaction: TransactionItem) {
-    if (transaction.status !== TransactionItemStatus.Successful) {
-      return <div className="badge badge-outline badge-success">Sent</div>;
-    } else {
-      return <div className="badge badge-outline badge-error">Error</div>;
-    }
-  }
-
-  return (
-    <table className="table">
-      <tbody>
-        {transactions.reverse().map((t) => (
-          <WrappedRow transaction={t} explorerUrl={explorerUrl}>
-            <tr>
-              <td>
-                <div className="mask mask-squircle bg-base-300 h-12 w-12 flex justify-center items-center">
-                  <i className="ri-arrow-right-up-line font-bold text-3xl"></i>
-                </div>
-              </td>
-              <td>
-                <div>
-                  {new Date(t.date).toLocaleDateString()}{" "}
-                  {new Date(t.date).toLocaleTimeString()}
-                </div>
-                <AccountLabel account={t.detail.to} />
-                <div className="font-bold text-lg">
-                  {ethers.formatUnits(t.detail.value, "ether")} ETH
-                </div>
-              </td>
-              <th>{getBadge(t)}</th>
-            </tr>
-          </WrappedRow>
-        ))}
-      </tbody>
-    </table>
-  );
-};
+}) => (
+  <table className="table">
+    <tbody>
+      {transactions.reverse().map((t) => (
+        <WrappedRow transaction={t} explorerUrl={explorerUrl}>
+          <td>
+            <div className="mask mask-squircle bg-base-300 h-12 w-12 flex justify-center items-center">
+              <i className="ri-arrow-right-up-line font-bold text-3xl"></i>
+            </div>
+          </td>
+          <td>
+            <div>
+              {new Date(t.date).toLocaleDateString()}{" "}
+              {new Date(t.date).toLocaleTimeString()}
+            </div>
+            <AccountLabel account={t.detail.to} />
+            <div className="font-bold text-lg">
+              {ethers.formatUnits(t.detail.value, "ether")} ETH
+            </div>
+            {t.status === TransactionItemStatus.Error ? (
+              <p>Error: {t.detail.error || "Unkwnown error"} </p>
+            ) : (
+              <></>
+            )}
+          </td>
+          <th>
+            {t.status === TransactionItemStatus.Successful ? (
+              <div className="badge badge-outline badge-success">Sent</div>
+            ) : (
+              <div className="badge badge-outline badge-error">Error</div>
+            )}
+          </th>
+        </WrappedRow>
+      ))}
+    </tbody>
+  </table>
+);
 
 export default TransactionHistory;

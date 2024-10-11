@@ -17,6 +17,7 @@ import {
   TransactionItemBuilder,
   TransactionItemStatus,
   TransactionItem,
+  TransactionItemDetail,
 } from "../../utils/transaction";
 
 export default () => {
@@ -31,20 +32,26 @@ export default () => {
       const decodedTx = Transaction.from(transactionContext.signedTransaction);
 
       const chainId = transactionContext.transaction.preview().chainId!;
+
+      let detail: TransactionItemDetail = {
+        to: transactionContext.transaction.preview().to!,
+        value: transactionContext.transaction.preview().value!,
+      };
+
       const transactionItem = new TransactionItemBuilder()
         .setHash(decodedTx.hash!)
         .setDate(Date.now())
-        .setDirection("outgoing")
-        .setDetail({
-          to: transactionContext.transaction.preview().to!,
-          value: transactionContext.transaction.preview().value!,
-        });
+        .setDirection("outgoing");
 
       sendToChain(transactionContext.signedTransaction)
-        .then(() => {
-          const txItem = transactionItem
-            .setStatus(TransactionItemStatus.Successful)
-            .build();
+        .then((receipt) => {
+          if (receipt.error != null) {
+            transactionItem.setStatus(TransactionItemStatus.Error);
+            detail.error = receipt.error.message;
+          } else {
+            transactionItem.setStatus(TransactionItemStatus.Successful);
+          }
+          const txItem = transactionItem.setDetail(detail).build();
 
           addTransactionItem(txItem, chainId).then(() =>
             changeScreen(Screen.Welcome)
@@ -52,8 +59,10 @@ export default () => {
         })
         .catch((e) => {
           console.log("there was an error sending the transaction", e);
+          detail.error = "Unknown error";
           const txItem = transactionItem
             .setStatus(TransactionItemStatus.Error)
+            .setDetail(detail)
             .build();
 
           addTransactionItem(txItem, chainId).then(() =>

@@ -23,7 +23,7 @@ export enum TransactionItemType {
 
 // This is the detail for common transactions. We will have other types, for example for ERC-20
 // transactions
-type TransactionItemDetail = {
+export type TransactionItemDetail = {
   to: string;
   value: string;
   error?: string;

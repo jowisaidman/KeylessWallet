@@ -37,9 +37,9 @@ export async function sendToChain(signedTransaction: string) {
 
   try {
     let receipt = await fetch(node_url, requestOptions);
-    console.log(`txn receipt`, await receipt.text());
+    return JSON.parse(await receipt.text());
   } catch (e) {
-    console.log(`Error sending tx to chain ${e}`);
+    throw e;
   }
 }
 
