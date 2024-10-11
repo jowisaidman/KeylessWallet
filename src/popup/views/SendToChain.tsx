@@ -30,6 +30,7 @@ export default () => {
     if (transactionContext.signedTransaction != null) {
       const decodedTx = Transaction.from(transactionContext.signedTransaction);
 
+      const chainId = transactionContext.transaction.preview().chainId!;
       const transactionItem = new TransactionItemBuilder()
         .setHash(decodedTx.hash!)
         .setDate(Date.now())
@@ -45,7 +46,9 @@ export default () => {
             .setStatus(TransactionItemStatus.Successful)
             .build();
 
-          addTransactionItem(txItem).then(() => changeScreen(Screen.Welcome));
+          addTransactionItem(txItem, chainId).then(() =>
+            changeScreen(Screen.Welcome)
+          );
         })
         .catch((e) => {
           console.log("there was an error sending the transaction", e);
@@ -53,21 +56,32 @@ export default () => {
             .setStatus(TransactionItemStatus.Error)
             .build();
 
-          addTransactionItem(txItem).then(() => changeScreen(Screen.Welcome));
+          addTransactionItem(txItem, chainId).then(() =>
+            changeScreen(Screen.Welcome)
+          );
         });
     } else {
       changeScreen(Screen.Welcome);
     }
   }, []);
 
-  async function addTransactionItem(txItem: TransactionItem) {
+  async function addTransactionItem(txItem: TransactionItem, chainId: number) {
     const currentAccount = walletContext.currentAccount!.address;
     return await updateState((currentState) => {
       if (currentState.transactionHistory[currentAccount] == null) {
-        currentState.transactionHistory[currentAccount] = [txItem];
+        currentState.transactionHistory[currentAccount] = {
+          [chainId]: [txItem],
+        };
+      } else if (
+        currentState.transactionHistory[currentAccount][chainId] == null
+      ) {
+        currentState.transactionHistory[currentAccount][chainId] = [txItem];
       } else {
-        currentState.transactionHistory[currentAccount].push(txItem);
+        currentState.transactionHistory[currentAccount][chainId].unshift(
+          txItem
+        );
       }
+
       return currentState;
     });
   }

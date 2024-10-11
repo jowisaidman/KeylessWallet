@@ -13,6 +13,7 @@ import EmptyState from "../components/EmptyState";
 import ButtonIcon from "../components/ButtonIcon";
 import { changeScreen, Screen, changeNetwork } from "../navigation";
 import { getBalance, sendToChain } from "../transaction";
+import { TransactionItem } from "../../utils/transaction";
 import { networks } from "../networks";
 import Select from "react-select";
 
@@ -31,6 +32,19 @@ export const Welcome: FC<{}> = ({}) => {
       getBalance(walletContext.currentAccount?.address).then(setBalance);
     }
   }, [walletContext.currentAccount, walletContext.network]);
+
+  function getTrasactionHistory(): TransactionItem[] | null {
+    let address = walletContext.currentAccount!.address;
+    let chainId = Number(walletContext.network.value);
+    if (
+      walletContext.transactionHistory[address] == null ||
+      walletContext.transactionHistory[address][chainId] == null
+    ) {
+      return null;
+    } else {
+      return walletContext.transactionHistory[address][chainId];
+    }
+  }
 
   return (
     <>
@@ -106,15 +120,9 @@ export const Welcome: FC<{}> = ({}) => {
             />
           </Tab>
           <Tab label="History">
-            {walletContext.transactionHistory[
-              walletContext.currentAccount!.address
-            ] != null ? (
+            {getTrasactionHistory() != null ? (
               <TransactionHistory
-                transactions={
-                  walletContext.transactionHistory[
-                    walletContext.currentAccount!.address
-                  ]
-                }
+                transactions={getTrasactionHistory()!}
                 explorerUrl={walletContext.network.explorerUrls.hash}
               />
             ) : (
@@ -122,6 +130,7 @@ export const Welcome: FC<{}> = ({}) => {
                 icon="file-paper-line"
                 text="No transactions yet"
                 subtext="This account did not performed any transaction yet"
+                className="p-6"
               />
             )}
           </Tab>

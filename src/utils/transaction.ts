@@ -26,6 +26,7 @@ export enum TransactionItemType {
 type TransactionItemDetail = {
   to: string;
   value: string;
+  error?: string;
 };
 
 // This is an item from a transaction performed with the plugin. We use this in the list of

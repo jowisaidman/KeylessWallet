@@ -29,7 +29,9 @@ export type IWalletContext = {
     [url: string]: string[];
   };
   [TRANSACTION_HISTORY]: {
-    [address: string]: TransactionItem[];
+    [address: string]: {
+      [chainId: number]: TransactionItem[];
+    };
   };
 };
 
