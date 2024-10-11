@@ -5,6 +5,7 @@
 
 import { createContext } from "react";
 import { Screen } from "../navigation";
+import { Network, networks } from "../networks";
 import { TransactionItem } from "../../utils/transaction";
 import {
   SOURCE,
@@ -23,11 +24,7 @@ export type IWalletContext = {
     avatar: string;
     label?: string;
   };
-  [NETWORK]: {
-    value: string;
-    label: string;
-    icon?: string;
-  };
+  [NETWORK]: Network;
   [CONNECTED_DAPPS]: {
     [url: string]: string[];
   };
@@ -38,7 +35,7 @@ export type IWalletContext = {
 
 export const DefaultContext: IWalletContext = {
   [SOURCE]: Screen.Welcome,
-  [NETWORK]: { value: "84532", label: "Base Sepolia" },
+  [NETWORK]: networks[0],
   [CONNECTED_DAPPS]: {},
   [TRANSACTION_HISTORY]: {},
 };

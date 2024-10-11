@@ -10,7 +10,7 @@ import { Tabs, Tab } from "../components/Tabs";
 import Loading from "../components/Loading";
 import Title from "../components/Title";
 import ScreenContainer, { Footer } from "../components/ScreenContainer";
-import { changeScreen, Screen, watchTransaction } from "../navigation";
+import { changeScreen, Screen } from "../navigation";
 import { sendToChain } from "../transaction";
 import { updateState } from "../context/context";
 import {
@@ -28,10 +28,7 @@ export default () => {
 
   useEffect(() => {
     if (transactionContext.signedTransaction != null) {
-      console.log(transactionContext.signedTransaction);
       const decodedTx = Transaction.from(transactionContext.signedTransaction);
-
-      console.log(decodedTx);
 
       const transactionItem = new TransactionItemBuilder()
         .setHash(decodedTx.hash!)
@@ -45,7 +42,7 @@ export default () => {
       sendToChain(transactionContext.signedTransaction)
         .then(() => {
           const txItem = transactionItem
-            .setStatus(TransactionItemStatus.Pending)
+            .setStatus(TransactionItemStatus.Successful)
             .build();
 
           addTransactionItem(txItem).then(() => changeScreen(Screen.Welcome));

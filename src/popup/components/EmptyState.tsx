@@ -10,6 +10,8 @@ interface IEmptyState {
   actionText?: string;
 
   onClickAction?: () => any;
+
+  className?: string;
 }
 
 export const EmptyState: FC<IEmptyState> = ({
@@ -18,8 +20,9 @@ export const EmptyState: FC<IEmptyState> = ({
   subtext,
   actionText,
   onClickAction,
+  className,
 }) => (
-  <div className="flex flex-col justify-center items-center">
+  <div className={`flex flex-col justify-center items-center ${className}`}>
     <i className={`ri-${icon} text-6xl text-secondary`}></i>
     <div className="text-neutral font-bold text-2xl">{text}</div>
     {subtext && (

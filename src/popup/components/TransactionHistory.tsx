@@ -1,47 +1,76 @@
 import React, { FC } from "react";
-import { TransactionItem } from "../../utils/transaction";
+import { ethers } from "ethers";
+import AccountLabel from "./AccountLabel";
+import {
+  TransactionItem,
+  TransactionItemStatus,
+} from "../../utils/transaction";
 
-export const TransactionHistory: FC<{ transactions: TransactionItem[] }> = ({
-  transactions,
+interface IWrappedRow {
+  transaction: TransactionItem;
+  explorerUrl: string;
+  children: any;
+}
+
+export const WrappedRow: FC<IWrappedRow> = ({
+  transaction,
+  explorerUrl,
+  children,
 }) => {
+  if (transaction.status === TransactionItemStatus.Successful) {
+    return (
+      <a href={explorerUrl.replace("<hash>", transaction.hash)}>{children}</a>
+    );
+  } else {
+    return children;
+  }
+};
+
+interface ITransactionHistory {
+  transactions: TransactionItem[];
+  explorerUrl: string;
+}
+
+export const TransactionHistory: FC<ITransactionHistory> = ({
+  transactions,
+  explorerUrl,
+}) => {
+  function getBadge(transaction: TransactionItem) {
+    if (transaction.status !== TransactionItemStatus.Successful) {
+      return <div className="badge badge-outline badge-success">Sent</div>;
+    } else {
+      return <div className="badge badge-outline badge-error">Error</div>;
+    }
+  }
+
   return (
     <table className="table">
       <tbody>
-        <tr>
-          <th>
-            <label>
-              <input type="checkbox" className="checkbox" />
-            </label>
-          </th>
-          <td>
-            <div className="flex items-center gap-3">
-              <div className="avatar">
-                <div className="mask mask-squircle h-12 w-12">
-                  <img
-                    src="https://img.daisyui.com/images/profile/demo/2@94.webp"
-                    alt="Avatar Tailwind CSS Component"
-                  />
+        {transactions.reverse().map((t) => (
+          <WrappedRow transaction={t} explorerUrl={explorerUrl}>
+            <tr>
+              <td>
+                <div className="mask mask-squircle bg-base-300 h-12 w-12 flex justify-center items-center">
+                  <i className="ri-arrow-right-up-line font-bold text-3xl"></i>
                 </div>
-              </div>
-              <div>
-                <div className="font-bold">Hart Hagerty</div>
-                <div className="text-sm opacity-50">United States</div>
-              </div>
-            </div>
-          </td>
-          <td>
-            Zemlak, Daniel and Leannon
-            <br />
-            <span className="badge badge-ghost badge-sm">
-              Desktop Support Technician
-            </span>
-          </td>
-          <td>Purple</td>
-          <th>
-            <button className="btn btn-ghost btn-xs">details</button>
-          </th>
-        </tr>
+              </td>
+              <td>
+                <div>
+                  {new Date(t.date).toLocaleDateString()}{" "}
+                  {new Date(t.date).toLocaleTimeString()}
+                </div>
+                <AccountLabel account={t.detail.to} />
+                <div className="font-bold text-lg">
+                  {ethers.formatUnits(t.detail.value, "ether")} ETH
+                </div>
+              </td>
+              <th>{getBadge(t)}</th>
+            </tr>
+          </WrappedRow>
+        ))}
       </tbody>
     </table>
   );
 };
+
+export default TransactionHistory;

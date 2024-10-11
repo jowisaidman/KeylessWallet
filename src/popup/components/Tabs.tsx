@@ -44,7 +44,7 @@ export const Tabs: FC<ITabsProperties> = ({ children }) => {
       {children.map((child: any) => {
         if (child.props.label === activeTab) {
           return (
-            <div className="bg-base-200 border-base-300 rounded-box p-6 my-2 w-full">
+            <div className="bg-base-200 border-base-300 rounded-box my-2 w-full">
               {child.props.children}
             </div>
           );

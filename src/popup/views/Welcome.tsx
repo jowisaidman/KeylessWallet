@@ -5,35 +5,29 @@ import { Button } from "../components/Button";
 import { Tabs, Tab } from "../components/Tabs";
 import { WalletContext, IWalletContext } from "../context/context";
 import NetworkSelector from "../components/NetworkSelector";
+import TransactionHistory from "../components/TransactionHistory";
 import OptionsMenu from "../components/OptionsMenu";
 import AccountLabel from "../components/AccountLabel";
 import AccountAvatar from "../components/AccountAvatar";
 import EmptyState from "../components/EmptyState";
 import ButtonIcon from "../components/ButtonIcon";
-import {
-  watchAddress,
-  changeScreen,
-  Screen,
-  changeNetwork,
-} from "../navigation";
+import { changeScreen, Screen, changeNetwork } from "../navigation";
 import { getBalance, sendToChain } from "../transaction";
 import { networks } from "../networks";
 import Select from "react-select";
 
-export const Welcome: FC<{ syncedWithStorage: boolean }> = ({
-  syncedWithStorage,
-}) => {
+export const Welcome: FC<{}> = ({}) => {
   const walletContext = useContext<IWalletContext>(WalletContext);
   const [balance, setBalance] = useState<string>();
 
   useEffect(() => {
-    if (syncedWithStorage && walletContext.currentAccount == null) {
+    if (walletContext.currentAccount == null) {
       changeScreen(Screen.SyncAddress);
     }
   }, [walletContext]);
 
   useEffect(() => {
-    if (syncedWithStorage && walletContext.currentAccount != null) {
+    if (walletContext.currentAccount != null) {
       getBalance(walletContext.currentAccount?.address).then(setBalance);
     }
   }, [walletContext.currentAccount, walletContext.network]);
@@ -112,11 +106,24 @@ export const Welcome: FC<{ syncedWithStorage: boolean }> = ({
             />
           </Tab>
           <Tab label="History">
-            <EmptyState
-              icon="file-paper-line"
-              text="No transactions yet"
-              subtext="This account did not performed any transaction yet"
-            />
+            {walletContext.transactionHistory[
+              walletContext.currentAccount!.address
+            ] != null ? (
+              <TransactionHistory
+                transactions={
+                  walletContext.transactionHistory[
+                    walletContext.currentAccount!.address
+                  ]
+                }
+                explorerUrl={walletContext.network.explorerUrls.hash}
+              />
+            ) : (
+              <EmptyState
+                icon="file-paper-line"
+                text="No transactions yet"
+                subtext="This account did not performed any transaction yet"
+              />
+            )}
           </Tab>
         </Tabs>
       </div>

@@ -11,7 +11,6 @@ import SendToChain from "./views/SendToChain";
 import SwitchChain from "./views/SwitchChain";
 import Send from "./views/Send";
 import SendReview from "./views/SendReview";
-import NetworkSelector from "./components/NetworkSelector";
 import { changeScreen, Screen, goToSignScreenWithQr } from "./navigation";
 import { Command, RpcCall } from "../communication";
 import {
@@ -97,13 +96,16 @@ const Popup = () => {
   useEffect(() => {
     chrome.storage.local.get(SAVED_STATE_KEYS, (result) => {
       console.log(2, result);
-      setWalletContext({ ...result } as IWalletContext);
+      if (Object.keys(result).length === 0) {
+        setWalletContext(DefaultContext);
+      } else {
+        setWalletContext({ ...result } as IWalletContext);
+      }
       setSyncedWithStorage(true);
     });
   }, []);
 
   function getScreen() {
-    console.log(walletContext?.source);
     switch (walletContext?.source) {
       case Screen.SyncAddress: {
         return <SyncAddress />;
@@ -145,7 +147,7 @@ const Popup = () => {
         );
       }
       default: {
-        return <Welcome syncedWithStorage={syncedWithStorage} />;
+        return <Welcome />;
       }
     }
   }
@@ -154,7 +156,15 @@ const Popup = () => {
     <WalletContext.Provider value={walletContext}>
       <TransactionContext.Provider value={transactionContext}>
         <div className="bg-default min-w-[390px] min-h-[600px] text-default flex flex-col">
-          {getScreen()}
+          {syncedWithStorage ? (
+            walletContext.currentAccount != null ? (
+              getScreen()
+            ) : (
+              <SyncAddress />
+            )
+          ) : (
+            <Loading />
+          )}
         </div>
       </TransactionContext.Provider>
     </WalletContext.Provider>
