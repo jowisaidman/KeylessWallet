@@ -230,3 +230,9 @@ export async function estimateGasFee(): Promise<GasFee> {
     maxPriorityFeePerGas: feeData.maxPriorityFeePerGas!,
   };
 }
+
+export async function estimateGasLimit(transaction: object): Promise<bigint> {
+  // Estimate the gas required for the transaction
+  const gasEstimate = await provider.estimateGas(transaction);
+  return gasEstimate;
+}

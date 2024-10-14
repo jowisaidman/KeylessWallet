@@ -34,7 +34,6 @@ export const SwitchChain: FC<{
   useEffect(() => {
     // If the origin is null we probably have a bug, to not leave the addon blank, we move back
     // to welcome
-    console.log("la data", eventData);
     if (eventData == null) {
       changeScreen(Screen.Welcome);
     } else {

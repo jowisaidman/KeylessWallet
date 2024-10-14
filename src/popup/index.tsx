@@ -9,8 +9,10 @@ import QrToSign from "./views/QrToSign";
 import QrToRead from "./views/QrToRead";
 import SendToChain from "./views/SendToChain";
 import SwitchChain from "./views/SwitchChain";
+import DappTxReview from "./views/DappTxReview";
 import Send from "./views/Send";
 import SendReview from "./views/SendReview";
+import QrToSignDapp from "./views/QrToSignDapp";
 import { changeScreen, Screen, goToSignScreenWithQr } from "./navigation";
 import { Command, RpcCall } from "../communication";
 import {
@@ -51,6 +53,7 @@ const Popup = () => {
     chrome.runtime.onMessage.addListener(
       (command: Command | undefined, _sender, sendResponse) => {
         if (command != null) {
+          console.log("received command", command);
           switch (command.type) {
             case RpcCall.WalletRequestPermissions:
             case RpcCall.EthRequestAccounts: {
@@ -63,6 +66,11 @@ const Popup = () => {
               sendResp = sendResponse;
               setEventData(command.data);
               changeScreen(Screen.SwitchChain);
+              break;
+            }
+            case RpcCall.EthSendTranasaction: {
+              transactionContext.dappTransactionEvent = command;
+              changeScreen(Screen.DappTxReview);
               break;
             }
             default: {
@@ -127,6 +135,12 @@ const Popup = () => {
       }
       case Screen.Loading: {
         return <Loading />;
+      }
+      case Screen.DappTxReview: {
+        return <DappTxReview />;
+      }
+      case Screen.QrToSignDapp: {
+        return <QrToSignDapp />;
       }
       case Screen.AccountPermission: {
         return (

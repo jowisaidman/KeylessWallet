@@ -110,7 +110,7 @@ export const Welcome: FC<{}> = ({}) => {
             onClick={() => changeScreen(Screen.SyncAddress)}
           />
         </div>
-        <div className="bg-base-200 border-base-300 overflow-y-auto rounded-box my-4 h-full w-[90%]">
+        <div className="bg-base-200 border-base-300 overflow-y-auto rounded-box my-4 w-[90%]">
           {getTrasactionHistory() != null ? (
             <TransactionHistory
               transactions={getTrasactionHistory()!}

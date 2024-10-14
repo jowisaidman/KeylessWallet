@@ -16,6 +16,8 @@ export const enum Screen {
   SendReview = "send_review",
   SwitchChain = "switch_chain",
   Loading = "loading",
+  DappTxReview = "dapp_tx_review",
+  QrToSignDapp = "qr_to_sign_dapp",
 }
 
 export async function changeNetwork(network: Network) {
