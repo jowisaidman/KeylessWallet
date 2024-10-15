@@ -20,17 +20,8 @@ export const enum Screen {
   QrToSignDapp = "qr_to_sign_dapp",
 }
 
-export async function changeNetwork(network: Network) {
-  console.log("changeNetwork", network);
-  await updateState((currentState) => {
-    currentState.network = network;
-    return currentState;
-  });
-}
-
 export async function changeScreen(screen: Screen) {
   await updateState((currentState) => {
-    console.log("=>", currentState);
     currentState.source = screen;
     return currentState;
   });

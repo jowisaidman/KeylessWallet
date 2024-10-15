@@ -123,7 +123,7 @@ export default () => {
                   String(transactionContext.transaction.preview().value),
                   "ether"
                 )}{" "}
-                ETH
+                {walletContext.network.unitNames[0]}
               </label>
             </td>
           </tr>
@@ -139,7 +139,7 @@ export default () => {
                   String(transactionContext.transaction.preview().maxFeePerGas),
                   "ether"
                 )}{" "}
-                ETH
+                {walletContext.network.unitNames[0]}
               </label>
             </td>
           </tr>
@@ -158,7 +158,7 @@ export default () => {
                   ),
                   "ether"
                 )}{" "}
-                ETH
+                {walletContext.network.unitNames[0]}
               </label>
             </td>
           </tr>

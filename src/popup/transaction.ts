@@ -43,12 +43,6 @@ export async function sendToChain(signedTransaction: string) {
   }
 }
 
-// Returns the balance in ethers
-export async function getBalance(account: string): Promise<string> {
-  const balance = await provider.getBalance(account);
-  return ethers.formatUnits(balance, "ether").substring(0, 6);
-}
-
 export async function getNextNonce(account: string): Promise<number> {
   return await provider.getTransactionCount(account);
 }

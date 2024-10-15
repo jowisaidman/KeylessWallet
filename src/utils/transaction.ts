@@ -236,3 +236,11 @@ export async function estimateGasLimit(transaction: object): Promise<bigint> {
   const gasEstimate = await provider.estimateGas(transaction);
   return gasEstimate;
 }
+
+// Returns the balance in ethers
+export async function getBalance(
+  account: string,
+  provider: ethers.JsonRpcProvider
+): Promise<bigint> {
+  return await provider.getBalance(account);
+}

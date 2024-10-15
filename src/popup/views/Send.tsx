@@ -207,7 +207,7 @@ export default () => {
         <Input
           label="Amount"
           placeholder="2.35"
-          insideLabel="ETH"
+          insideLabel={walletContext.network.unitNames[0]}
           ref={valueToSend}
         />
         <div className="label">
@@ -221,7 +221,7 @@ export default () => {
               {ethers.formatUnits(configuredFees.maxFeePerGas, "ether")}
             </label>
             <label className="text-lg flex">
-              ETH{" "}
+              {walletContext.network.unitNames[0]}
               <ButtonIcon icon="pencil-line" onClick={openFeeModal} size="xs" />
             </label>
           </div>
@@ -305,7 +305,7 @@ export default () => {
             <div className="flex flex-col p-3">
               <Input
                 label="Max base fee"
-                insideLabel="GWEI"
+                insideLabel={walletContext.network.unitNames[1]}
                 className="text-neutral"
                 ref={maxFee}
                 defaultValue={ethers.formatUnits(
@@ -316,7 +316,7 @@ export default () => {
               />
               <Input
                 label="Priority tip"
-                insideLabel="GWEI"
+                insideLabel={walletContext.network.unitNames[1]}
                 className="text-neutral mt-2"
                 ref={priorityFee}
                 defaultValue={ethers.formatUnits(

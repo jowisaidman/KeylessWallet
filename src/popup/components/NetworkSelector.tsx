@@ -1,6 +1,5 @@
 import React, { FC, useEffect, useState, useRef } from "react";
 import { Network, networks } from "../networks";
-import { changeNetwork } from "../navigation";
 
 const NetworkItem: FC<{ icon: string; label: string; onClick: () => any }> = ({
   icon,
@@ -18,7 +17,7 @@ const NetworkItem: FC<{ icon: string; label: string; onClick: () => any }> = ({
 export const NetworkSelector: FC<{
   selectedChain: string;
   changeNetwork: (n: Network) => any;
-}> = ({ selectedChain }) => {
+}> = ({ selectedChain, changeNetwork }) => {
   let [currentChain, setCurrentChain] = useState<Network>(networks[1]);
   let dropdown = useRef<HTMLDivElement>(null);
 

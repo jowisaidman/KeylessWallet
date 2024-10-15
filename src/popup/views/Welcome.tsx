@@ -11,15 +11,20 @@ import AccountLabel from "../components/AccountLabel";
 import AccountAvatar from "../components/AccountAvatar";
 import EmptyState from "../components/EmptyState";
 import ButtonIcon from "../components/ButtonIcon";
-import { changeScreen, Screen, changeNetwork } from "../navigation";
-import { getBalance, sendToChain } from "../transaction";
-import { TransactionItem } from "../../utils/transaction";
-import { networks } from "../networks";
-import Select from "react-select";
+import { changeScreen, Screen } from "../navigation";
+import { getBalance, TransactionItem } from "../../utils/transaction";
+import { networks, changeNetwork } from "../networks";
+import { ethers } from "ethers";
+import {
+  TransactionContext,
+  ITransactionContext,
+} from "../context/transaction";
 
 export const Welcome: FC<{}> = ({}) => {
   const walletContext = useContext<IWalletContext>(WalletContext);
-  const [balance, setBalance] = useState<string>();
+  const ephemeralContext = useContext<ITransactionContext>(TransactionContext);
+
+  const [loadingBalance, setLoadingBalance] = useState<boolean>(true);
 
   useEffect(() => {
     if (walletContext.currentAccount == null) {
@@ -29,9 +34,23 @@ export const Welcome: FC<{}> = ({}) => {
 
   useEffect(() => {
     if (walletContext.currentAccount != null) {
-      getBalance(walletContext.currentAccount?.address).then(setBalance);
+      ephemeralContext.rpcProvider = new ethers.JsonRpcProvider(
+        walletContext.network.rpcEndpoints[0]
+      );
+      setLoadingBalance(true);
+      getBalance(
+        walletContext.currentAccount?.address,
+        ephemeralContext.rpcProvider
+      ).then((b) => {
+        ephemeralContext.currentBalance = b;
+        setLoadingBalance(false);
+      });
     }
-  }, [walletContext.currentAccount, walletContext.network]);
+  }, [
+    walletContext.currentAccount,
+    walletContext.network,
+    ephemeralContext.rpcProvider,
+  ]);
 
   function getTrasactionHistory(): TransactionItem[] | null {
     let address = walletContext.currentAccount!.address;
@@ -82,7 +101,16 @@ export const Welcome: FC<{}> = ({}) => {
         </div>
       </div>
       <div className="flex flex-col items-center justify-center">
-        <div className="font-bold text-3xl mt-3 mb-3">{balance} Eth</div>
+        {loadingBalance ? (
+          <div className="skeleton h-8 w-28 m-3"></div>
+        ) : (
+          <div className="font-bold text-3xl m-3">
+            {ethers
+              .formatUnits(ephemeralContext.currentBalance, "ether")
+              .substring(0, 6)}{" "}
+            {walletContext.network.unitNames[0]}
+          </div>
+        )}
 
         <div className="flex items-center space-x-3">
           <ButtonIcon
@@ -115,6 +143,7 @@ export const Welcome: FC<{}> = ({}) => {
             <TransactionHistory
               transactions={getTrasactionHistory()!}
               explorerUrl={walletContext.network.explorerUrls.hash}
+              chainUnit={walletContext.network.unitNames[0]}
             />
           ) : (
             <EmptyState

@@ -35,11 +35,13 @@ export const WrappedRow: FC<IWrappedRow> = ({
 
 interface ITransactionHistory {
   transactions: TransactionItem[];
+  chainUnit: string;
   explorerUrl: string;
 }
 
 export const TransactionHistory: FC<ITransactionHistory> = ({
   transactions,
+  chainUnit,
   explorerUrl,
 }) => (
   <table className="table">
@@ -58,7 +60,7 @@ export const TransactionHistory: FC<ITransactionHistory> = ({
             </div>
             <AccountLabel account={t.detail.to} />
             <div className="font-bold text-lg">
-              {ethers.formatUnits(t.detail.value, "ether")} ETH
+              {ethers.formatUnits(t.detail.value, "ether")} {chainUnit}
             </div>
             {t.status === TransactionItemStatus.Error ? (
               <p>Error: {t.detail.error || "Unkwnown error"} </p>

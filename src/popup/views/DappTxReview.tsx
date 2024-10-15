@@ -31,7 +31,8 @@ export default () => {
     } else {
       estimateGasLimit(transactionContext.dappTransactionEvent!.data[0]).then(
         (r) => {
-          transactionContext.dappTransactionEvent!.data[0].gasLimit = r.toString();
+          transactionContext.dappTransactionEvent!.data[0].gasLimit =
+            r.toString();
           setEstimatingGasLimit(false);
         }
       );
