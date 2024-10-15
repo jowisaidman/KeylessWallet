@@ -46,7 +46,7 @@ export const TransactionHistory: FC<ITransactionHistory> = ({
 }) => (
   <table className="table">
     <tbody>
-      {transactions.reverse().map((t) => (
+      {transactions.map((t) => (
         <WrappedRow transaction={t} explorerUrl={explorerUrl}>
           <td>
             <div className="mask mask-squircle bg-base-300 h-12 w-12 flex justify-center items-center">

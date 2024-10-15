@@ -20,11 +20,14 @@ import {
   ITransactionContext,
 } from "../context/transaction";
 
+const COPY_ADDRESS_TOOLTIP_TEXT = "Copy address";
+
 export const Welcome: FC<{}> = ({}) => {
   const walletContext = useContext<IWalletContext>(WalletContext);
   const ephemeralContext = useContext<ITransactionContext>(TransactionContext);
 
   const [loadingBalance, setLoadingBalance] = useState<boolean>(true);
+  const [copyAddressTooltip, setCopyAddressTooltip] = useState<string>(COPY_ADDRESS_TOOLTIP_TEXT);
 
   useEffect(() => {
     if (walletContext.currentAccount == null) {
@@ -37,20 +40,26 @@ export const Welcome: FC<{}> = ({}) => {
       ephemeralContext.rpcProvider = new ethers.JsonRpcProvider(
         walletContext.network.rpcEndpoints[0]
       );
-      setLoadingBalance(true);
-      getBalance(
-        walletContext.currentAccount?.address,
-        ephemeralContext.rpcProvider
-      ).then((b) => {
-        ephemeralContext.currentBalance = b;
-        setLoadingBalance(false);
-      });
+      refreshBalance();
     }
   }, [
     walletContext.currentAccount,
     walletContext.network,
     ephemeralContext.rpcProvider,
   ]);
+
+  function refreshBalance() {
+    if (walletContext.currentAccount != null && ephemeralContext.rpcProvider != null) {
+      setLoadingBalance(true);
+      getBalance(
+        walletContext.currentAccount!.address,
+        ephemeralContext.rpcProvider
+      ).then((b) => {
+        ephemeralContext.currentBalance = b;
+        setLoadingBalance(false);
+      });
+    }
+  }
 
   function getTrasactionHistory(): TransactionItem[] | null {
     let address = walletContext.currentAccount!.address;
@@ -62,6 +71,26 @@ export const Welcome: FC<{}> = ({}) => {
       return null;
     } else {
       return walletContext.transactionHistory[address][chainId];
+    }
+  }
+
+  function openAddressInExplorer() {
+    if (walletContext.currentAccount != null) {
+      window.open(
+        walletContext.network.explorerUrls.address.replace(
+          "<address>",
+          walletContext.currentAccount!.address
+        ),
+        "_blank"
+      );
+    }
+  }
+
+  function copyAddress() {
+    if (walletContext.currentAccount != null) {
+      navigator.clipboard.writeText(walletContext.currentAccount!.address);
+      setCopyAddressTooltip("Address copied!");
+      setTimeout(() => setCopyAddressTooltip(COPY_ADDRESS_TOOLTIP_TEXT), 3000);
     }
   }
 
@@ -89,12 +118,20 @@ export const Welcome: FC<{}> = ({}) => {
           <div className="flex justify-center">
             <ButtonIcon
               icon="file-copy-line"
-              tooltip="Copy address"
+              tooltip={copyAddressTooltip}
+              onClick={copyAddress}
               size="sm"
             />
             <ButtonIcon
               icon="search-line"
               tooltip="Open block explorer"
+              onClick={openAddressInExplorer}
+              size="sm"
+            />
+            <ButtonIcon
+              icon="refresh-line"
+              tooltip="Refresh balance"
+              onClick={refreshBalance}
               size="sm"
             />
           </div>
