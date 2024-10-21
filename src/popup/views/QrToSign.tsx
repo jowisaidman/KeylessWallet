@@ -11,21 +11,20 @@ import Loading from "../components/Loading";
 import EmptyState from "../components/EmptyState";
 import Qr from "../components/Qr";
 import { changeScreen, Screen } from "../navigation";
-import { getNextNonce } from "../transaction";
-import { estimateGasFee } from "../../utils/transaction";
+import { getNextNonce, estimateGasFee } from "../../utils/transaction";
 import ScreenContainer, { Footer } from "../components/ScreenContainer";
 import QRCode from "qrcode";
 
 export default () => {
   const walletContext = useContext<IWalletContext>(WalletContext);
-  const transactionContext =
+  const ephemeralContext =
     useContext<ITransactionContext>(TransactionContext);
 
   let [dataToSign, setDataToSign] = useState<string | null>(null);
   let [dataTooLong, setDataTooLong] = useState<boolean>(false);
 
   useEffect(() => {
-    if (transactionContext.transaction.preview().to != null) {
+    if (ephemeralContext.transaction.preview().to != null) {
       buildQrToSing();
     } else {
       console.log("error");
@@ -42,9 +41,9 @@ export default () => {
   }
 
   async function buildQrToSing() {
-    const nonce = await getNextNonce(walletContext.currentAccount!.address);
-    transactionContext.transaction.setNonce(nonce);
-    const transaction = transactionContext.transaction.build();
+    const nonce = await getNextNonce(walletContext.currentAccount!.address, ephemeralContext.rpcProvider!);
+    ephemeralContext.transaction.setNonce(nonce);
+    const transaction = ephemeralContext.transaction.build();
     const message = btoa(JSON.stringify(transaction));
 
     const data = JSON.stringify({ part: 1, totalParts: 1, message });

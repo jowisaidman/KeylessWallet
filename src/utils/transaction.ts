@@ -1,9 +1,5 @@
 import { ethers, Transaction } from "ethers";
 
-const SEPOLIA_NODE_URL = "https://ethereum-sepolia-rpc.publicnode.com";
-const SEPOLIA_BASE_NODE_URL = "https://base-sepolia-rpc.publicnode.com";
-export let provider = new ethers.JsonRpcProvider(SEPOLIA_BASE_NODE_URL);
-
 // Status of the tx
 export enum TransactionItemStatus {
   Successful,
@@ -222,7 +218,7 @@ export type GasFee = {
   maxPriorityFeePerGas: bigint;
 };
 
-export async function estimateGasFee(): Promise<GasFee> {
+export async function estimateGasFee(provider: ethers.JsonRpcProvider): Promise<GasFee> {
   let feeData = await provider.getFeeData();
 
   return {
@@ -231,7 +227,7 @@ export async function estimateGasFee(): Promise<GasFee> {
   };
 }
 
-export async function estimateGasLimit(transaction: object): Promise<bigint> {
+export async function estimateGasLimit(transaction: object, provider: ethers.JsonRpcProvider): Promise<bigint> {
   // Estimate the gas required for the transaction
   const gasEstimate = await provider.estimateGas(transaction);
   return gasEstimate;
@@ -244,3 +240,28 @@ export async function getBalance(
 ): Promise<bigint> {
   return await provider.getBalance(account);
 }
+
+export async function sendToChain(nodeUrl: string, signedTransaction: string) {
+  const requestOptions = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      jsonrpc: "2.0",
+      id: 10,
+      method: "eth_sendRawTransaction",
+      params: [signedTransaction],
+    }),
+  };
+
+  try {
+    let receipt = await fetch(nodeUrl, requestOptions);
+    return JSON.parse(await receipt.text());
+  } catch (e) {
+    throw e;
+  }
+}
+
+export async function getNextNonce(account: string, provider: ethers.JsonRpcProvider): Promise<number> {
+  return await provider.getTransactionCount(account);
+}
+

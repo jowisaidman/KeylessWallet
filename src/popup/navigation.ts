@@ -1,7 +1,6 @@
 import { useContext } from "react";
 import { updateState } from "./context/context";
 import { SingleValue } from "react-select";
-import { updateProvider } from "./transaction";
 import { Network } from "./networks";
 import { ethers, Transaction } from "ethers";
 

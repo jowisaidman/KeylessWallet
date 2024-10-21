@@ -6,7 +6,6 @@ import {
   TransactionContext,
   ITransactionContext,
 } from "../context/transaction";
-import { getTransaction } from "../transaction";
 import { WalletContext, IWalletContext } from "../context/context";
 import Loading from "../components/Loading";
 import { changeScreen, Screen } from "../navigation";

@@ -108,6 +108,9 @@ window.addEventListener(
         dispatchResponseEvent(command, currentNetwork.value);
         break;
       }
+      case RpcCall.EthEstimateGas: {
+        break;
+      }
       case RpcCall.WalletRevokePermissions: {
         let connectedDapps = await getCurrentStateValue(CONNECTED_DAPPS);
         // TODO: At the moment we remove the whole key, when we support multiple address we will

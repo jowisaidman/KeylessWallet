@@ -11,21 +11,20 @@ import Loading from "../components/Loading";
 import EmptyState from "../components/EmptyState";
 import Qr from "../components/Qr";
 import { changeScreen, Screen } from "../navigation";
-import { getNextNonce } from "../transaction";
-import { estimateGasFee } from "../../utils/transaction";
+import { getNextNonce, estimateGasFee } from "../../utils/transaction";
 import ScreenContainer, { Footer } from "../components/ScreenContainer";
 import QRCode from "qrcode";
 
 export default () => {
   const walletContext = useContext<IWalletContext>(WalletContext);
-  const transactionContext =
+  const ephemeralContext =
     useContext<ITransactionContext>(TransactionContext);
 
   let [dataToSign, setDataToSign] = useState<string | null>(null);
   let [dataTooLong, setDataTooLong] = useState<boolean>(false);
 
   useEffect(() => {
-    if (transactionContext.dappTransactionEvent != null) {
+    if (ephemeralContext.dappTransactionEvent != null) {
       buildQrToSing();
     } else {
       console.log("error");
@@ -43,11 +42,11 @@ export default () => {
 
   async function buildQrToSing() {
     const canvas = document.getElementById("qr");
-    const nonce = await getNextNonce(walletContext.currentAccount!.address);
-    transactionContext.dappTransactionEvent!.data[0].nonce = nonce;
+    const nonce = await getNextNonce(walletContext.currentAccount!.address, ephemeralContext.rpcProvider!);
+    ephemeralContext.dappTransactionEvent!.data[0].nonce = nonce;
 
     const message = btoa(
-      JSON.stringify(transactionContext.dappTransactionEvent!.data[0])
+      JSON.stringify(ephemeralContext.dappTransactionEvent!.data[0])
     );
     const data = JSON.stringify({ part: 1, totalParts: 1, message });
 

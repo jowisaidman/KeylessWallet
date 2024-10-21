@@ -12,7 +12,6 @@ import { Input } from "../components/Input";
 import AccountAvatar from "../components/AccountAvatar";
 import AccountLabel from "../components/AccountLabel";
 import ScreenContainer, { Footer } from "../components/ScreenContainer";
-import { getTransaction } from "../transaction";
 import { WalletContext, IWalletContext } from "../context/context";
 import { changeScreen, Screen } from "../navigation";
 import { estimateGasFee, GasFee } from "../../utils/transaction";
@@ -26,7 +25,7 @@ enum FeeConfiguration {
 
 export default () => {
   const walletContext = useContext<IWalletContext>(WalletContext);
-  const transactionContext =
+  const ephemeralContext =
     useContext<ITransactionContext>(TransactionContext);
 
   const [loadingFees, setLoadingFees] = useState(true);
@@ -56,7 +55,7 @@ export default () => {
   let feeModal = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
-    estimateGasFee().then((fees) => {
+    estimateGasFee(ephemeralContext.rpcProvider!).then((fees) => {
       setFees(fees);
       setConfiguredFees(fees);
       setLoadingFees(false);
@@ -75,21 +74,21 @@ export default () => {
     const addressToValue = addressTo.current?.value;
     const valueToSendValue = valueToSend.current?.value;
     if (addressToValue != null && valueToSendValue != null) {
-      transactionContext.transaction.setValue(
+      ephemeralContext.transaction.setValue(
         String(ethers.parseUnits(valueToSendValue, "ether"))
       );
-      transactionContext.transaction.setTo(addressToValue);
-      transactionContext.transaction.setChainId(
+      ephemeralContext.transaction.setTo(addressToValue);
+      ephemeralContext.transaction.setChainId(
         Number(walletContext.network.value)
       );
-      transactionContext.transaction.setMaxFeePerGas(
+      ephemeralContext.transaction.setMaxFeePerGas(
         String(configuredFees.maxFeePerGas)
       );
-      transactionContext.transaction.setMaxPriorityFeePerGas(
+      ephemeralContext.transaction.setMaxPriorityFeePerGas(
         String(configuredFees.maxPriorityFeePerGas)
       );
-      transactionContext.transaction.setGasLimit("21000");
-      transactionContext.transaction.setData("0x");
+      ephemeralContext.transaction.setGasLimit("21000");
+      ephemeralContext.transaction.setData("0x");
       await changeScreen(Screen.SendReview);
     }
   }

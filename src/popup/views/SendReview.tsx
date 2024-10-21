@@ -11,7 +11,6 @@ import { Input } from "../components/Input";
 import AccountAvatar from "../components/AccountAvatar";
 import AccountLabel from "../components/AccountLabel";
 import ScreenContainer, { Footer } from "../components/ScreenContainer";
-import { getTransaction } from "../transaction";
 import { WalletContext, IWalletContext } from "../context/context";
 import { changeScreen, Screen } from "../navigation";
 import createAvatar from "../avatarGenerator";

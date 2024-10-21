@@ -12,7 +12,6 @@ import AccountAvatar from "../components/AccountAvatar";
 import Loading from "../components/Loading";
 import AccountLabel from "../components/AccountLabel";
 import ScreenContainer, { Footer } from "../components/ScreenContainer";
-import { getTransaction } from "../transaction";
 import { WalletContext, IWalletContext } from "../context/context";
 import { changeScreen, Screen } from "../navigation";
 import createAvatar from "../avatarGenerator";
@@ -20,18 +19,18 @@ import { estimateGasLimit } from "../../utils/transaction";
 
 export default () => {
   const walletContext = useContext<IWalletContext>(WalletContext);
-  const transactionContext =
+  const ephemeralContext =
     useContext<ITransactionContext>(TransactionContext);
 
   let [estimatingGasLimit, setEstimatingGasLimit] = useState(true);
 
   useEffect(() => {
-    if (transactionContext.dappTransactionEvent == null) {
+    if (ephemeralContext.dappTransactionEvent == null) {
       changeScreen(Screen.Welcome);
     } else {
-      estimateGasLimit(transactionContext.dappTransactionEvent!.data[0]).then(
+      estimateGasLimit(ephemeralContext.dappTransactionEvent!.data[0], ephemeralContext.rpcProvider!).then(
         (r) => {
-          transactionContext.dappTransactionEvent!.data[0].gasLimit =
+          ephemeralContext.dappTransactionEvent!.data[0].gasLimit =
             r.toString();
           setEstimatingGasLimit(false);
         }
@@ -47,7 +46,7 @@ export default () => {
     changeScreen(Screen.QrToSignDapp);
   }
 
-  if (transactionContext.dappTransactionEvent == null || estimatingGasLimit) {
+  if (ephemeralContext.dappTransactionEvent == null || estimatingGasLimit) {
     return <Loading />;
   } else {
     return (
@@ -62,7 +61,7 @@ export default () => {
         <p className="text-center text-lg">
           The site{" "}
           <span className="font-bold text-accent">
-            {transactionContext.dappTransactionEvent!.data.origin}
+            {ephemeralContext.dappTransactionEvent!.data.origin}
           </span>{" "}
           wants to sign the following transaction on network
           <span className="font-bold text-accent">
@@ -77,7 +76,7 @@ export default () => {
           style={{ overflowWrap: "break-word" }}
         >
           {JSON.stringify(
-            transactionContext.dappTransactionEvent!.data[0],
+            ephemeralContext.dappTransactionEvent!.data[0],
             undefined,
             2
           )}

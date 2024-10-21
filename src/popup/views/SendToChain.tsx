@@ -11,31 +11,31 @@ import Loading from "../components/Loading";
 import Title from "../components/Title";
 import ScreenContainer, { Footer } from "../components/ScreenContainer";
 import { changeScreen, Screen } from "../navigation";
-import { sendToChain } from "../transaction";
 import { updateState } from "../context/context";
 import {
   TransactionItemBuilder,
   TransactionItemStatus,
   TransactionItem,
   TransactionItemDetail,
+  sendToChain,
 } from "../../utils/transaction";
 
 export default () => {
-  const transactionContext =
+  const ephemeralContext =
     useContext<ITransactionContext>(TransactionContext);
   const walletContext = useContext<IWalletContext>(WalletContext);
 
   const [transactionSent, setTransactionSent] = useState<boolean>(false);
 
   useEffect(() => {
-    if (transactionContext.signedTransaction != null) {
-      const decodedTx = Transaction.from(transactionContext.signedTransaction);
+    if (ephemeralContext.signedTransaction != null) {
+      const decodedTx = Transaction.from(ephemeralContext.signedTransaction);
 
-      const chainId = transactionContext.transaction.preview().chainId!;
+      const chainId = ephemeralContext.transaction.preview().chainId!;
 
       let detail: TransactionItemDetail = {
-        to: transactionContext.transaction.preview().to!,
-        value: transactionContext.transaction.preview().value!,
+        to: ephemeralContext.transaction.preview().to!,
+        value: ephemeralContext.transaction.preview().value!,
       };
 
       const transactionItem = new TransactionItemBuilder()
@@ -43,7 +43,7 @@ export default () => {
         .setDate(Date.now())
         .setDirection("outgoing");
 
-      sendToChain(transactionContext.signedTransaction)
+      sendToChain(ephemeralContext.signedTransaction, walletContext.network.rpcEndpoints[0])
         .then((receipt) => {
           if (receipt.error != null) {
             transactionItem.setStatus(TransactionItemStatus.Error);
