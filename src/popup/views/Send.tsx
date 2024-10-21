@@ -1,92 +1,345 @@
-import React, { useContext } from "react";
+import React, { useContext, useState, useRef, useEffect } from "react";
+import { ethers } from "ethers";
 import { Button } from "../components/Button";
+import ButtonIcon from "../components/ButtonIcon";
 import { Tabs, Tab } from "../components/Tabs";
 import {
   TransactionContext,
   ITransactionContext,
 } from "../context/transaction";
+import Title from "../components/Title";
+import { Input } from "../components/Input";
+import AccountAvatar from "../components/AccountAvatar";
+import AccountLabel from "../components/AccountLabel";
+import ScreenContainer, { Footer } from "../components/ScreenContainer";
 import { getTransaction } from "../transaction";
 import { WalletContext, IWalletContext } from "../context/context";
 import { changeScreen, Screen } from "../navigation";
+import { estimateGasFee, GasFee } from "../../utils/transaction";
+
+enum FeeConfiguration {
+  Slow,
+  Normal,
+  Fast,
+  Custom,
+}
 
 export default () => {
   const walletContext = useContext<IWalletContext>(WalletContext);
   const transactionContext =
     useContext<ITransactionContext>(TransactionContext);
 
+  const [loadingFees, setLoadingFees] = useState(true);
+
+  // This feees are the ones returned from the node
+  const [fees, setFees] = useState<GasFee>({
+    maxFeePerGas: BigInt(0),
+    maxPriorityFeePerGas: BigInt(0),
+  });
+
+  // At the beginning they are the same as fees state, but they can change if the user selects
+  // other few configuration from the modal
+  const [configuredFees, setConfiguredFees] = useState<GasFee>({
+    maxFeePerGas: BigInt(0),
+    maxPriorityFeePerGas: BigInt(0),
+  });
+
+  const [feeConfiguration, setFeeConfiguration] = useState<FeeConfiguration>(
+    FeeConfiguration.Normal
+  );
+
+  let addressTo = useRef<HTMLInputElement>(null);
+  let valueToSend = useRef<HTMLInputElement>(null);
+  let maxFee = useRef<HTMLInputElement>(null);
+  let priorityFee = useRef<HTMLInputElement>(null);
+
+  let feeModal = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    estimateGasFee().then((fees) => {
+      setFees(fees);
+      setConfiguredFees(fees);
+      setLoadingFees(false);
+    });
+  }, []);
+
+  function openFeeModal() {
+    (feeModal.current as any)?.showModal();
+  }
+
   async function back() {
     await changeScreen(Screen.Welcome);
   }
 
   async function send() {
-    const addressTo = (
-      document.getElementById("address_to") as HTMLInputElement
-    )?.value;
-    const valueToSend = (
-      document.getElementById("value_to_send") as HTMLInputElement
-    )?.value;
-    const transaction = getTransaction(addressTo, Number(valueToSend));
-    transactionContext.setData(transaction);
-    await changeScreen(Screen.QrToSign);
+    const addressToValue = addressTo.current?.value;
+    const valueToSendValue = valueToSend.current?.value;
+    if (addressToValue != null && valueToSendValue != null) {
+      transactionContext.transaction.setValue(
+        String(ethers.parseUnits(valueToSendValue, "ether"))
+      );
+      transactionContext.transaction.setTo(addressToValue);
+      transactionContext.transaction.setChainId(
+        Number(walletContext.network.value)
+      );
+      transactionContext.transaction.setMaxFeePerGas(
+        String(configuredFees.maxFeePerGas)
+      );
+      transactionContext.transaction.setMaxPriorityFeePerGas(
+        String(configuredFees.maxPriorityFeePerGas)
+      );
+      transactionContext.transaction.setGasLimit("21000");
+      transactionContext.transaction.setData("0x");
+      await changeScreen(Screen.SendReview);
+    }
+  }
+
+  // Gets fee estimation based on the fee configuration
+  function getFeeEstimation(): GasFee {
+    switch (feeConfiguration) {
+      case FeeConfiguration.Slow:
+        return {
+          maxFeePerGas: (fees.maxFeePerGas * BigInt(80)) / BigInt(100),
+          maxPriorityFeePerGas:
+            (fees.maxPriorityFeePerGas * BigInt(80)) / BigInt(100),
+        };
+      case FeeConfiguration.Fast:
+        return {
+          maxFeePerGas: (fees.maxFeePerGas * BigInt(120)) / BigInt(100),
+          maxPriorityFeePerGas:
+            (fees.maxPriorityFeePerGas * BigInt(120)) / BigInt(100),
+        };
+      case FeeConfiguration.Normal:
+      case FeeConfiguration.Custom:
+      default:
+        return {
+          maxFeePerGas: fees.maxFeePerGas,
+          maxPriorityFeePerGas: fees.maxPriorityFeePerGas,
+        };
+    }
+  }
+
+  useEffect(() => {
+    if (maxFee.current != null && priorityFee.current != null) {
+      const estimation = getFeeEstimation();
+      maxFee.current!.value = ethers.formatUnits(
+        estimation.maxFeePerGas,
+        "gwei"
+      );
+      priorityFee.current!.value = ethers.formatUnits(
+        estimation.maxPriorityFeePerGas,
+        "gwei"
+      );
+    }
+  }, [feeConfiguration]);
+
+  // Sets the fee configuration
+  function changeFeesConfiguration() {
+    if (maxFee.current != null && priorityFee.current != null) {
+      setConfiguredFees({
+        maxFeePerGas: BigInt(
+          ethers.formatUnits(
+            ethers.parseUnits(maxFee.current.value, "gwei"),
+            "wei"
+          )
+        ),
+        maxPriorityFeePerGas: BigInt(
+          ethers.formatUnits(
+            ethers.parseUnits(priorityFee.current.value, "gwei"),
+            "wei"
+          )
+        ),
+      });
+    }
   }
 
   return (
-    <div className="flex flex-col items-center gap-5 grow px-5 h-full">
-      <div className="text-primary font-bold text-2xl my-2">
-        Send transaction
-      </div>
-      <div>
-        <div className="text-primary font-bold text-2xl">Account</div>
-        <div className="text-secondary">
-          {walletContext.currentAccount!.address}
-        </div>
-      </div>
-      <form className="max-w-sm mx-auto w-full">
-        <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-          Send to:
-        </label>
-        <input
-          type="text"
-          id="address_to"
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          placeholder="0"
-          required
-        />
-        <br />
-        <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-          Enter the amount:
-        </label>
-        <input
-          type="number"
-          id="value_to_send"
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          placeholder="0"
-          required
-        />
-      </form>
+    <ScreenContainer>
+      <Title title="Send Transaction" />
+      <ul className="steps lg:steps-horizontal">
+        <li className="step step-primary font-bold">Choose&#10;&#13;Account</li>
+        <li className="step">Review</li>
+        <li className="step">Sign</li>
+        <li className="step">Send</li>
+      </ul>
 
-      <div className="flex items-center space-x-3 items-end mt-auto mb-6">
-        <Button
-          onClick={back}
-          variant="secondary"
-          className="px-10"
-          centered
-          size="lg"
-        >
-          {" "}
-          Back
+      <label className="form-control w-full max-w-xs">
+        <div className="flex justify-between mb-3">
+          <div className="flex flex-col">
+            <div className="label">
+              <span className="label-text font-bold">From</span>
+            </div>
+
+            <div className="flex items-center">
+              <AccountAvatar
+                imageData={walletContext.currentAccount?.avatar || ""}
+                className="mr-2"
+                size="md"
+              />
+              <AccountLabel
+                account={walletContext.currentAccount?.address || ""}
+                label={walletContext.currentAccount?.label || ""}
+              />
+            </div>
+          </div>
+          <div className="flex flex-col">
+            <div className="label">
+              <span className="label-text font-bold">Network</span>
+            </div>
+
+            <div className="flex items-center">
+              <img
+                src={walletContext.network.icon || "generic_chain.svg"}
+                width="32px"
+                className="mr-2"
+              />
+              <label className="font-bold text-lg">
+                {walletContext.network.label}
+              </label>
+            </div>
+          </div>
+        </div>
+        <Input
+          label="To"
+          placeholder={walletContext.currentAccount!.address}
+          ref={addressTo}
+        />
+        <Input
+          label="Amount"
+          placeholder="2.35"
+          insideLabel={walletContext.network.unitNames[0]}
+          ref={valueToSend}
+        />
+        <div className="label">
+          <span className="label-text font-bold mt-2">Transaction Fee</span>
+        </div>
+
+        {loadingFees && <div className="skeleton h-5 w-full"></div>}
+        {!loadingFees && (
+          <div className="flex justify-between">
+            <label className="text-lg">
+              {ethers.formatUnits(configuredFees.maxFeePerGas, "ether")}
+            </label>
+            <label className="text-lg flex">
+              {walletContext.network.unitNames[0]}
+              <ButtonIcon icon="pencil-line" onClick={openFeeModal} size="xs" />
+            </label>
+          </div>
+        )}
+      </label>
+      <Footer>
+        <Button onClick={back} className="px-10" centered>
+          Cancel
         </Button>
         <Button
           onClick={send}
           variant="primary"
           centered
           className="px-10"
-          size="lg"
+          disabled={loadingFees}
         >
-          {" "}
-          Sign
+          Next
         </Button>
-      </div>
-    </div>
+      </Footer>
+
+      {!loadingFees && (
+        <dialog id="my_modal_1" className="modal" ref={feeModal}>
+          <div className="modal-box">
+            <h3 className="font-bold text-lg">Change transaction fee</h3>
+
+            <div role="tablist" className="tabs tabs-boxed mt-3">
+              <a
+                role="tab"
+                className={`tab tooltip tooltip-bottom ${
+                  feeConfiguration == FeeConfiguration.Slow ? "tab-active" : ""
+                }`}
+                data-tip="Slow"
+                onClick={() => {
+                  setFeeConfiguration(FeeConfiguration.Slow);
+                }}
+              >
+                <i className="ri-slow-down-line text-lg"></i>
+              </a>
+              <a
+                role="tab"
+                className={`tab tooltip tooltip-bottom ${
+                  feeConfiguration == FeeConfiguration.Normal
+                    ? "tab-active"
+                    : ""
+                }`}
+                data-tip="Normal"
+                onClick={() => {
+                  setFeeConfiguration(FeeConfiguration.Normal);
+                }}
+              >
+                <i className="ri-timer-line text-lg"></i>
+              </a>
+              <a
+                role="tab"
+                className={`tab tooltip tooltip-bottom ${
+                  feeConfiguration == FeeConfiguration.Fast ? "tab-active" : ""
+                }`}
+                data-tip="Fast"
+                onClick={() => {
+                  setFeeConfiguration(FeeConfiguration.Fast);
+                }}
+              >
+                <i className="ri-speed-up-line text-lg"></i>
+              </a>
+              <a
+                role="tab"
+                className={`tab tooltip tooltip-bottom ${
+                  feeConfiguration == FeeConfiguration.Custom
+                    ? "tab-active"
+                    : ""
+                }`}
+                data-tip="Custom"
+                onClick={() => {
+                  setFeeConfiguration(FeeConfiguration.Custom);
+                  maxFee.current?.focus();
+                }}
+              >
+                <i className="ri-question-mark"></i>
+              </a>
+            </div>
+            <div className="flex flex-col p-3">
+              <Input
+                label="Max base fee"
+                insideLabel={walletContext.network.unitNames[1]}
+                className="text-neutral"
+                ref={maxFee}
+                defaultValue={ethers.formatUnits(
+                  configuredFees.maxFeePerGas,
+                  "gwei"
+                )}
+                disabled={feeConfiguration != FeeConfiguration.Custom}
+              />
+              <Input
+                label="Priority tip"
+                insideLabel={walletContext.network.unitNames[1]}
+                className="text-neutral mt-2"
+                ref={priorityFee}
+                defaultValue={ethers.formatUnits(
+                  configuredFees.maxPriorityFeePerGas,
+                  "gwei"
+                )}
+                disabled={feeConfiguration != FeeConfiguration.Custom}
+              />
+            </div>
+            <div className="modal-action">
+              <form method="dialog">
+                <button className="btn">Cancel</button>
+                <button
+                  className="btn btn-primary mx-2"
+                  onClick={changeFeesConfiguration}
+                >
+                  Ok
+                </button>
+              </form>
+            </div>
+          </div>
+        </dialog>
+      )}
+    </ScreenContainer>
   );
 };

@@ -37,16 +37,10 @@ export async function sendToChain(signedTransaction: string) {
 
   try {
     let receipt = await fetch(node_url, requestOptions);
-    console.log(`txn receipt`, await receipt.text());
+    return JSON.parse(await receipt.text());
   } catch (e) {
-    console.log(`Error sending tx to chain ${e}`);
+    throw e;
   }
-}
-
-// Returns the balance in ethers
-export async function getBalance(account: string): Promise<string> {
-  const balance = await provider.getBalance(account);
-  return ethers.formatUnits(balance, "ether").substring(0, 6);
 }
 
 export async function getNextNonce(account: string): Promise<number> {

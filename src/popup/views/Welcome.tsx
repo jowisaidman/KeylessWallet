@@ -5,36 +5,94 @@ import { Button } from "../components/Button";
 import { Tabs, Tab } from "../components/Tabs";
 import { WalletContext, IWalletContext } from "../context/context";
 import NetworkSelector from "../components/NetworkSelector";
+import TransactionHistory from "../components/TransactionHistory";
+import OptionsMenu from "../components/OptionsMenu";
 import AccountLabel from "../components/AccountLabel";
+import AccountAvatar from "../components/AccountAvatar";
+import EmptyState from "../components/EmptyState";
 import ButtonIcon from "../components/ButtonIcon";
+import { changeScreen, Screen } from "../navigation";
+import { getBalance, TransactionItem } from "../../utils/transaction";
+import { networks, changeNetwork } from "../networks";
+import { ethers } from "ethers";
 import {
-  watchAddress,
-  changeScreen,
-  Screen,
-  changeNetwork,
-} from "../navigation";
-import { getBalance, sendToChain } from "../transaction";
-import { networks } from "../networks";
-import Select from "react-select";
+  TransactionContext,
+  ITransactionContext,
+} from "../context/transaction";
 
-export const Welcome: FC<{ syncedWithStorage: boolean }> = ({
-  syncedWithStorage,
-}) => {
+const COPY_ADDRESS_TOOLTIP_TEXT = "Copy address";
+
+export const Welcome: FC<{}> = ({}) => {
   const walletContext = useContext<IWalletContext>(WalletContext);
-  const [balance, setBalance] = useState<string>();
+  const ephemeralContext = useContext<ITransactionContext>(TransactionContext);
+
+  const [loadingBalance, setLoadingBalance] = useState<boolean>(true);
+  const [copyAddressTooltip, setCopyAddressTooltip] = useState<string>(COPY_ADDRESS_TOOLTIP_TEXT);
 
   useEffect(() => {
-    console.log("contexto", walletContext);
-    if (syncedWithStorage && walletContext.currentAccount == null) {
+    if (walletContext.currentAccount == null) {
       changeScreen(Screen.SyncAddress);
     }
   }, [walletContext]);
 
   useEffect(() => {
-    if (syncedWithStorage && walletContext.currentAccount != null) {
-      getBalance(walletContext.currentAccount?.address).then(setBalance);
+    if (walletContext.currentAccount != null) {
+      ephemeralContext.rpcProvider = new ethers.JsonRpcProvider(
+        walletContext.network.rpcEndpoints[0]
+      );
+      refreshBalance();
     }
-  }, [walletContext.currentAccount, walletContext.network]);
+  }, [
+    walletContext.currentAccount,
+    walletContext.network,
+    ephemeralContext.rpcProvider,
+  ]);
+
+  function refreshBalance() {
+    if (walletContext.currentAccount != null && ephemeralContext.rpcProvider != null) {
+      setLoadingBalance(true);
+      getBalance(
+        walletContext.currentAccount!.address,
+        ephemeralContext.rpcProvider
+      ).then((b) => {
+        ephemeralContext.currentBalance = b;
+        setLoadingBalance(false);
+      });
+    }
+  }
+
+  function getTrasactionHistory(): TransactionItem[] | null {
+    let address = walletContext.currentAccount!.address;
+    let chainId = Number(walletContext.network.value);
+    if (
+      walletContext.transactionHistory[address] == null ||
+      walletContext.transactionHistory[address][chainId] == null
+    ) {
+      return null;
+    } else {
+      return walletContext.transactionHistory[address][chainId];
+    }
+  }
+
+  function openAddressInExplorer() {
+    if (walletContext.currentAccount != null) {
+      window.open(
+        walletContext.network.explorerUrls.address.replace(
+          "<address>",
+          walletContext.currentAccount!.address
+        ),
+        "_blank"
+      );
+    }
+  }
+
+  function copyAddress() {
+    if (walletContext.currentAccount != null) {
+      navigator.clipboard.writeText(walletContext.currentAccount!.address);
+      setCopyAddressTooltip("Address copied!");
+      setTimeout(() => setCopyAddressTooltip(COPY_ADDRESS_TOOLTIP_TEXT), 3000);
+    }
+  }
 
   return (
     <>
@@ -43,85 +101,96 @@ export const Welcome: FC<{ syncedWithStorage: boolean }> = ({
           selectedChain={walletContext.network.value}
           changeNetwork={changeNetwork}
         />
+        <OptionsMenu />
       </div>
 
       <div className="flex flex-col items-center">
-        <AccountLabel label={walletContext.currentAccount?.address || "asd"} />
-        <div>
-          <ButtonIcon icon="clone" tooltip="Copy address" />
-          <ButtonIcon icon="share-square-o" tooltip="Share address" />
-          <ButtonIcon icon="search" tooltip="Open block explorer" />
+        <div className="text-center">
+          <AccountAvatar
+            imageData={walletContext.currentAccount?.avatar || ""}
+            className="mb-3"
+          />
+          <AccountLabel
+            account={walletContext.currentAccount?.address || ""}
+            label={walletContext.currentAccount?.label || ""}
+            className="mb-2"
+          />
+          <div className="flex justify-center">
+            <ButtonIcon
+              icon="file-copy-line"
+              tooltip={copyAddressTooltip}
+              onClick={copyAddress}
+              size="sm"
+            />
+            <ButtonIcon
+              icon="search-line"
+              tooltip="Open block explorer"
+              onClick={openAddressInExplorer}
+              size="sm"
+            />
+            <ButtonIcon
+              icon="refresh-line"
+              tooltip="Refresh balance"
+              onClick={refreshBalance}
+              size="sm"
+            />
+          </div>
         </div>
       </div>
       <div className="flex flex-col items-center justify-center">
-        <div className="text-primary font-bold">Network</div>
-
-        {walletContext.network.label}
-        {walletContext.network.value}
-
-        <div className="text-primary font-bold">Account</div>
-
-        <div className="text-secondary">
-          {walletContext.currentAccount?.address || "No Address Loaded"}
-        </div>
-        <Button
-          variant="secondary"
-          size="lg"
-          className="mt-3"
-          onClick={() => {
-            console.log(walletContext);
-            watchAddress(
-              walletContext.currentAccount?.address,
-              walletContext.network?.value
-            );
-          }}
-        >
-          Address information
-        </Button>
-
-        <div className="font-bold text-3xl mt-3 mb-3">{balance} Eth</div>
+        {loadingBalance ? (
+          <div className="skeleton h-8 w-28 m-3"></div>
+        ) : (
+          <div className="font-bold text-3xl m-3">
+            {ethers
+              .formatUnits(ephemeralContext.currentBalance, "ether")
+              .substring(0, 6)}{" "}
+            {walletContext.network.unitNames[0]}
+          </div>
+        )}
 
         <div className="flex items-center space-x-3">
-          <LabelledButton
+          <ButtonIcon
             variant="primary"
-            centered
-            size="lg"
-            className="px-5"
+            size="md"
             label="Send"
-            onClick={async () => await changeScreen(Screen.Send)}
-          >
-            ↗
-          </LabelledButton>
-          <LabelledButton
+            tooltip="Send tokens"
+            icon="arrow-right-up-line"
+            onClick={() => changeScreen(Screen.Send)}
+          />
+          <ButtonIcon
             variant="primary"
-            centered
-            size="lg"
-            className="px-5"
+            size="md"
             label="Receive"
-          >
-            ↙
-          </LabelledButton>
-          <LabelledButton
+            tooltip="Show a QR of your address"
+            icon="arrow-left-down-line"
+            onClick={() => changeScreen(Screen.Send)}
+          />
+          <ButtonIcon
             variant="primary"
-            centered
-            size="lg"
-            className="px-5"
-            label="Sync Account"
-            onClick={async () => await changeScreen(Screen.SyncAddress)}
-          >
-            &#8634;
-          </LabelledButton>
+            size="md"
+            label="Resync"
+            icon="loop-right-line"
+            tooltip="Re-sync offline acount"
+            onClick={() => changeScreen(Screen.SyncAddress)}
+          />
         </div>
-        <br />
-
-        <Tabs>
-          <Tab label="Tokens">
-            <div className="py-4">Token list</div>
-          </Tab>
-          <Tab label="History">
-            <div className="py-4">Transaction history</div>
-          </Tab>
-        </Tabs>
+        <div className="bg-base-200 border-base-300 overflow-y-auto rounded-box my-4 w-[90%]">
+          {getTrasactionHistory() != null ? (
+            <TransactionHistory
+              transactions={getTrasactionHistory()!}
+              explorerUrl={walletContext.network.explorerUrls.hash}
+              chainUnit={walletContext.network.unitNames[0]}
+            />
+          ) : (
+            <EmptyState
+              icon="file-paper-line"
+              text="No transactions yet"
+              subtext={`This account did not performed any transaction on ${walletContext.network.label} yet`}
+              className="p-6"
+            />
+          )}
+        </div>
       </div>
     </>
   );

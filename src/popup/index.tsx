@@ -9,8 +9,10 @@ import QrToSign from "./views/QrToSign";
 import QrToRead from "./views/QrToRead";
 import SendToChain from "./views/SendToChain";
 import SwitchChain from "./views/SwitchChain";
+import DappTxReview from "./views/DappTxReview";
 import Send from "./views/Send";
-import NetworkSelector from "./components/NetworkSelector";
+import SendReview from "./views/SendReview";
+import QrToSignDapp from "./views/QrToSignDapp";
 import { changeScreen, Screen, goToSignScreenWithQr } from "./navigation";
 import { Command, RpcCall } from "../communication";
 import {
@@ -20,7 +22,11 @@ import {
   DefaultContext,
 } from "./context/context";
 import { SOURCE, CURRENT_ACCOUNT, NETWORK, SAVED_STATE_KEYS } from "../storage";
-import { TransactionContext, ITransactionContext } from "./context/transaction";
+import {
+  TransactionContext,
+  ITransactionContext,
+  DefaultTransactionContext,
+} from "./context/transaction";
 
 // We set the sendResponse function from the chrome.runtime.addListener callback here to be able to
 // pass it to the view that has to request the action from the user
@@ -31,16 +37,12 @@ const Popup = () => {
   const [walletContext, setWalletContext] =
     useState<IWalletContext>(DefaultContext);
 
-  const [transaction, setTransaction] = useState<string | null>(null);
+  const [transactionContext, setTransactionContext] =
+    useState<ITransactionContext>(DefaultTransactionContext);
 
   // This state is used to propagate the event data received from the DOM to the screen that will
   // solve the request
   const [eventData, setEventData] = useState<object | null>(null);
-
-  const transactionContext = {
-    data: transaction,
-    setData: setTransaction,
-  };
 
   // Tells us if we synced with saved state the first time we enter the popup
   const [syncedWithStorage, setSyncedWithStorage] = useState<boolean>(false);
@@ -51,6 +53,7 @@ const Popup = () => {
     chrome.runtime.onMessage.addListener(
       (command: Command | undefined, _sender, sendResponse) => {
         if (command != null) {
+          console.log("received command", command);
           switch (command.type) {
             case RpcCall.WalletRequestPermissions:
             case RpcCall.EthRequestAccounts: {
@@ -63,6 +66,11 @@ const Popup = () => {
               sendResp = sendResponse;
               setEventData(command.data);
               changeScreen(Screen.SwitchChain);
+              break;
+            }
+            case RpcCall.EthSendTranasaction: {
+              transactionContext.dappTransactionEvent = command;
+              changeScreen(Screen.DappTxReview);
               break;
             }
             default: {
@@ -96,13 +104,16 @@ const Popup = () => {
   useEffect(() => {
     chrome.storage.local.get(SAVED_STATE_KEYS, (result) => {
       console.log(2, result);
-      setWalletContext({ ...result } as IWalletContext);
+      if (Object.keys(result).length === 0) {
+        setWalletContext(DefaultContext);
+      } else {
+        setWalletContext({ ...result } as IWalletContext);
+      }
       setSyncedWithStorage(true);
     });
   }, []);
 
   function getScreen() {
-    console.log(walletContext?.source);
     switch (walletContext?.source) {
       case Screen.SyncAddress: {
         return <SyncAddress />;
@@ -119,8 +130,17 @@ const Popup = () => {
       case Screen.Send: {
         return <Send />;
       }
+      case Screen.SendReview: {
+        return <SendReview />;
+      }
       case Screen.Loading: {
         return <Loading />;
+      }
+      case Screen.DappTxReview: {
+        return <DappTxReview />;
+      }
+      case Screen.QrToSignDapp: {
+        return <QrToSignDapp />;
       }
       case Screen.AccountPermission: {
         return (
@@ -141,7 +161,7 @@ const Popup = () => {
         );
       }
       default: {
-        return <Welcome syncedWithStorage={syncedWithStorage} />;
+        return <Welcome />;
       }
     }
   }
@@ -149,8 +169,16 @@ const Popup = () => {
   return (
     <WalletContext.Provider value={walletContext}>
       <TransactionContext.Provider value={transactionContext}>
-        <div className="bg-default min-w-[390px] min-h-[600px] text-default flex flex-col text-sm">
-          {getScreen()}
+        <div className="bg-default min-w-[390px] min-h-[600px] text-default flex flex-col">
+          {syncedWithStorage ? (
+            walletContext.currentAccount != null ? (
+              getScreen()
+            ) : (
+              <SyncAddress />
+            )
+          ) : (
+            <Loading />
+          )}
         </div>
       </TransactionContext.Provider>
     </WalletContext.Provider>

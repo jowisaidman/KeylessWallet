@@ -22,7 +22,7 @@ export default () => {
     useContext<ITransactionContext>(TransactionContext);
 
   useEffect(() => {
-    if (transactionContext.transaction.preview().to != null) {
+    if (transactionContext.dappTransactionEvent != null) {
       buildQrToSing();
       setLoadingQr(false);
     } else {
@@ -42,20 +42,22 @@ export default () => {
   async function buildQrToSing() {
     const canvas = document.getElementById("qr");
     const nonce = await getNextNonce(walletContext.currentAccount!.address);
-    transactionContext.transaction.setNonce(nonce);
-    const transaction = transactionContext.transaction.build();
+    transactionContext.dappTransactionEvent!.data[0].nonce = nonce;
 
-    QRCode.toCanvas(canvas, JSON.stringify(transaction), function (error: any) {
-      if (error) console.error(error);
-      console.log("success!");
-    });
+    QRCode.toCanvas(
+      canvas,
+      JSON.stringify(transactionContext.dappTransactionEvent!.data[0]),
+      function (error: any) {
+        if (error) console.error(error);
+        console.log("success!");
+      }
+    );
   }
 
   return (
     <ScreenContainer>
       <Title title="Sign transaction" />
       <ul className="steps lg:steps-horizontal">
-        <li className="step step-primary font-bold">Choose&#10;&#13;Account</li>
         <li className="step step-primary font-bold">Review</li>
         <li className="step step-primary font-bold">Sign</li>
         <li className="step">Send</li>

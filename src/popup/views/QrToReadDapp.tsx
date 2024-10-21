@@ -27,7 +27,6 @@ export default () => {
       <Title title="Scan the signed transaction" />
 
       <ul className="steps lg:steps-horizontal">
-        <li className="step step-primary font-bold">Choose&#10;&#13;Account</li>
         <li className="step step-primary font-bold">Review</li>
         <li className="step step-primary font-bold">Sign</li>
         <li className="step step-primary font-bold">Send</li>
