@@ -66,6 +66,7 @@ export default () => {
           </span>{" "}
           wants to sign the following transaction on network
           <span className="font-bold text-accent">
+            {" "}
             {walletContext.network.label}{" "}
           </span>{" "}
           :

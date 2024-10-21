@@ -8,6 +8,8 @@ import {
 } from "../context/transaction";
 import Title from "../components/Title";
 import Loading from "../components/Loading";
+import EmptyState from "../components/EmptyState";
+import Qr from "../components/Qr";
 import { changeScreen, Screen } from "../navigation";
 import { getNextNonce } from "../transaction";
 import { estimateGasFee } from "../../utils/transaction";
@@ -15,16 +17,16 @@ import ScreenContainer, { Footer } from "../components/ScreenContainer";
 import QRCode from "qrcode";
 
 export default () => {
-  let [loadingQr, setLoadingQr] = useState(true);
-
   const walletContext = useContext<IWalletContext>(WalletContext);
   const transactionContext =
     useContext<ITransactionContext>(TransactionContext);
 
+  let [dataToSign, setDataToSign] = useState<string | null>(null);
+  let [dataTooLong, setDataTooLong] = useState<boolean>(false);
+
   useEffect(() => {
     if (transactionContext.transaction.preview().to != null) {
       buildQrToSing();
-      setLoadingQr(false);
     } else {
       console.log("error");
       // go back to welcome screen and show a poopup saying that some error happened
@@ -40,15 +42,17 @@ export default () => {
   }
 
   async function buildQrToSing() {
-    const canvas = document.getElementById("qr");
     const nonce = await getNextNonce(walletContext.currentAccount!.address);
     transactionContext.transaction.setNonce(nonce);
     const transaction = transactionContext.transaction.build();
+    const message = btoa(JSON.stringify(transaction));
 
-    QRCode.toCanvas(canvas, JSON.stringify(transaction), function (error: any) {
-      if (error) console.error(error);
-      console.log("success!");
-    });
+    const data = JSON.stringify({ part: 1, totalParts: 1, message });
+    if (data.length > 400) {
+      setDataTooLong(true);
+    } else {
+      setDataToSign(data);
+    }
   }
 
   return (
@@ -63,9 +67,16 @@ export default () => {
       <p className="text-neutral text-lg text-center">
         Scan the following QR code with the offline signer
       </p>
-      <div className="skeleton h-[260px] w-[260px]">
-        <canvas id="qr" className={loadingQr ? "hidden" : ""} />
-      </div>
+      {!dataTooLong ? (
+        <Qr data={dataToSign} />
+      ) : (
+        <EmptyState
+          icon="error-warning-line"
+          text="Data to sign is too long"
+          subtext="The data to be signed is too long and must be divided. This feature will be available soon."
+          className="p-6"
+        />
+      )}
 
       <Footer>
         <Button onClick={back} className="px-10" centered>
@@ -76,7 +87,7 @@ export default () => {
           variant="primary"
           centered
           className="px-10"
-          disabled={loadingQr}
+          disabled={dataToSign == null || dataTooLong}
         >
           Send
         </Button>

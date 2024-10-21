@@ -27,7 +27,9 @@ export const Welcome: FC<{}> = ({}) => {
   const ephemeralContext = useContext<ITransactionContext>(TransactionContext);
 
   const [loadingBalance, setLoadingBalance] = useState<boolean>(true);
-  const [copyAddressTooltip, setCopyAddressTooltip] = useState<string>(COPY_ADDRESS_TOOLTIP_TEXT);
+  const [copyAddressTooltip, setCopyAddressTooltip] = useState<string>(
+    COPY_ADDRESS_TOOLTIP_TEXT
+  );
 
   useEffect(() => {
     if (walletContext.currentAccount == null) {
@@ -49,7 +51,10 @@ export const Welcome: FC<{}> = ({}) => {
   ]);
 
   function refreshBalance() {
-    if (walletContext.currentAccount != null && ephemeralContext.rpcProvider != null) {
+    if (
+      walletContext.currentAccount != null &&
+      ephemeralContext.rpcProvider != null
+    ) {
       setLoadingBalance(true);
       getBalance(
         walletContext.currentAccount!.address,

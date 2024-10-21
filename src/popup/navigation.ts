@@ -18,6 +18,7 @@ export const enum Screen {
   Loading = "loading",
   DappTxReview = "dapp_tx_review",
   QrToSignDapp = "qr_to_sign_dapp",
+  QrToReadDapp = "qr_to_to_send_dapp",
 }
 
 export async function changeScreen(screen: Screen) {

@@ -80,7 +80,13 @@ export const QrReader: FC<IQrReader> = ({ readInterval, onSuccess }) => {
   return (
     <div>
       <canvas ref={canvas} className="hidden"></canvas>
-      <video ref={video} className="max-h-64" playsInline autoPlay></video>
+      <video
+        ref={video}
+        className="max-h-64"
+        playsInline
+        autoPlay
+        style={{ transform: "rotateY(180deg)" }}
+      ></video>
     </div>
   );
 };

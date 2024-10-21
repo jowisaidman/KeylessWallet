@@ -13,6 +13,8 @@ import DappTxReview from "./views/DappTxReview";
 import Send from "./views/Send";
 import SendReview from "./views/SendReview";
 import QrToSignDapp from "./views/QrToSignDapp";
+import QrToReadDapp from "./views/QrToReadDapp";
+
 import { changeScreen, Screen, goToSignScreenWithQr } from "./navigation";
 import { Command, RpcCall } from "../communication";
 import {
@@ -141,6 +143,9 @@ const Popup = () => {
       }
       case Screen.QrToSignDapp: {
         return <QrToSignDapp />;
+      }
+      case Screen.QrToReadDapp: {
+        return <QrToReadDapp />;
       }
       case Screen.AccountPermission: {
         return (
