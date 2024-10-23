@@ -1,13 +1,13 @@
 import { Web3 } from "web3";
-import {
-  sendMessageToExtension,
-  Command,
+import { ethers } from "ethers";
+import { sendMessageToExtension, Command,
   BackgroundCommand,
   RpcCall,
 } from "../communication";
 import { IWalletContext } from "../popup/context/context";
 import convertToHex from "../utils/convertToHex";
 import { NETWORK, CONNECTED_DAPPS } from "../storage";
+import { estimateGasLimit, call, getBlockNumber } from "../utils/transaction";
 
 async function injectExtensionScript(url: string) {
   try {
@@ -45,6 +45,13 @@ async function updateCurrentStateValue(
   newValue: any
 ) {
   await chrome.storage.local.set({ [key]: newValue });
+}
+
+async function getRpcProvider() {
+    let currentNetwork = await getCurrentStateValue(NETWORK);
+    return new ethers.JsonRpcProvider(
+       currentNetwork.rpcEndpoints[0]
+    );
 }
 
 // This listener is the nexus between the injected script in the DOM and the popup, because it has
@@ -109,6 +116,21 @@ window.addEventListener(
         break;
       }
       case RpcCall.EthEstimateGas: {
+        let provider = await getRpcProvider();
+        let response = await estimateGasLimit(command.data[0], provider);
+        dispatchResponseEvent(command, response);
+        break;
+      }
+      case RpcCall.EthCall: {
+        let provider = await getRpcProvider();
+        let response = await call(command.data[0], provider);
+        dispatchResponseEvent(command, response);
+        break;
+      }
+      case RpcCall.EthGetBlockNumber: {
+        let provider = await getRpcProvider();
+        let response = await getBlockNumber(provider);
+        dispatchResponseEvent(command, response);
         break;
       }
       case RpcCall.WalletRevokePermissions: {

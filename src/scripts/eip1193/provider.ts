@@ -128,7 +128,7 @@ class Provider implements Eip1193Provider {
     method: string,
     params?: Array<any> | Record<string, any>
   ): Promise<any> {
-    console.log("ee ", method, params);
+    console.log("dapp Request", method, params);
     const p = { origin: window.origin, ...params };
     return this.dispatchEvent(new Command(method, p)).then((r: any) => {
       switch (method) {
@@ -139,6 +139,7 @@ class Provider implements Eip1193Provider {
           this.emit("networkChanged", r);
           break;
       }
+      console.log(`plugin response to ${method}:`, r);
       return r;
     });
   }

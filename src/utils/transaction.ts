@@ -265,3 +265,10 @@ export async function getNextNonce(account: string, provider: ethers.JsonRpcProv
   return await provider.getTransactionCount(account);
 }
 
+export async function call(data: object, provider: ethers.JsonRpcProvider): Promise<unknown> {
+  return await provider.call(data);
+}
+
+export async function getBlockNumber(provider: ethers.JsonRpcProvider): Promise<number> {
+  return await provider.getBlockNumber();
+}

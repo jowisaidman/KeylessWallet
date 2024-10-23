@@ -20,6 +20,8 @@ export enum RpcCall {
   EthSendTranasaction = "eth_sendTransaction",
   EthChainId = "eth_chainId",
   EthEstimateGas = "eth_estimateGas",
+  EthCall = "eth_call",
+  EthGetBlockNumber = "eth_blockNumber",
   NetVersion = "net_version",
   WalletRevokePermissions = "wallet_revokePermissions",
   WalletSwitchEthereumChain = "wallet_switchEthereumChain",
