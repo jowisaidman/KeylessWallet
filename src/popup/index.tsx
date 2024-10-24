@@ -14,7 +14,7 @@ import Send from "./views/Send";
 import SendReview from "./views/SendReview";
 import QrToSignDapp from "./views/QrToSignDapp";
 import QrToReadDapp from "./views/QrToReadDapp";
-
+import { ethers } from "ethers";
 import { changeScreen, Screen, goToSignScreenWithQr } from "./navigation";
 import { Command, RpcCall } from "../communication";
 import {
@@ -71,6 +71,7 @@ const Popup = () => {
               break;
             }
             case RpcCall.EthSendTranasaction: {
+              sendResp = sendResponse;
               transactionContext.dappTransactionEvent = command;
               changeScreen(Screen.DappTxReview);
               break;
@@ -88,6 +89,14 @@ const Popup = () => {
       }
     );
   }, []);
+
+  useEffect(() => {
+    transactionContext.rpcProvider = new ethers.JsonRpcProvider(
+        walletContext.network.rpcEndpoints[0]
+      );
+
+  }, [syncedWithStorage, walletContext.network])
+
 
   // Effect 1: Add listener to sync persisted state with local state
   useEffect(() => {
@@ -127,7 +136,7 @@ const Popup = () => {
         return <QrToRead />;
       }
       case Screen.SendToChain: {
-        return <SendToChain />;
+        return <SendToChain sendResponse={sendResp!} />;
       }
       case Screen.Send: {
         return <Send />;

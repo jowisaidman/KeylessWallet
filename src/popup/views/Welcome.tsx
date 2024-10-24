@@ -12,7 +12,7 @@ import AccountAvatar from "../components/AccountAvatar";
 import EmptyState from "../components/EmptyState";
 import ButtonIcon from "../components/ButtonIcon";
 import { changeScreen, Screen } from "../navigation";
-import { getBalance, TransactionItem } from "../../utils/transaction";
+import { getBalance, TransactionItem, EIP1559TransactionBuilder } from "../../utils/transaction";
 import { networks, changeNetwork } from "../networks";
 import { ethers } from "ethers";
 import {
@@ -37,11 +37,14 @@ export const Welcome: FC<{}> = ({}) => {
     }
   }, [walletContext]);
 
+  // Refresh balance when landing here or network parameters change
   useEffect(() => {
     if (walletContext.currentAccount != null) {
-      ephemeralContext.rpcProvider = new ethers.JsonRpcProvider(
-        walletContext.network.rpcEndpoints[0]
-      );
+        if (ephemeralContext.rpcProvider == null) {
+          ephemeralContext.rpcProvider = new ethers.JsonRpcProvider(
+            walletContext.network.rpcEndpoints[0]
+          );
+        }
       refreshBalance();
     }
   }, [
@@ -49,6 +52,14 @@ export const Welcome: FC<{}> = ({}) => {
     walletContext.network,
     ephemeralContext.rpcProvider,
   ]);
+
+  // Reset transactions if we are in Welcome
+  useEffect(() => {
+      console.log("always?");
+        ephemeralContext.transaction = new EIP1559TransactionBuilder();
+        ephemeralContext.dappTransactionEvent = null;
+  }, [])
+
 
   function refreshBalance() {
     if (

@@ -25,8 +25,7 @@ enum FeeConfiguration {
 
 export default () => {
   const walletContext = useContext<IWalletContext>(WalletContext);
-  const ephemeralContext =
-    useContext<ITransactionContext>(TransactionContext);
+  const ephemeralContext = useContext<ITransactionContext>(TransactionContext);
 
   const [loadingFees, setLoadingFees] = useState(true);
 

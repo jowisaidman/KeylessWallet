@@ -35,7 +35,11 @@ export const Qr: FC<IQr> = ({ data }) => {
         data == null ? "skeleton" : ""
       } h-[350px] w-[350px] flex justify-center items-center`}
     >
-      <canvas id="qr" className={data == null ? "hidden" : ""} ref={canvasRef}/>
+      <canvas
+        id="qr"
+        className={data == null ? "hidden" : ""}
+        ref={canvasRef}
+      />
     </div>
   );
 };

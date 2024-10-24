@@ -1,6 +1,8 @@
 import { Web3 } from "web3";
 import { ethers } from "ethers";
-import { sendMessageToExtension, Command,
+import {
+  sendMessageToExtension,
+  Command,
   BackgroundCommand,
   RpcCall,
 } from "../communication";
@@ -48,10 +50,8 @@ async function updateCurrentStateValue(
 }
 
 async function getRpcProvider() {
-    let currentNetwork = await getCurrentStateValue(NETWORK);
-    return new ethers.JsonRpcProvider(
-       currentNetwork.rpcEndpoints[0]
-    );
+  let currentNetwork = await getCurrentStateValue(NETWORK);
+  return new ethers.JsonRpcProvider(currentNetwork.rpcEndpoints[0]);
 }
 
 // This listener is the nexus between the injected script in the DOM and the popup, because it has

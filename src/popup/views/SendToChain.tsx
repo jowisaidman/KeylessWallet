@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useContext } from "react";
-import { Transaction } from "ethers";
+import React, { useState, useEffect, useContext, FC } from "react";
+import { Transaction, TransactionResponse } from "ethers";
 import {
   TransactionContext,
   ITransactionContext,
@@ -17,12 +17,12 @@ import {
   TransactionItemStatus,
   TransactionItem,
   TransactionItemDetail,
-  sendToChain,
+  sendTransaction,
+  EIP1559TransactionBuilder,
 } from "../../utils/transaction";
 
-export default () => {
-  const ephemeralContext =
-    useContext<ITransactionContext>(TransactionContext);
+export const SendToChain: FC<{ sendResponse: (r: object) => void }> = ({ sendResponse }) => {
+  const ephemeralContext = useContext<ITransactionContext>(TransactionContext);
   const walletContext = useContext<IWalletContext>(WalletContext);
 
   const [transactionSent, setTransactionSent] = useState<boolean>(false);
@@ -43,36 +43,55 @@ export default () => {
         .setDate(Date.now())
         .setDirection("outgoing");
 
-      sendToChain(ephemeralContext.signedTransaction, walletContext.network.rpcEndpoints[0])
-        .then((receipt) => {
-          if (receipt.error != null) {
-            transactionItem.setStatus(TransactionItemStatus.Error);
-            detail.error = receipt.error.message;
-          } else {
-            transactionItem.setStatus(TransactionItemStatus.Successful);
-          }
+      sendTransaction(
+        ephemeralContext.signedTransaction,
+        ephemeralContext.rpcProvider!,
+      )
+        .then((transactionResponse: TransactionResponse) => {
+            console.log("TX RESPONSE", transactionResponse);
+          transactionItem.setStatus(TransactionItemStatus.Successful);
           const txItem = transactionItem.setDetail(detail).build();
 
-          addTransactionItem(txItem, chainId).then(() =>
+          addTransactionItem(txItem, chainId).then(() => {
+            ephemeralContext.transaction = new EIP1559TransactionBuilder();
+            ephemeralContext.dappTransactionEvent = null;
             changeScreen(Screen.Welcome)
-          );
+          });
+          respondToDapp(transactionResponse.hash);
         })
         .catch((e) => {
           console.log("there was an error sending the transaction", e);
-          detail.error = "Unknown error";
+          if (e.info != null && e.info.error != null && e.info.error.message != null) {
+              detail.error = e.info.error.message;
+          } else {
+              detail.error = "Unknown error";
+          }
+
           const txItem = transactionItem
             .setStatus(TransactionItemStatus.Error)
             .setDetail(detail)
             .build();
 
-          addTransactionItem(txItem, chainId).then(() =>
-            changeScreen(Screen.Welcome)
-          );
+          addTransactionItem(txItem, chainId).then(() => {
+            ephemeralContext.transaction = new EIP1559TransactionBuilder();
+            ephemeralContext.dappTransactionEvent = null;
+            changeScreen(Screen.Welcome);
+          });
+          respondToDapp(e.info.error);
         });
     } else {
+      ephemeralContext.transaction = new EIP1559TransactionBuilder();
+      ephemeralContext.dappTransactionEvent = null;
       changeScreen(Screen.Welcome);
     }
   }, []);
+
+  /// Send the tx response to the dapp if the tx comes from a dapp
+  function respondToDapp(data: any) {
+    if (ephemeralContext.dappTransactionEvent != null) {
+        sendResponse(data);
+    }
+  }
 
   async function addTransactionItem(txItem: TransactionItem, chainId: number) {
     const currentAccount = walletContext.currentAccount!.address;
@@ -111,3 +130,5 @@ export default () => {
     </ScreenContainer>
   );
 };
+
+export default SendToChain;

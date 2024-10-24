@@ -11,14 +11,13 @@ import Loading from "../components/Loading";
 import EmptyState from "../components/EmptyState";
 import Qr from "../components/Qr";
 import { changeScreen, Screen } from "../navigation";
-import { getNextNonce, estimateGasFee } from "../../utils/transaction";
+import { getNextNonce, estimateGasFee, TRANSACTION_CHARACTER_LIMIT } from "../../utils/transaction";
 import ScreenContainer, { Footer } from "../components/ScreenContainer";
 import QRCode from "qrcode";
 
 export default () => {
   const walletContext = useContext<IWalletContext>(WalletContext);
-  const ephemeralContext =
-    useContext<ITransactionContext>(TransactionContext);
+  const ephemeralContext = useContext<ITransactionContext>(TransactionContext);
 
   let [dataToSign, setDataToSign] = useState<string | null>(null);
   let [dataTooLong, setDataTooLong] = useState<boolean>(false);
@@ -41,13 +40,16 @@ export default () => {
   }
 
   async function buildQrToSing() {
-    const nonce = await getNextNonce(walletContext.currentAccount!.address, ephemeralContext.rpcProvider!);
+    const nonce = await getNextNonce(
+      walletContext.currentAccount!.address,
+      ephemeralContext.rpcProvider!
+    );
     ephemeralContext.transaction.setNonce(nonce);
     const transaction = ephemeralContext.transaction.build();
     const message = btoa(JSON.stringify(transaction));
 
     const data = JSON.stringify({ part: 1, totalParts: 1, message });
-    if (data.length > 400) {
+    if (data.length > TRANSACTION_CHARACTER_LIMIT) {
       setDataTooLong(true);
     } else {
       setDataToSign(data);

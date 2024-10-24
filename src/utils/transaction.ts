@@ -1,5 +1,7 @@
 import { ethers, Transaction } from "ethers";
 
+export const TRANSACTION_CHARACTER_LIMIT = 512;
+
 // Status of the tx
 export enum TransactionItemStatus {
   Successful,
@@ -218,7 +220,9 @@ export type GasFee = {
   maxPriorityFeePerGas: bigint;
 };
 
-export async function estimateGasFee(provider: ethers.JsonRpcProvider): Promise<GasFee> {
+export async function estimateGasFee(
+  provider: ethers.JsonRpcProvider
+): Promise<GasFee> {
   let feeData = await provider.getFeeData();
 
   return {
@@ -227,7 +231,10 @@ export async function estimateGasFee(provider: ethers.JsonRpcProvider): Promise<
   };
 }
 
-export async function estimateGasLimit(transaction: object, provider: ethers.JsonRpcProvider): Promise<bigint> {
+export async function estimateGasLimit(
+  transaction: object,
+  provider: ethers.JsonRpcProvider
+): Promise<bigint> {
   // Estimate the gas required for the transaction
   const gasEstimate = await provider.estimateGas(transaction);
   return gasEstimate;
@@ -241,6 +248,10 @@ export async function getBalance(
   return await provider.getBalance(account);
 }
 
+export async function sendTransaction(signedTransaction: string, provider: ethers.JsonRpcProvider) {
+    return await provider.broadcastTransaction(signedTransaction);
+}
+/*
 export async function sendToChain(nodeUrl: string, signedTransaction: string) {
   const requestOptions = {
     method: "POST",
@@ -259,16 +270,24 @@ export async function sendToChain(nodeUrl: string, signedTransaction: string) {
   } catch (e) {
     throw e;
   }
-}
+}*/
 
-export async function getNextNonce(account: string, provider: ethers.JsonRpcProvider): Promise<number> {
+export async function getNextNonce(
+  account: string,
+  provider: ethers.JsonRpcProvider
+): Promise<number> {
   return await provider.getTransactionCount(account);
 }
 
-export async function call(data: object, provider: ethers.JsonRpcProvider): Promise<unknown> {
+export async function call(
+  data: object,
+  provider: ethers.JsonRpcProvider
+): Promise<unknown> {
   return await provider.call(data);
 }
 
-export async function getBlockNumber(provider: ethers.JsonRpcProvider): Promise<number> {
+export async function getBlockNumber(
+  provider: ethers.JsonRpcProvider
+): Promise<number> {
   return await provider.getBlockNumber();
 }
